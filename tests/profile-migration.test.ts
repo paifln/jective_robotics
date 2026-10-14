@@ -1,0 +1,9 @@
+import {it,expect} from 'vitest';
+import {profiles} from '../packages/profiles';
+import {reviewProfileMigration} from '../packages/profiles/migration';
+it('migration review reports metadata and GPIO changes without editing a definition or silently remapping wiring',()=>{
+ const from={...profiles[0]!,id:'custom-review',ledPin:4};const to={...from,version:'2.0.0',name:'Reviewed next',baudRate:9600,pins:from.pins.filter(p=>p.gpio!==2).map(p=>p.gpio===4?{...p,bootSensitive:true}:p).concat({gpio:6,input:true,output:true,pwm:true,analog:false,reserved:false,bootSensitive:false})};const wiring={led:4};const before=JSON.stringify({from,to,wiring});const review=reviewProfileMigration(from,to,'indicator',wiring);expect(review.changedFields).toEqual(['version','name','baudRate']);expect(review.pinChanges).toEqual([{gpio:2,change:'removed'},{gpio:4,change:'changed'},{gpio:6,change:'added'}]);expect(review.blocked).toBe(false);expect(review.issues.some(i=>i.code==='BOOT_SENSITIVE')).toBe(true);expect(review.wiring).toEqual(wiring);expect(review.previousHash).not.toBe(review.nextHash);expect(review.physicalVerification).toBe('NOT RUN');expect(JSON.stringify({from,to,wiring})).toBe(before);
+});
+it('migration review blocks lost pin capability and provisional boards and rejects unrelated identifiers',()=>{
+ const from={...profiles[0]!,id:'custom-review',ledPin:4};const to={...from,version:'2.0.0',pins:from.pins.filter(p=>p.gpio!==2)};expect(reviewProfileMigration(from,to,'indicator',{led:2}).blocked).toBe(true);expect(reviewProfileMigration(from,{...from,provisional:true,ledPin:null},'indicator',{led:4}).blocked).toBe(true);expect(()=>reviewProfileMigration(from,{...from,id:'other-board'},'indicator',{led:4})).toThrow('PROFILE_MIGRATION_ID_MISMATCH');const same=reviewProfileMigration(from,{...from,pins:[...from.pins].reverse()},'indicator',{led:4});expect(same.pinChanges).toEqual([]);expect(same.previousHash).toBe(same.nextHash);
+});

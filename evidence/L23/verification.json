@@ -1,0 +1,20 @@
+{
+  "scope": "Unpackaged source; two targeted Electron scenarios covering repeat tables, real downloads, rejected settings and both actual lesson projects. Not full-suite, installed or physical acceptance.",
+  "unitPassed": 202,
+  "targetedElectronPassed": 2,
+  "typecheck": "passed",
+  "lint": "passed",
+  "build": "passed",
+  "curriculum": "23/60 draft lessons; 37 remaining",
+  "contentGate": "NOT COMPLETE: requires 60 lessons and human technical language review",
+  "sourceSHA256": {
+    "packages/content/lesson-timed-motion.ts": "687ea74422a157425216b7d16ccff9acd267b4f1400fa9c270edb121e95df066",
+    "packages/content/lessons.ts": "e1265475d38a8f0815f069040b8a38e388a0409ce2a29953da24a7390c3538eb",
+    "packages/content/knowledge-check.ts": "f4e600b2fa861e7a548a726b963bfe0a7be0f7a3ece6553e6a16c31e0433537f",
+    "packages/content/timed-motion.ts": "a884f13ba2081411c57fd674abaafb4acfceba77056b8c7bbbbca9c8f79e1981",
+    "apps/desktop/renderer/TimedMotionPanel.tsx": "ac17b423dc7b885a40f3fd007ff5ec3e4a89dd64fab755b35fb705a530ed8aa2",
+    "apps/desktop/renderer/ContentPanel.tsx": "54cca8e81d44cd9a146365872df95a58778d538c7ae9b878cf36833ee446b91b",
+    "tests/timed-motion.test.ts": "6ff95465a140d0f7d5999ac0a17a7a2ba4012e0baf82747f8835180cff766bb9",
+    "tests/e2e/timed-motion.spec.ts": "110f1ec09844dfd79a8f1ca2dcd8d94a082de3b4840bcde1d0e82a9f54e8c75e"
+  }
+}

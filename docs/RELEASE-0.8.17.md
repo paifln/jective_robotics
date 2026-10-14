@@ -1,0 +1,11 @@
+# JECTIVE Robotics Studio 0.8.17
+
+Studio adds an expandable editor that keeps board commands and output visible. The icon rail, actual-save activity calendar, explicit board-upload dialog, twelve simulator maps and simplified learner assistant are checked in the ordinary Electron UI. Owner configuration stays in Help. Physical upload has not been verified.
+
+Optional Help > Work review distributes shared assignments with rubric, related lessons, permitted profiles, due date and an optional starter. Imported starters open only through an explicit separate-copy action. Submission snapshots preserve assignment identity and context; revised source creates version two while the original work and grade remain intact. Actual GUI tests exchange two assignments among five independent learner workspaces and retain ten scored submissions, returned feedback and a CSV report. Manual rubric scores and native file-dialog paths are test inputs. Local acceptance, file export and review remain explicit; files do not establish verified reviewer identity. Existing different feedback is rejected rather than silently replacing a grade; a complete correction/deletion workflow remains pending.
+
+L53 adds substantive English, Russian and Kazakh theory, an animated sharing diagram and a saved ordering exercise. Course content is **53/60 draft lessons**. L54-L60 and human technical translation review remain incomplete.
+
+Verification: **465 tests**, 163 test files, **96.58% branch coverage**; typecheck, lint and build pass. Four Studio/review/lesson GUI scenarios, an actual revised-code submission, a broader all53 learner journey and the post-version review scenario pass. Staged Windows 11 package startup/workspace IPC, single-instance behavior, seven fuses, packaged asset/CLI/eight-worker equality and intentional ASAR tamper rejection/restoration pass. Full and production audits report zero known vulnerabilities at preparation.
+
+Installer: [Setup 0.8.17](../release/JECTIVE%20Robotics%20Studio%20Setup%200.8.17.exe), 152,463,861 bytes; SHA256 `6c2db7ed9c33ee7b7d5ce26cdec6ce797d3c2b44d942ca8adc33182cea27f40c`; Authenticode **NotSigned**. Published 0.8.16 remains unchanged. Clean installer lifecycle, Windows 10, physical hardware, live OpenAI and the full packaged learner workflow are **NOT RUN**. [Evidence](../evidence/releases/0.8.17/verification.json).

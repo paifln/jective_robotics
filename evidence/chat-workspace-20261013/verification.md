@@ -1,0 +1,17 @@
+# Contained assistant workspace — 2026-10-13
+
+Scope: student chat presentation, keyboard submission and request re-entry protection. This does not complete the whole product goal.
+
+Implemented a separate `AssistantConversation` presentation component with stable exchange IDs, real pending-question display and auto-follow that preserves the learner's position when reading older messages. The composer remains below a separately scrollable dialogue. Ctrl+Enter submits; IME composition is excluded. A synchronous pending guard prevents re-entering the same in-flight request. New conversation clears the draft and dialogue. Consent, bounded history, pending payload preview, stale-source rejection, code comparison and explicit application remain intact.
+
+Chat styles are separated into `chat-workspace.css`. Idle cancellation is hidden; active cancellation remains available. Full privacy text and exact payload remain inspectable. The privacy copy distinguishes attaching the selected file from existing conversation messages that can already contain discussed code. Small-height windows retain a scrollable fallback instead of clipping controls.
+
+Five selected Electron source UI tests passed in `final-e2e.json`: contained long dialogue, preserved reading position, keyboard sending, genuine encrypted managed provisioning and HTTP transport, code consent/review, source snapshots, late results and settings-refresh recovery. The layout test checks actual page/composer/log geometry at 1200×800 and 800×700. This is not the complete GUI matrix or an OS DPI/screen-reader evaluation.
+
+The first long-dialogue test reached its assertions, then failed because its own cleanup tried to send the fixture response twice. The failed report is retained as `before-layout-e2e.json`. The fixture's one-shot release was corrected; application assertions were retained. Strict typecheck also caught a test viewport array inferred as possibly undefined under `noUncheckedIndexedAccess`; the array was made a readonly tuple, without relaxing compiler settings. Final typecheck and lint passed.
+
+Actual production EXE evidence is under `evidence/package-snapshots/current-source-chat-layout-20261013`. Main-process fixture requests are local only; no paid/live OpenAI or deployed JECTIVE server was used. No Windows 10, clean installer lifecycle, physical hardware or human accessibility review was performed here. Domain logic was unchanged; the prior scoped domain run remains 546/546 in `evidence/managed-assistant-design-20261013/unit-scene-final.json`, not a newly rerun domain suite.
+
+An orphaned profile from the initial failed test remains at `C:\Users\Kabessov\AppData\Local\Temp\jective-chat-layout-ziCvmB`. Its resolved path, non-reparse directory attributes and test-only contents were inspected. Automatic approval review rejected both guarded cleanup and the subsequent literal-path native PowerShell deletion with `blocked by policy`; no detailed reason was provided. No alternate deletion mechanism was used.
+
+User preview: earlier background launch PIDs were no longer live on subsequent inspection; their exit reason was not established, and their presence was not claimed as a persistent launch. A foreground Node launcher (`.verification/run-chat-preview.mjs`) now holds the ordinary, non-debug production preview process while it runs. The isolated packaged UI test still provides the bounded functional evidence; user-profile startup must not be treated as a complete personal-workspace recovery audit.

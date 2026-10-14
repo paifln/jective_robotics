@@ -1,0 +1,30 @@
+import {test,expect,_electron as electron} from '@playwright/test';
+import {mkdtemp,rm,mkdir} from 'node:fs/promises';
+import {tmpdir} from 'node:os';
+import {join,resolve,sep,basename} from 'node:path';
+import {knowledgeChecks} from '../../packages/content/knowledge-check';
+import {lessons} from '../../packages/content/lessons';
+import {manual} from '../../packages/content/manual';
+test('a saved real quiz result changes the suggestion and survives restart without locking other lessons',async()=>{
+ const root=await mkdtemp(join(tmpdir(),'jective-next-lesson-')),env:Record<string,string>=Object.fromEntries(Object.entries(process.env).filter((x):x is [string,string]=>x[1]!==undefined));env.JECTIVE_WORKSPACE_ROOT=root;delete env.ELECTRON_RUN_AS_NODE;
+ let app=await electron.launch({args:['.'],env});
+ const close=async()=>{await app.evaluate(({app})=>app.exit(0));if(app.process().exitCode===null&&app.process().signalCode===null)await new Promise<void>(r=>app.process().once('exit',()=>r()));};
+ const open=async()=>{const page=await app.firstWindow();await app.evaluate(({BrowserWindow})=>BrowserWindow.getAllWindows().forEach(w=>{w.setFocusable(false);w.setPosition(-12000,-12000);w.webContents.setBackgroundThrottling(false);w.showInactive();}));await expect(page.locator('#launch-screen')).toHaveCount(0);await page.locator('main>header>label>select').selectOption('en');await page.getByRole('button',{name:'Programming',exact:true}).click();return page;};
+ try{
+  let page=await open();const recommendation=page.locator('.lesson-recommendation');await expect(recommendation.getByRole('button')).toContainText('L01');
+  const forged=await page.evaluate(()=>window.jective.progress('L01','knowledge-check-passed'));expect(forged.ok).toBe(false);const before=await page.evaluate(()=>window.jective.workspace());expect(before.ok&&before.value.progress.L01).toBeUndefined();
+  await page.locator('.knowledge-check').getByRole('button',{name:'Check answers',exact:true}).click();await expect(page.locator('.knowledge-check').getByRole('status')).toContainText('Review and try again');const failed=await page.evaluate(()=>window.jective.workspace());expect(failed.ok&&failed.value.progress.L01).toBeUndefined();await expect(recommendation.getByRole('button')).toContainText('L01');
+  const quiz=page.locator('.knowledge-check'),bank=knowledgeChecks.L01!;await quiz.locator('input[type=radio][value="'+bank.choice.correct+'"]').check();await quiz.getByRole('textbox',{name:'Numeric answer',exact:true}).fill(String(bank.number.answer));await quiz.getByRole('button',{name:'Check answers',exact:true}).click();await expect(quiz.getByRole('status')).toContainText('Knowledge check passed');await expect(recommendation.getByRole('button')).toContainText('L02');
+  const saved=await page.evaluate(()=>window.jective.workspace());expect(saved.ok&&saved.value.progress.L01).toBe('knowledge-check-passed');
+  const selfReport=await page.evaluate(()=>window.jective.progress('L01','self-reported-complete'));expect(selfReport.ok).toBe(true);const retained=await page.evaluate(()=>window.jective.workspace());expect(retained.ok&&retained.value.progress.L01).toBe('knowledge-check-passed');
+  await recommendation.getByRole('button').focus();await page.keyboard.press('Enter');const heading=page.getByRole('heading',{name:lessons.find(l=>l.id==='L02')!.title.en,exact:true});await expect(heading).toBeVisible();await expect(heading).toBeFocused();
+  await recommendation.getByRole('button').focus();await page.keyboard.press('Enter');await expect(heading).toBeFocused();
+  await page.getByRole('textbox',{name:'Content search',exact:true}).fill('no-matching-topic-123');await expect(page.locator('.empty-library')).toContainText('No results');await expect(page.locator('.library-layout')).toBeHidden();await recommendation.getByRole('button').click();await expect(page.getByRole('textbox',{name:'Content search',exact:true})).toHaveValue('');await expect(heading).toBeFocused();await expect(page.locator('.empty-library')).toHaveCount(0);
+  for(const [locale,name,message] of [['ru','Поиск по библиотеке','Ничего не найдено'],['kk','Кітапханадан іздеу','Ештеңе табылмады']] as const){await page.locator('main>header>label>select').selectOption(locale);await page.getByRole('textbox',{name,exact:true}).fill('no-matching-topic-123');await expect(page.locator('.empty-library')).toContainText(message);await page.getByRole('textbox',{name,exact:true}).fill('');}
+  await page.locator('main>header>label>select').selectOption('en');
+  await page.setViewportSize({width:800,height:700});await recommendation.scrollIntoViewIfNeeded();expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);await mkdir('test-results/lesson-recommendation',{recursive:true});await page.screenshot({path:'test-results/lesson-recommendation/light.png'});await page.getByRole('button',{name:'Color theme',exact:true}).click();await recommendation.scrollIntoViewIfNeeded();await page.screenshot({path:'test-results/lesson-recommendation/dark.png'});
+  await page.locator('.library-layout>aside>button').last().click();await expect(page.getByRole('heading',{name:lessons.find(l=>l.id==='L60')!.title.en,exact:true})).toBeVisible();
+  await page.getByRole('button',{name:'Manual',exact:true}).click();await page.getByRole('textbox',{name:'Content search',exact:true}).fill('administrator password');const assistant=manual.find(page=>page.id==='assistant')!;expect(assistant.title.en.toLowerCase()).not.toContain('password');await page.getByRole('button',{name:'assistant · '+assistant.title.en,exact:true}).click();await expect(page.locator('.library-layout article')).toContainText('administrator password');
+  await close();app=await electron.launch({args:['.'],env});page=await open();await expect(page.locator('.lesson-recommendation button')).toContainText('L02');
+ }finally{await close();if(!resolve(root).startsWith(resolve(tmpdir())+sep)||!basename(root).startsWith('jective-next-lesson-'))throw new Error('UNSAFE_CLEANUP');await rm(root,{recursive:true,force:true,maxRetries:20,retryDelay:100});}
+});

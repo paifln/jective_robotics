@@ -1,0 +1,17 @@
+{
+  "scope": "Nine distinct targeted source Electron scenarios over two sequential commands; full legacy suite not run",
+  "expected": 9,
+  "unexpected": 0,
+  "batches": [
+    {
+      "report": "source-ui-seven.json",
+      "expected": 7,
+      "sha256": "5c6b1cf29a728fc813a107eb2dbdb5f4046a8ff44d1f76cd857d86170c86a6de"
+    },
+    {
+      "report": "source-student-two.json",
+      "expected": 2,
+      "sha256": "57bc9068d1d9061ebbf09e34c142a3cc851e49759654658613784e505ca60fa3"
+    }
+  ]
+}

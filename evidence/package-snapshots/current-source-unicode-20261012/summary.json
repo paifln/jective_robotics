@@ -1,0 +1,15 @@
+{
+  "checkedAt": "2026-10-11T20:18:27.795Z",
+  "scope": "Current unpacked snapshot,not installer/fullpackagedlearner acceptance",
+  "resources": 273,
+  "startup": {
+    "rendererInitialized": true,
+    "elapsedMs": 1149
+  },
+  "archiveSha256": "12fb867b124781827ac1826e8e18cb651300c3ecba8949e1ce3a971721ab5906",
+  "exeSha256": "def0db5a45b16c5e654c8980f5b8f9c657841fedbbbb380fc07e91fd26f2116f",
+  "publishedInstallerUnchanged": true,
+  "publishedInstallerSha256": "8de7b4fddb70c34d21e8eaee78c257ba618618cf69a84a3d8935d1bf3f480897",
+  "physical": "NOT RUN",
+  "installerLifecycle": "NOT RUN"
+}

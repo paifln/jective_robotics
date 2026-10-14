@@ -1,0 +1,123 @@
+{
+  "baselineCycleMs": 246396.6046,
+  "originalFsCycleMs": 242088.8188,
+  "sourceHashMatch": true,
+  "sdkHashMatch": true,
+  "node": {
+    "hashCPU": {
+      "bytes": 1073741824,
+      "elapsedMs": 527.7717,
+      "sha256": "5a7f73c1e86a6639ea188108cd123ce4187526b0bdc00ddcab11ee93afcfa1f3"
+    },
+    "scope": "Repeated warm-cache single physical SDK file, diagnostic only; not full-tree speed or acceptance",
+    "versions": {
+      "node": "24.21.0",
+      "acorn": "8.18.0",
+      "ada": "4.0.0",
+      "amaro": "1.1.11",
+      "ares": "1.34.8",
+      "brotli": "1.2.0",
+      "cldr": "48.0",
+      "icu": "78.3",
+      "llhttp": "9.4.3",
+      "merve": "1.2.2",
+      "modules": "137",
+      "napi": "10",
+      "nbytes": "0.1.4",
+      "ncrypto": "0.0.1",
+      "nghttp2": "1.70.0",
+      "nghttp3": "",
+      "ngtcp2": "",
+      "openssl": "3.5.8",
+      "simdjson": "4.6.7",
+      "simdutf": "6.4.0",
+      "sqlite": "3.53.4",
+      "tz": "2026c",
+      "undici": "7.29.1",
+      "unicode": "17.0",
+      "uv": "1.52.1",
+      "uvwasi": "0.0.23",
+      "v8": "13.6.233.17-node.53",
+      "zlib": "1.3.2.1-motley-8002e91",
+      "zstd": "1.5.7"
+    },
+    "results": [
+      {
+        "variant": "node-fs",
+        "lstat1000Ms": 33.0837,
+        "readdir200Ms": 18.135099999999994,
+        "readAndHash200Ms": 86.6851,
+        "fileBytes": 29941,
+        "sha256": "a205ad3ee8db95e95b4ba2419413af78dfb79145782ac847146f1396e875b187"
+      }
+    ]
+  },
+  "electron": {
+    "hashCPU": {
+      "bytes": 1073741824,
+      "elapsedMs": 535.7843999999999,
+      "sha256": "5a7f73c1e86a6639ea188108cd123ce4187526b0bdc00ddcab11ee93afcfa1f3"
+    },
+    "scope": "Repeated warm-cache single physical SDK file, diagnostic only; not full-tree speed or acceptance",
+    "versions": {
+      "node": "24.21.0",
+      "acorn": "8.18.0",
+      "ada": "4.0.0",
+      "amaro": "1.1.11",
+      "ares": "1.34.8",
+      "brotli": "1.2.0",
+      "cldr": "48.0",
+      "icu": "78.2",
+      "llhttp": "9.4.3",
+      "merve": "1.2.2",
+      "modules": "149",
+      "napi": "10",
+      "nbytes": "0.1.4",
+      "ncrypto": "0.0.1",
+      "nghttp2": "1.70.0",
+      "nghttp3": "",
+      "ngtcp2": "",
+      "openssl": "0.0.0",
+      "simdjson": "4.6.7",
+      "simdutf": "7.7.0",
+      "sqlite": "3.53.4",
+      "tz": "2026d",
+      "undici": "7.29.1",
+      "unicode": "17.0",
+      "uv": "1.52.1",
+      "uvwasi": "0.0.23",
+      "v8": "15.2.124.28-electron.0",
+      "zlib": "1.3.2.1-motley",
+      "zstd": "1.6.0",
+      "electron": "44.7.0",
+      "chrome": "152.0.7977.130"
+    },
+    "results": [
+      {
+        "variant": "node-fs",
+        "lstat1000Ms": 46.74600000000001,
+        "readdir200Ms": 18.856299999999976,
+        "readAndHash200Ms": 77.0162,
+        "fileBytes": 29941,
+        "sha256": "a205ad3ee8db95e95b4ba2419413af78dfb79145782ac847146f1396e875b187"
+      },
+      {
+        "variant": "original-promises",
+        "lstat1000Ms": 30.639700000000005,
+        "readdir200Ms": 19.385400000000004,
+        "readAndHash200Ms": 70.7466,
+        "fileBytes": 29941,
+        "sha256": "a205ad3ee8db95e95b4ba2419413af78dfb79145782ac847146f1396e875b187"
+      },
+      {
+        "variant": "original-callbacks-explicit-stream-fs",
+        "lstat1000Ms": 41.1721,
+        "readdir200Ms": 17.491000000000042,
+        "readAndHash200Ms": 75.91440000000006,
+        "fileBytes": 29941,
+        "sha256": "a205ad3ee8db95e95b4ba2419413af78dfb79145782ac847146f1396e875b187"
+      }
+    ]
+  },
+  "interpretation": "Small warm-file/metadata and 1GiB buffer hashing costs similar; no proven full-tree original-fs speedup. Full SDK scanning still material. Benchmarks do not substitute GUI or declared baseline acceptance."
+}

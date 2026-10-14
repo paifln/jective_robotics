@@ -1,0 +1,8 @@
+{
+  "beforeMedianMs": 2604.6764999999996,
+  "afterMedianMs": 2563.9193999999998,
+  "beforeMeanSummedWorkingSetMiB": 757.97421875,
+  "afterMeanSummedWorkingSetMiB": 739.23828125,
+  "reductionMiB": 18.735937499999977,
+  "scope": "Same host/procedure, fresh processes/workspaces, OS cache not cleared; noisy observations, not required baseline acceptance"
+}

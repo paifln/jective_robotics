@@ -1,0 +1,140 @@
+{
+  "checkedAt": "2026-10-11T09:29:39.058Z",
+  "scope": "Corrected learner helper against actual Runtime with hardware substitutes; starter logical defect reproduced; actual ESP32 compilation only",
+  "sourceHashes": {
+    "packages/content/functions-interface.ts": "1cf28d9a329a85c56452b5e213f7e773fafd6e083fcf46570223bcc566fc7b23",
+    "packages/content/runtime-source.generated.ts": "6375f95869df2c5c2bec771fda77fab654eb5a5ebddc21a066133a60a904ffac",
+    "firmware/jective-runtime/CheckedMove.h": "29bc737d98c4f9971a962a2168178d74f92d16b8b06e5572a9301eb69a886be7",
+    "scripts/functions-interface-check.mjs": "68c322ad90c18275e836bf678cdce6c5b40625fb8cfa93e6848f8cd533ec8a03"
+  },
+  "observedCases": [
+    {
+      "id": "valid",
+      "left": 10,
+      "right": 10,
+      "durationMs": 100,
+      "ready": true,
+      "armed": true,
+      "result": "Accepted"
+    },
+    {
+      "id": "speed-limit",
+      "left": 30,
+      "right": -30,
+      "durationMs": 2000,
+      "ready": true,
+      "armed": true,
+      "result": "Accepted"
+    },
+    {
+      "id": "too-fast",
+      "left": 31,
+      "right": 10,
+      "durationMs": 100,
+      "ready": true,
+      "armed": true,
+      "result": "InvalidInput"
+    },
+    {
+      "id": "zero-duration",
+      "left": 10,
+      "right": 10,
+      "durationMs": 0,
+      "ready": true,
+      "armed": true,
+      "result": "InvalidInput"
+    },
+    {
+      "id": "negative-duration",
+      "left": 10,
+      "right": 10,
+      "durationMs": -1,
+      "ready": true,
+      "armed": true,
+      "result": "InvalidInput"
+    },
+    {
+      "id": "too-long",
+      "left": 10,
+      "right": 10,
+      "durationMs": 2001,
+      "ready": true,
+      "armed": true,
+      "result": "InvalidInput"
+    },
+    {
+      "id": "not-ready",
+      "left": 10,
+      "right": 10,
+      "durationMs": 100,
+      "ready": false,
+      "armed": false,
+      "result": "RuntimeRejected"
+    },
+    {
+      "id": "not-armed",
+      "left": 10,
+      "right": 10,
+      "durationMs": 100,
+      "ready": true,
+      "armed": false,
+      "result": "RuntimeRejected"
+    }
+  ],
+  "hostCompile": {
+    "code": 0,
+    "log": ""
+  },
+  "hostExecution": {
+    "code": 0,
+    "log": ""
+  },
+  "starterCompile": {
+    "code": 0,
+    "log": ""
+  },
+  "starterBugExecution": {
+    "code": 0,
+    "log": ""
+  },
+  "firmware": [
+    {
+      "variant": "starter",
+      "result": {
+        "operationId": "1b73f3f5-3abb-469a-887d-66fada15fd72",
+        "state": "succeeded",
+        "sourceHash": "47a1f527795e49ffa8a0c1964bfbde1106af49bf56fe90cb46ee5d29685d1a75",
+        "artifacts": [
+          "boot_app0.bin",
+          "sketch.ino.bin",
+          "sketch.ino.bootloader.bin",
+          "sketch.ino.elf",
+          "sketch.ino.merged.bin",
+          "sketch.ino.partitions.bin"
+        ],
+        "exitCode": 0,
+        "log": "Sketch uses 271639 bytes (20%) of program storage space. Maximum is 1310720 bytes.\nGlobal variables use 22624 bytes (6%) of dynamic memory, leaving 305056 bytes for local variables. Maximum is 327680 bytes.\n"
+      }
+    },
+    {
+      "variant": "reference",
+      "result": {
+        "operationId": "08cc8cd3-fe92-4dc5-bac8-e20dba74a522",
+        "state": "succeeded",
+        "sourceHash": "7b1f8cce706d9b0d3b44ea016eb18b670592710e7598f170c7b0cd697bfb6f5d",
+        "artifacts": [
+          "boot_app0.bin",
+          "sketch.ino.bin",
+          "sketch.ino.bootloader.bin",
+          "sketch.ino.elf",
+          "sketch.ino.merged.bin",
+          "sketch.ino.partitions.bin"
+        ],
+        "exitCode": 0,
+        "log": "Sketch uses 271671 bytes (20%) of program storage space. Maximum is 1310720 bytes.\nGlobal variables use 22624 bytes (6%) of dynamic memory, leaving 305056 bytes for local variables. Maximum is 327680 bytes.\n"
+      }
+    }
+  ],
+  "uploadVerification": "NOT RUN",
+  "physicalVerification": "NOT RUN"
+}

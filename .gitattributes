@@ -1,2 +1,27 @@
-# Auto detect text files and perform LF normalization
-* text=auto
+# Normalize source and documentation; preserve Windows command script endings.
+* text=auto eol=lf
+*.ps1 text eol=crlf
+*.cmd text eol=crlf
+*.bat text eol=crlf
+
+# Bundled learning and branding assets are binary.
+*.png -text
+*.jpg -text
+*.jpeg -text
+*.ico -text
+*.bmp -text
+*.ogg -text
+*.wav -text
+*.mp3 -text
+*.ttf -text
+*.woff -text
+*.woff2 -text
+*.pdf -text
+
+# These runtime fixtures are bound to historical SHA-256 evidence by exact bytes.
+# Preserve their existing line endings; do not rewrite the evidence hashes.
+firmware/jective-runtime/*.h -text
+tests/firmware/runtime_interface_test.cpp -text
+tests/firmware/runtime-stubs/Arduino.h -text
+tests/firmware/runtime-stubs/esp_system.h -text
+scripts/runtime-interface-check.mjs -text

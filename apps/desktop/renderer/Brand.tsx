@@ -1,0 +1,2 @@
+import React from 'react';
+export function Brand(){return <div className="brand"><svg className="brand-mark" viewBox="0 0 160 320" aria-hidden="true"><path fill="currentColor" d="M100 260V18Q100 0 118 0H142Q160 0 160 18V242Q160 260 142 260ZM100 260V302Q100 320 82 320H18Q0 320 0 302V278Q0 260 18 260Z"/></svg><span className="brand-word">Jective</span><span className="brand-product">Robotics Studio</span></div>;}

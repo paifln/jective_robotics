@@ -1,0 +1,12 @@
+{
+  "checkedAt": "2026-10-11T20:18:28.342Z",
+  "scope": "Structural traceability only: exact master section/criterion text, unique IDs and existing contained references. Does not prove implementation, content quality, release or hardware acceptance.",
+  "sections": 24,
+  "criteria": 15,
+  "references": 156,
+  "statuses": {
+    "PARTIAL": 24,
+    "NOT MET": 1,
+    "PARTIAL / NOT MET": 14
+  }
+}

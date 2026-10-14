@@ -1,0 +1,19 @@
+{
+  "scope": "Unpackaged source; two targeted Electron scenarios covering three comparisons, modeled polarity correction and both actual lesson projects. Not full-suite, installed or physical acceptance.",
+  "unitPassed": 196,
+  "targetedElectronPassed": 2,
+  "typecheck": "passed",
+  "lint": "passed",
+  "build": "passed",
+  "curriculum": "21/60 draft lessons; 39 remaining",
+  "contentGate": "NOT COMPLETE: requires 60 lessons and human technical language review",
+  "sourceSHA256": {
+    "packages/content/lesson-steering.ts": "ab1eb0b43516b81418b784dbc425d4761d50b96819e6eb372da9db1401aa22d6",
+    "packages/content/lessons.ts": "3a0945099e8f0dba99af441f2d17b27f6adc3443e37b7c9c5708d2d08d50f6fb",
+    "packages/content/knowledge-check.ts": "702faca90f2c7acbcafd9cd002f0667ab339eed09c19c1169018760b918a8485",
+    "packages/content/differential-experiment.ts": "d386a77a0841eb5640aeda0b1c53ce74d599be11e65779a6c277ad3f0e325104",
+    "apps/desktop/renderer/DifferentialPanel.tsx": "d5f2cb7ab9fe2f2981265bcbf579350a032e9b14b0a69211bdd9d7b083a8eca7",
+    "apps/desktop/renderer/ContentPanel.tsx": "ddd52432f7dae0e5713883308350a248cfccc1024d5c4b3aff2470486a14389a",
+    "tests/e2e/differential.spec.ts": "cbccfe9cf2be604da5315a001738c69a32463107dc88f9826b9ef1c71be8c677"
+  }
+}

@@ -1,0 +1,9 @@
+# Desktop design revision
+
+Student-facing design work: Windows Segoe UI typography, quieter neutral theme tokens, flat navigation and course tabs, reduced card/button visual weight, consistent reading hierarchy and project rows. Studio fills the available viewport with internally scrolling editors, including 800×700. Expand editor increases the working area and restores the component dock when closed. Simulator and board screens share the same chrome. Actual Blockly light/dark themes now follow the app; conflicting legacy backgrounds are overridden explicitly.
+
+Source typecheck/lint/build PASS. Four source Electron regressions PASS for initial final design, ordinary Save/Open/conflict, chat viewport and native 200% reading keyboard controls (`e2e.json`). Expanded-editor test PASS (`expand-e2e.json`). Additional all-five-surface/theme and localized board-run/code-copy tests PASS (`all-surfaces-e2e.json`). Studio height and horizontal/page bounds asserted at desktop and 800×700. Screenshots manually inspected for lessons, Studio, simulator and compact Studio; artifacts retained here.
+
+Earlier dark-canvas assertions were incorrect: SVG background rect uses a grid-pattern fill, not a literal color attribute. The meaningful final assertion checks the rendered SVG background. Visual inspection also caught legacy white canvas/toolbox styles; these were corrected before the final gallery. Earlier attempts remain in .verification/desktop-design-*.json.
+
+Private production snapshot current-source-desktop-design-r2-20261013 passes startup/fuses/tamper/asset equality and actual packaged UI smoke. See ../package-snapshots/current-source-desktop-design-r2-20261013/verification.md. Published installer remains older; no new actual compiler, hardware, Windows10 or full accessibility acceptance claim. The pending scanner change is included but its complete packaged compiler performance remains unverified; previous timeout result preserved.

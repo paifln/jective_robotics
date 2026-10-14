@@ -1,0 +1,22 @@
+import {it,expect} from 'vitest';
+import {mkdtemp,rm,writeFile,readdir,mkdir} from 'node:fs/promises';
+import {join} from 'node:path';
+import {tmpdir} from 'node:os';
+import {profiles} from '../packages/profiles';
+import {encodeProfile} from '../packages/profiles/exchange';
+import {ProfileRegistry,profileHash} from '../packages/profiles/registry';
+it('versioned imported profiles survive reopening, resist replacement and resolve only by matching hash',async()=>{
+ const root=await mkdtemp(join(tmpdir(),'jective-profile-registry-'));try{const p={...profiles[0]!,id:'custom-board'};const store=new ProfileRegistry(root);expect(await store.import(encodeProfile(p))).toBe('imported');expect(await store.import(encodeProfile(p))).toBe('duplicate');await expect(store.import(encodeProfile({...p,name:'Replacement'}))).rejects.toThrow('PROFILE_VERSION_CONFLICT');const reopened=new ProfileRegistry(root);expect(await reopened.resolve(p.id,p.version,profileHash(p))).toEqual(p);await expect(reopened.resolve(p.id,'9.0.0',profileHash(p))).rejects.toThrow('PROFILE_VERSION_UNKNOWN');await expect(reopened.resolve(p.id,p.version,'bad')).rejects.toThrow('PROFILE_HASH_MISMATCH');expect(await store.import(encodeProfile({...p,version:'2.0.0'}))).toBe('imported');expect((await reopened.list()).filter(x=>x.id===p.id)).toHaveLength(2);expect(profileHash({...p,pins:[...p.pins].reverse()})).toBe(profileHash(p));expect(await store.import(encodeProfile(profiles[0]!))).toBe('duplicate');await expect(store.import(encodeProfile({...profiles[0]!,version:'9.0.0'}))).rejects.toThrow('PROFILE_BUILTIN_IMMUTABLE');}finally{await rm(root,{recursive:true,force:true});}
+});
+it('concurrent identical imports publish one complete file and leave no temporary files',async()=>{
+ const root=await mkdtemp(join(tmpdir(),'jective-profile-race-'));try{const p={...profiles[0]!,id:'race-board'};const results=await Promise.all(Array.from({length:8},()=>new ProfileRegistry(root).import(encodeProfile(p))));expect(results.filter(r=>r==='imported')).toHaveLength(1);expect(results.filter(r=>r==='duplicate')).toHaveLength(7);expect(await new ProfileRegistry(root).resolve(p.id,p.version,profileHash(p))).toEqual(p);expect(await readdir(join(root,'.pending'))).toEqual([]);}finally{await rm(root,{recursive:true,force:true});}
+});
+it('conflicting concurrent imports preserve the winning version and reject its replacement',async()=>{
+ const root=await mkdtemp(join(tmpdir(),'jective-profile-conflict-'));try{const a={...profiles[0]!,id:'race-board'},b={...a,name:'Another definition'};const results=await Promise.allSettled([new ProfileRegistry(root).import(encodeProfile(a)),new ProfileRegistry(root).import(encodeProfile(b))]);expect(results.filter(r=>r.status==='fulfilled')).toHaveLength(1);const rejected=results.find(r=>r.status==='rejected')!;expect(rejected.status==='rejected'&&String(rejected.reason)).toContain('PROFILE_VERSION_CONFLICT');const imported=(await new ProfileRegistry(root).list()).find(p=>p.id===a.id)!;expect([profileHash(a),profileHash(b)]).toContain(profileHash(imported));expect(await readdir(join(root,'.pending'))).toEqual([]);}finally{await rm(root,{recursive:true,force:true});}
+});
+it('abandoned staging files stay unpublished and an obstructed final path leaves no new temporary files',async()=>{
+ const root=await mkdtemp(join(tmpdir(),'jective-profile-stage-'));try{await mkdir(join(root,'.pending'));await writeFile(join(root,'.pending','abandoned.tmp'),'{incomplete');const registry=new ProfileRegistry(root);expect(await registry.list()).toEqual(profiles);await writeFile(join(root,'occupied-board.1.1.0.json'),'not a profile');await expect(registry.import(encodeProfile({...profiles[0]!,id:'occupied-board'}))).rejects.toThrow();expect(await readdir(join(root,'.pending'))).toEqual(['abandoned.tmp']);}finally{await rm(root,{recursive:true,force:true});}
+});
+it('registry refuses foreign files and filename/content mismatches instead of silently loading them',async()=>{
+ const root=await mkdtemp(join(tmpdir(),'jective-profile-invalid-'));try{const registry=new ProfileRegistry(root);await writeFile(join(root,'foreign.txt'),'{}');await expect(registry.list()).rejects.toThrow('PROFILE_REGISTRY_FILE_INVALID');await rm(join(root,'foreign.txt'));await writeFile(join(root,'other-board.1.1.0.json'),encodeProfile({...profiles[0]!,id:'custom-board'}));await expect(registry.list()).rejects.toThrow('PROFILE_REGISTRY_ID_CONFLICT');}finally{await rm(root,{recursive:true,force:true});}
+});

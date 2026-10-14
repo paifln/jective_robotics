@@ -1,0 +1,7 @@
+# Main-process knowledge assessment
+
+New strict answer/result contracts and a pure assessKnowledge domain service validate and grade answers. learning:knowledge runs in main and writes the quiz-pass marker only after a successful grade/database write. Generic workspace:progress rejects knowledge-check-passed. Renderer waits for the returned result, disables editing/repeated submission while pending and ignores results after unmount. Questions/hints remain local.
+
+Full534tests/181files pass,96.35% package branch coverage/per-file thresholds pass. Domain tests grade actual right/wrong answers for all60lessons and reject extra claimed pass fields, invalid IDs, out-of-range choices, oversized input and inconsistent result flags. Source Electron scenario7.8s uses actual trusted IPC/main/database: forged generic progress write fails without changingDB; empty incorrect submission fails without changing recommendation; correct answers save pass and suggestL02; restart retains it and other lessons remain accessible. Build/lint/typecheck pass.
+
+This establishes the current IPC write boundary, not cheating prevention, tamper-proof local storage or proof of physical/practical mastery. Existing stored/backup progress is preserved and not retroactively independently verified. Human content review/current packaged acceptance/Windows10/hardware remain unverified. No firmware/compiler cycle repeated for this educational grading change.

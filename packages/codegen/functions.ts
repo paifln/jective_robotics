@@ -1,0 +1,16 @@
+import {validateProgram,type Instruction,type Expression} from './index';
+export type FunctionInstruction=Exclude<Instruction,{kind:'if'|'repeat'|'while'}>|{kind:'call';name:string;arguments:Expression[];blockId?:string}|{kind:'if';condition:Expression;then:FunctionInstruction[];otherwise:FunctionInstruction[];blockId?:string}|{kind:'repeat';count:number;body:FunctionInstruction[];blockId?:string}|{kind:'while';condition:Expression;maxIterations:number;body:FunctionInstruction[];blockId?:string};
+export interface FunctionDefinition {name:string;parameters:string[];body:FunctionInstruction[]}
+export interface FunctionProgram {setup:FunctionInstruction[];loop:FunctionInstruction[];functions:FunctionDefinition[]}
+export function validateFunctions(program:FunctionProgram){
+ if(!Array.isArray(program.functions)||program.functions.length>32)throw new Error('FUNCTION_LIMIT');const definitions=new Map<string,FunctionDefinition>();
+ const identifier=(value:string)=>typeof value==='string'&&/^[a-zA-Z_][a-zA-Z0-9_]{0,39}$/.test(value);
+ for(const definition of program.functions){if(!definition||!identifier(definition.name))throw new Error('FUNCTION_NAME');if(definitions.has(definition.name))throw new Error('FUNCTION_DUPLICATE');if(!Array.isArray(definition.parameters)||definition.parameters.length>8||definition.parameters.some(p=>!identifier(p))||new Set(definition.parameters).size!==definition.parameters.length)throw new Error('FUNCTION_PARAMETERS');definitions.set(definition.name,definition);}
+ const dependencies=new Map<string,Set<string>>();let count=0;
+ const strip=(body:FunctionInstruction[],calls:Set<string>,depth=0):Instruction[]=>{if(!Array.isArray(body)||depth>24)throw new Error('FUNCTION_NESTING_LIMIT');return body.map(i=>{if(!i||++count>1000)throw new Error('PROGRAM_LIMIT');if(i.kind==='call'){const target=definitions.get(i.name);if(!target)throw new Error('FUNCTION_UNKNOWN');if(!Array.isArray(i.arguments)||i.arguments.length!==target.parameters.length)throw new Error('FUNCTION_ARGUMENT_COUNT');validateProgram({setup:i.arguments.map(value=>({kind:'waitValue',value})),loop:[]});calls.add(i.name);return {kind:'wait',ms:0};}if(i.kind==='if')return {...i,then:strip(i.then,calls,depth+1),otherwise:strip(i.otherwise,calls,depth+1)};if(i.kind==='repeat'||i.kind==='while')return {...i,body:strip(i.body,calls,depth+1)};return i;});};
+ const roots=new Set<string>();validateProgram({setup:strip(program.setup,roots),loop:strip(program.loop,roots)});
+ for(const definition of definitions.values()){const calls=new Set<string>();validateProgram({setup:strip(definition.body,calls),loop:[]});dependencies.set(definition.name,calls);}
+ const visiting=new Set<string>(),heights=new Map<string,number>(),order:string[]=[];
+ const visit=(name:string):number=>{if(visiting.has(name))throw new Error('FUNCTION_RECURSION');const cached=heights.get(name);if(cached!==undefined)return cached;visiting.add(name);let height=1;for(const dependency of [...dependencies.get(name)!].sort())height=Math.max(height,1+visit(dependency));if(height>17)throw new Error('FUNCTION_CALL_DEPTH');visiting.delete(name);heights.set(name,height);order.push(name);return height;};
+ for(const name of [...definitions.keys()].sort())visit(name);return {definitions,order};
+}

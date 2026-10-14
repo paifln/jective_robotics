@@ -1,0 +1,5 @@
+import {it,expect} from 'vitest';
+import {buildErrorCases} from '../packages/content/build-error-cases';
+import {ProjectSchema} from '../packages/contracts';
+import {profiles} from '../packages/profiles';
+it('provides bounded distinct compiler faults and a board correction that preserves source',()=>{expect(buildErrorCases.map(c=>c.id)).toEqual(['symbol','type','library','board']);for(const entry of buildErrorCases){for(const example of [entry.starter,entry.corrected]){expect(profiles.some(p=>p.id===example.profileId&&!p.provisional)).toBe(true);expect(ProjectSchema.safeParse({schemaVersion:1,id:'7c2cb161-f7d3-4667-ac0d-dd156e697fa0',name:'Compiler lesson',mode:'code',workspace:{},revision:0,...example}).success).toBe(true);}expect(entry.diagnosticPattern.length).toBeGreaterThan(3);}const board=buildErrorCases.find(c=>c.id==='board')!;expect(board.starter.source).toBe(board.corrected.source);expect(board.starter.profileId).not.toBe(board.corrected.profileId);expect(buildErrorCases.find(c=>c.id==='library')!.corrected.source).toContain('#include <Wire.h>');});

@@ -1,0 +1,12 @@
+import {build} from 'esbuild';
+import {mkdir,writeFile,readFile} from 'node:fs/promises';
+import {createHash} from 'node:crypto';
+await mkdir('test-results/precision',{recursive:true});
+await build({entryPoints:['packages/content/precision-motion.ts'],outfile:'test-results/precision/model.cjs',bundle:true,platform:'node',format:'cjs'});
+const {comparePrecision,precisionTrial}=await import('../test-results/precision/model.cjs');
+const comparison=comparePrecision(),faults=['feedback','timed'].flatMap(mode=>['missing-feedback','manual-stop'].map(caseId=>precisionTrial(mode,.4,.6,caseId)));
+const mean=mode=>comparison.runs.reduce((sum,run)=>sum+run[mode].outcome.positionErrorMeters,0)/comparison.runs.length;
+if(mean('feedback')>=mean('timed')||comparison.runs[1].timed.outcome.positionErrorMeters>=comparison.runs[1].feedback.outcome.positionErrorMeters)throw new Error('PRECISION_COMPARISON');
+for(const trial of faults)if(trial.outcome.stopRequestMs!==500||trial.decisions.filter(row=>row.timeMs>=500).some(row=>row.left!==0||row.right!==0))throw new Error('PRECISION_FAULT_LATCH');
+const sourceHashes={};for(const path of ['packages/content/precision-motion.ts','packages/content/lesson-precision.ts','packages/content/lessons.ts','packages/content/knowledge-check.ts','apps/desktop/renderer/PrecisionPanel.tsx','apps/desktop/renderer/ContentPanel.tsx','packages/simulator/index.ts','packages/simulator/encoder.ts','packages/content/encoder-experiment.ts','tests/precision-motion.test.ts','tests/e2e/precision.spec.ts','scripts/precision-check.mjs'])sourceHashes[path]=createHash('sha256').update(await readFile(path)).digest('hex');
+await mkdir('evidence/precision',{recursive:true});await writeFile('evidence/precision/responses.json',JSON.stringify({comparison,faults},null,2));await writeFile('evidence/precision/verification.json',JSON.stringify({status:'DOMAIN VERIFIED; L36 AUTHORED DRAFT; UNPACKAGED SOURCE',sourceHashes,meanPositionErrorMeters:{feedback:mean('feedback'),timed:mean('timed')},scope:'Paired actual RobotSimulation with shared parameter assumptions and quantized wheel travel. Straight target pose only, no slip or physical encoder acquisition. Timed baseline is better at nominal speed in this fixture; feedback is better on mean across explicit speed assumptions.',physicalVerification:'NOT RUN'},null,2));console.log(JSON.stringify({feedbackMean:mean('feedback'),timedMean:mean('timed'),runs:comparison.runs.map(run=>({speed:run.maximumSpeedMps,feedback:run.feedback.outcome,timed:run.timed.outcome}))},null,2));

@@ -1,0 +1,15 @@
+# File-specific assistant review — unpackaged source
+
+The student chat now chooses an existing program file when the project has helper files. Sharing remains unchecked initially. A request includes only the selected file, with its filename, within 35,000 characters; other source files, project metadata and credentials are excluded. Students still see no provider/model configuration. The owner's encrypted-key configuration remains under Help.
+
+A review captures a validated deep copy of the project's source files, programming mode, project identity and hardware/profile configuration. Applying a proposal requires that snapshot to remain current. Changes to another source file also invalidate it, since files compile together. Removing a file, switching project or changing profile/connections cannot silently redirect a proposal. Revision increments and project renaming alone do not invalidate an otherwise unchanged review.
+
+In Code mode, explicit application replaces only the selected existing file and validates the entire resulting project against its size/name constraints. In Blocks mode, explicit application first creates the existing independent Code copy; it rechecks the original after that asynchronous operation. The original blocks remain preserved. The editor opens the changed file. Neither path invokes compilation, serial access or upload.
+
+File/project switches reset pending comparison and sharing. Request generations discard stale responses; cancellation prevents a late result from appearing. An active request is cancelled when its target component/file is replaced. A manual candidate uses the same snapshot and application checks as an assistant response. A read-only diff shows the chosen file and proposed replacement.
+
+EN/RU/KK student help documents the selected-file limit, copy behavior, stale-review protection and separate verification. These translations remain draft pending independent language review.
+
+Verification receipts are in `evidence/assistant-file-review`. The Electron assistant scenario replaces only the test-owned IPC assistant handlers with delayed fixtures; it checks consent, actual helper-file replacement/save, unchanged main source, stale response after another file changes, stale manual review, target/project reset, cancellation and zero compile/upload calls. It is **not a live OpenAI verification**. An early test expected an exact accessible name without an explicit selector label; the label was corrected. Closed review details after project replacement required opening before querying its visible button. A single save observation failed before the test waited for the successful save receipt; the revised scenario passed three independent repeats. Historical failed receipts remain under `.verification`.
+
+The master objective remains incomplete: source curriculum is 41/60, multi-file lesson loading and L42 content are next, and the current source increment has not been packaged. Published installer 0.8.8 remains unchanged. Physical JECTIVE/ESP32 behavior, Windows 10, clean installer lifecycle and live OpenAI remain NOT RUN.

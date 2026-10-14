@@ -1,0 +1,9 @@
+# Analog input model — unpublished groundwork for L14
+
+World scenarios support an optional ideal analog model with referenceVolts, bits (1–16), inputVolts, bounded noiseVolts, seed and an ordered voltage-change timeline. The model explicitly limits reference and input voltage to 3.3 V and rejects inputs above the chosen reference. This is the software model's contract, not a measured ADC transfer function or permission to apply a voltage to a physical board. Real ADC nonlinearity, attenuation, calibration and wiring remain unverified.
+
+The robot simulator exposes analogCounts and analogVolts expressions. Counts are rounded onto 0 through 2^bits−1; volts derive from those same counts. Bounded seeded noise and the current input value are sampled on the 20 ms grid. Both expressions at one tick use the same deterministic sample. Unconfigured analog reads produce ANALOG_MODEL_REQUIRED. Real hardware generation retains SENSOR_DRIVER_REQUIRED. Blockly includes localized analog dropdown captions.
+
+Four new tests cover endpoints, resolution, scheduled voltage changes, ten-repeat noise determinism, noise/clipping bounds, shared samples, invalid timestamps/models and explicit rejection of a 5 V input. All 148 unit tests pass; aggregate package branch coverage is 1032/1115 (92.55%), with unchanged per-file thresholds. Typecheck, lint and application build pass. A targeted source Electron scenario-editor test rejects the 5 V assumption with ANALOG_VOLTAGE_INCOMPATIBLE and exports the accepted analog model without changing its values. This test passes.
+
+Reports are in `evidence/wip-analog-model/`. L14's lesson text and plotted-series evidence are still outstanding; authored content remains 13/60. No full regression or installed acceptance has been rerun for this model, and existing 0.5.0 artifacts remain unchanged. Physical analog input verification is NOT RUN.

@@ -1,0 +1,27 @@
+import {test,expect,_electron as electron} from '@playwright/test';
+import {mkdtemp,readFile,rm} from 'node:fs/promises';
+import {tmpdir} from 'node:os';
+import {join} from 'node:path';
+test('L29 exports three real gain trials, invalidates edited inputs and matches actual worker endpoints',async()=>{
+ const root=await mkdtemp(join(tmpdir(),'jective-proportional-line-')),env:Record<string,string>=Object.fromEntries(Object.entries(process.env).filter((entry):entry is [string,string]=>entry[1]!==undefined));delete env.ELECTRON_RUN_AS_NODE;env.JECTIVE_WORKSPACE_ROOT=root;
+ const app=await electron.launch({executablePath:process.env.JECTIVE_EXECUTABLE,args:process.env.JECTIVE_EXECUTABLE?[]:['.'],env});
+ try{
+  const page=await app.firstWindow();page.on('dialog',dialog=>dialog.accept());await expect(page.getByRole('button',{name:'Learn',exact:true})).toBeVisible();await expect(page.locator('#launch-screen')).toHaveCount(0);
+  await page.getByRole('button',{name:'Learn',exact:true}).click();await page.getByRole('button',{name:/^L29 ·/}).click();await expect(page.getByRole('heading',{name:'Proportional line control',level:3,exact:true})).toBeVisible();
+  const panel=page.locator('.proportional-line-panel');await panel.getByRole('button',{name:'Compare gains',exact:true}).click();await expect(panel.getByRole('status')).toContainText('Three actual');await expect(panel.getByRole('button',{name:'Export gain comparison',exact:true})).toBeDisabled();
+  await panel.getByLabel('Gain explanation',{exact:true}).fill('Gain 8 responds sooner than gain 1 without clipping the correction in this world.');
+  const path=join(root,'gains.json');await app.evaluate(({session},path)=>{session.defaultSession.once('will-download',(_event,item)=>item.setSavePath(path));},path);await panel.getByRole('button',{name:'Export gain comparison',exact:true}).click();
+  await expect.poll(async()=>{try{return JSON.parse(await readFile(path,'utf8')).trials.length;}catch{return -1;}}).toBe(3);
+  const lab=JSON.parse(await readFile(path,'utf8'));expect(lab.trials.map((trial:{gain:number})=>trial.gain)).toEqual([1,8,40]);expect(lab.trials.map((trial:{metrics:{firstCenteredMs:number}})=>trial.metrics.firstCenteredMs)).toEqual([900,240,120]);expect(lab.trials[2].metrics.saturatedSamples).toBeGreaterThan(0);expect(lab.learnerExplanation).toContain('Gain 8');
+  await panel.locator('svg').evaluate(element=>element.scrollIntoView({block:'center'}));await panel.locator('svg').screenshot({path:'test-results/proportional-line-en-plot.png'});
+  await panel.getByLabel('Gain 1',{exact:true}).fill('');await expect(panel.getByRole('button',{name:'Export gain comparison',exact:true})).toHaveCount(0);await panel.getByRole('button',{name:'Compare gains',exact:true}).click();await expect(panel.getByRole('alert')).toBeVisible();
+  await panel.getByLabel('Gain 1',{exact:true}).fill('8');await panel.getByRole('button',{name:'Compare gains',exact:true}).click();await expect(panel.getByRole('alert')).toBeVisible();await panel.getByLabel('Gain 1',{exact:true}).fill('1');
+  await page.setViewportSize({width:800,height:900});await page.getByLabel('Language',{exact:true}).selectOption('ru');await panel.getByRole('button',{name:'Сравнить коэффициенты',exact:true}).click();await expect(panel.getByRole('status')).toContainText('Завершены три');await panel.locator('table').screenshot({path:'test-results/proportional-line-ru-table.png'});
+  await page.getByLabel('Язык',{exact:true}).selectOption('kk');await panel.getByRole('button',{name:'Коэффициенттерді салыстыру',exact:true}).click();await expect(panel.getByRole('status')).toContainText('Үш нақты');await panel.locator('table').screenshot({path:'test-results/proportional-line-kk-table.png'});await page.getByLabel('Тіл',{exact:true}).selectOption('en');await page.setViewportSize({width:1280,height:900});
+  for(const reference of [false,true]){
+   await page.getByRole('button',{name:'Learn',exact:true}).click();await page.getByRole('button',{name:/^L29 ·/}).click();await page.getByRole('button',{name:reference?'Load reference solution':'Load starter',exact:true}).click();await page.getByRole('button',{name:'Simulation',exact:true}).click();await expect(page.getByLabel('World',{exact:true})).toHaveValue('L29-proportional-line');await page.getByRole('button',{name:'Run',exact:true}).click();await expect(page.locator('.feature pre')).toContainText('"status": "completed"',{timeout:20000});
+   const path=join(root,reference?'reference.json':'starter.json');await app.evaluate(({session},path)=>{session.defaultSession.once('will-download',(_event,item)=>item.setSavePath(path));},path);await page.getByRole('button',{name:'Export scenario and state',exact:true}).click();await expect.poll(async()=>{try{return JSON.parse(await readFile(path,'utf8')).trace.at(-1).status;}catch{return '';}}).toBe('completed');
+   const trace=JSON.parse(await readFile(path,'utf8')).trace;expect(trace.every((frame:{collision:boolean})=>!frame.collision)).toBe(true);const expected=lab.trials[reference?1:0].trace.at(-1);expect(trace.at(-1).pose.x).toBeCloseTo(expected.pose.x,10);expect(trace.at(-1).pose.y).toBeCloseTo(expected.pose.y,10);expect(trace.at(-1).left).toBe(0);expect(trace.at(-1).right).toBe(0);
+  }
+ }finally{await app.evaluate(({app})=>app.exit(0));if(app.process().exitCode===null&&app.process().signalCode===null)await new Promise<void>(resolve=>app.process().once('exit',()=>resolve()));await rm(root,{recursive:true,force:true,maxRetries:30,retryDelay:100});}
+});

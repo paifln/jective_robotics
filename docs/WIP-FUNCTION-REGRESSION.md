@@ -1,0 +1,9 @@
+# Full source regression after functions and block localization
+
+`JECTIVE_REAL_COMPILER=1 npm run evidence -- test:e2e` completed all 26 source-build Electron tests: 26 expected, zero skipped, zero unexpected, zero flaky, approximately 3.4 minutes. The captured invocation does not specify an installed executable. Checks include actual Arduino compilation from the UI, custom profile and indicator GPIO compilation, function workspace save/reopen, L11 execution and language switching, serial enumeration/export, telemetry fixture export, classroom and backup workflows, persisted settings and other lesson/scenario flows.
+
+This resolves the pending full source E2E regression for the unpublished function work. It does not establish installed-build acceptance or physical hardware behavior. The immutable 0.5.0 published release retains its own 24-test installed report and earlier source scope. New installer packaging remains outstanding; 11/60 lessons are authored, translation review and other master requirements remain incomplete.
+
+The status script no longer hardcodes release 0.2.0 or two lessons and no longer labels every E2E report as installed acceptance. It reads the package/content reports, preserves immutable release evidence separately, and identifies E2E execution scope only when a captured invocation's report matches the current report. Missing or unmatched evidence is explicit. Future captured invocations also record their package version. Report timestamps alone are not treated as proof of source currency.
+
+Lint passes after the reporting changes. The updated summary is `evidence/verification-summary.json`; this regression snapshot is under `evidence/wip-function-regression/`. Hardware upload, handshake, physical execution, clean Windows 10 and a disconnected clean-machine installation remain NOT RUN.

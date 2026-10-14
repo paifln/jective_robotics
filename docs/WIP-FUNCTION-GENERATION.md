@@ -1,0 +1,7 @@
+# Function C++ generation — unpublished work
+
+`generateFunctions` validates the complete function graph and emits dependency-first void functions. Parameters use separate identifiers from shared globals and are passed by value. Calls evaluate each argument once, left to right, with arithmetic fault checks before invoking the callee. Fault checks after calls stop the caller. Invalid expression waits now latch execution faults so failure inside a callee cannot silently resume its caller. Existing hardware restrictions apply to every function body, including unused definitions.
+
+Verification: typecheck and lint pass; all 128 unit tests pass, with aggregate branch coverage 981/1065 (92.11%) and existing per-file thresholds. `node scripts/function-check.mjs` compiled and executed real generated C++ using Zig and explicit Arduino host stubs (exit 0), then compiled the same generated source using the actual Arduino CLI / ESP32 toolchain. Host assertions checked nested parameter isolation, global fallback, exact delay values 3/20/7/7/0/100/60000 ms, indicator writes, and propagation of a bad wait into the execution fault latch. Physical upload/execution were NOT RUN.
+
+Reports are copied into `evidence/wip-function-generation/`. Blockly, the robot simulator, persistence integration and L11 content remain outstanding. No new installer has been published; 0.5.0 artifacts remain immutable and do not contain these changes.

@@ -1,0 +1,6 @@
+import React,{useEffect,useState} from 'react';
+import {componentPhotos} from '../../../packages/content/component-photos';
+import type {Locale} from './locale';
+import {PhotoViewer} from './PhotoViewer';
+import {words} from './StudentUI';
+export function ComponentPhoto({id,locale}:{id:string;locale:Locale}){const [selected,setSelected]=useState<(typeof componentPhotos)[number]|null>(null);useEffect(()=>setSelected(null),[id]);return <>{componentPhotos.filter(p=>p.lessons.includes(id)).map(p=><section className="component-photo" key={p.id}><h4>{p.title[locale]}</h4><div><figure><button className="photo-open" onClick={()=>setSelected(p)} aria-label={words(locale,'Enlarge image','\u0423\u0432\u0435\u043b\u0438\u0447\u0438\u0442\u044c \u0438\u0437\u043e\u0431\u0440\u0430\u0436\u0435\u043d\u0438\u0435','\u0421\u0443\u0440\u0435\u0442\u0442\u0456 \u04af\u043b\u043a\u0435\u0439\u0442\u0443')}><img src={p.src} width={p.width} height={p.height} loading="lazy" decoding="async" alt={p.title[locale]}/><span aria-hidden="true">+</span></button><figcaption>{p.author} · {p.license}<small>{p.source}</small><small>{p.licenseUrl}</small></figcaption></figure><article><p>{p.explanation[locale]}</p><p className="hardware-safety">{p.safety[locale]}</p></article></div></section>)}<PhotoViewer photo={selected} locale={locale} close={()=>setSelected(null)}/></>;}

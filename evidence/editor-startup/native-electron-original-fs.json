@@ -1,0 +1,119 @@
+{
+  "scope": "Headless native Electron, no Playwright inspector or renderer; diagnostic only, not complete GUI acceptance",
+  "elapsedMs": 242088.8188,
+  "versions": {
+    "node": "24.21.0",
+    "acorn": "8.18.0",
+    "ada": "4.0.0",
+    "amaro": "1.1.11",
+    "ares": "1.34.8",
+    "brotli": "1.2.0",
+    "cldr": "48.0",
+    "icu": "78.2",
+    "llhttp": "9.4.3",
+    "merve": "1.2.2",
+    "modules": "149",
+    "napi": "10",
+    "nbytes": "0.1.4",
+    "ncrypto": "0.0.1",
+    "nghttp2": "1.70.0",
+    "nghttp3": "",
+    "ngtcp2": "",
+    "openssl": "0.0.0",
+    "simdjson": "4.6.7",
+    "simdutf": "7.7.0",
+    "sqlite": "3.53.4",
+    "tz": "2026d",
+    "undici": "7.29.1",
+    "unicode": "17.0",
+    "uv": "1.52.1",
+    "uvwasi": "0.0.23",
+    "v8": "15.2.124.28-electron.0",
+    "zlib": "1.3.2.1-motley",
+    "zstd": "1.6.0",
+    "electron": "44.7.0",
+    "chrome": "152.0.7977.130"
+  },
+  "phases": [
+    {
+      "projectId": "6fec0c3a-2d54-4506-964b-ddcc1041b05d",
+      "stage": "toolchain",
+      "elapsedMs": 2.099000000000018
+    },
+    {
+      "projectId": "6fec0c3a-2d54-4506-964b-ddcc1041b05d",
+      "stage": "environment-before",
+      "elapsedMs": 1487.9017
+    },
+    {
+      "projectId": "6fec0c3a-2d54-4506-964b-ddcc1041b05d",
+      "stage": "compile",
+      "elapsedMs": 113091.8785
+    },
+    {
+      "projectId": "6fec0c3a-2d54-4506-964b-ddcc1041b05d",
+      "stage": "environment-after",
+      "elapsedMs": 140141.8163
+    },
+    {
+      "projectId": "6fec0c3a-2d54-4506-964b-ddcc1041b05d",
+      "stage": "artifacts",
+      "elapsedMs": 242031.9885
+    }
+  ],
+  "result": {
+    "operationId": "8a2eff14-529e-4825-aa86-676da61ef4de",
+    "state": "succeeded",
+    "sourceHash": "9ced8f0f58f1b231f2f300bb812df519bc78810f989ab16344d6191a3aaff4ee",
+    "artifacts": [
+      "boot_app0.bin",
+      "sketch.ino.bin",
+      "sketch.ino.bootloader.bin",
+      "sketch.ino.elf",
+      "sketch.ino.merged.bin",
+      "sketch.ino.partitions.bin"
+    ],
+    "exitCode": 0,
+    "log": "Sketch uses 268976 bytes (20%) of program storage space. Maximum is 1310720 bytes.\nGlobal variables use 22124 bytes (6%) of dynamic memory, leaving 305556 bytes for local variables. Maximum is 327680 bytes.\n"
+  },
+  "environment": {
+    "scope": "cli-selected-core-installed-tools-user-libraries-v2",
+    "sha256": "05d780d8394605ad310a76c978d1015bd0b80fcc80305f8c4d3852b23cfb5533",
+    "files": 59748,
+    "bytes": 6852176031
+  },
+  "artifacts": [
+    {
+      "name": "boot_app0.bin",
+      "bytes": 8192,
+      "sha256": "f94c5d786a7a8fab06ac5d10e33bf37711a6697636dc037559ea19cc410a17f0"
+    },
+    {
+      "name": "sketch.ino.bin",
+      "bytes": 269120,
+      "sha256": "e9cc048c1b0c5b0d99436660d22e503bd8984baaa62efb1e382c1ddfa9d7035a"
+    },
+    {
+      "name": "sketch.ino.bootloader.bin",
+      "bytes": 24992,
+      "sha256": "47bbbfca119fe87190f63a67af9d85adff6433bcf3812ec92a9b9c9416a53ad1"
+    },
+    {
+      "name": "sketch.ino.elf",
+      "bytes": 5686720,
+      "sha256": "9a8527f6ba0e73fc3c8569c92803c94167c08acf4f22a89aa4fbbab7f29445b2"
+    },
+    {
+      "name": "sketch.ino.merged.bin",
+      "bytes": 4194304,
+      "sha256": "1e9bdde1b8424a8e36b5188099c31f1a2b4a00c0defca7fb3e521421f2a76d34"
+    },
+    {
+      "name": "sketch.ino.partitions.bin",
+      "bytes": 3072,
+      "sha256": "148b959cbff1c38aa8e1d5c0ba9d612c54997b945e56a63f41223eef650653a1"
+    }
+  ],
+  "physical": "NOT RUN",
+  "upload": "NOT RUN"
+}

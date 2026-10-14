@@ -1,0 +1,484 @@
+{
+  "checkedAt": "2026-10-11T10:13:02.945Z",
+  "scope": "Actual bounded C++ core and both actual sketches executed with Serial substitutes, including overflow recovery and the starter defect. Both ESP32 compile only.",
+  "assertionsEnabled": true,
+  "sourceHashes": {
+    "packages/content/collections-telemetry.ts": "9c8ae8ba6a787f57508421bea2b7870dc7e38ec36b5a398dfb9a732c52e96333",
+    "scripts/collections-telemetry-check.mjs": "11e640a4e0aad69eaca7340b4e406917b84684553f702c3b2968777b97b7ecb1",
+    "tests/firmware/assertions-required.h": "75778e699f6c793ec44e25dd1440f750f88ac396cb3620e9f908e3fa46613aac"
+  },
+  "inputs": [
+    "",
+    "0,10,?,bad,4095,11,12,13",
+    "11,12,0,?,bad,4095,5,6,7,8",
+    ",",
+    "4096,-1,12.5,1e3,NaN,null,00000,0",
+    " 12\t,?,0000",
+    "                 ,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0",
+    "0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63"
+  ],
+  "native": [
+    {
+      "v": 1,
+      "origin": "lesson-input",
+      "unit": "adc-count",
+      "count": 0,
+      "dropped": 0,
+      "samples": []
+    },
+    {
+      "v": 1,
+      "origin": "lesson-input",
+      "unit": "adc-count",
+      "count": 8,
+      "dropped": 0,
+      "samples": [
+        {
+          "value": 0,
+          "status": "valid"
+        },
+        {
+          "value": 10,
+          "status": "valid"
+        },
+        {
+          "value": null,
+          "status": "missing"
+        },
+        {
+          "value": null,
+          "status": "malformed"
+        },
+        {
+          "value": 4095,
+          "status": "valid"
+        },
+        {
+          "value": 11,
+          "status": "valid"
+        },
+        {
+          "value": 12,
+          "status": "valid"
+        },
+        {
+          "value": 13,
+          "status": "valid"
+        }
+      ]
+    },
+    {
+      "v": 1,
+      "origin": "lesson-input",
+      "unit": "adc-count",
+      "count": 8,
+      "dropped": 2,
+      "samples": [
+        {
+          "value": 0,
+          "status": "valid"
+        },
+        {
+          "value": null,
+          "status": "missing"
+        },
+        {
+          "value": null,
+          "status": "malformed"
+        },
+        {
+          "value": 4095,
+          "status": "valid"
+        },
+        {
+          "value": 5,
+          "status": "valid"
+        },
+        {
+          "value": 6,
+          "status": "valid"
+        },
+        {
+          "value": 7,
+          "status": "valid"
+        },
+        {
+          "value": 8,
+          "status": "valid"
+        }
+      ]
+    },
+    {
+      "v": 1,
+      "origin": "lesson-input",
+      "unit": "adc-count",
+      "count": 2,
+      "dropped": 0,
+      "samples": [
+        {
+          "value": null,
+          "status": "missing"
+        },
+        {
+          "value": null,
+          "status": "missing"
+        }
+      ]
+    },
+    {
+      "v": 1,
+      "origin": "lesson-input",
+      "unit": "adc-count",
+      "count": 8,
+      "dropped": 0,
+      "samples": [
+        {
+          "value": null,
+          "status": "malformed"
+        },
+        {
+          "value": null,
+          "status": "malformed"
+        },
+        {
+          "value": null,
+          "status": "malformed"
+        },
+        {
+          "value": null,
+          "status": "malformed"
+        },
+        {
+          "value": null,
+          "status": "malformed"
+        },
+        {
+          "value": null,
+          "status": "malformed"
+        },
+        {
+          "value": null,
+          "status": "malformed"
+        },
+        {
+          "value": 0,
+          "status": "valid"
+        }
+      ]
+    },
+    {
+      "v": 1,
+      "origin": "lesson-input",
+      "unit": "adc-count",
+      "count": 3,
+      "dropped": 0,
+      "samples": [
+        {
+          "value": 12,
+          "status": "valid"
+        },
+        {
+          "value": null,
+          "status": "missing"
+        },
+        {
+          "value": 0,
+          "status": "valid"
+        }
+      ]
+    },
+    {
+      "v": 1,
+      "origin": "lesson-input",
+      "unit": "adc-count",
+      "count": 8,
+      "dropped": 10,
+      "samples": [
+        {
+          "value": 0,
+          "status": "valid"
+        },
+        {
+          "value": 0,
+          "status": "valid"
+        },
+        {
+          "value": 0,
+          "status": "valid"
+        },
+        {
+          "value": 0,
+          "status": "valid"
+        },
+        {
+          "value": 0,
+          "status": "valid"
+        },
+        {
+          "value": 0,
+          "status": "valid"
+        },
+        {
+          "value": 0,
+          "status": "valid"
+        },
+        {
+          "value": 0,
+          "status": "valid"
+        }
+      ]
+    },
+    {
+      "v": 1,
+      "origin": "lesson-input",
+      "unit": "adc-count",
+      "count": 8,
+      "dropped": 56,
+      "samples": [
+        {
+          "value": 56,
+          "status": "valid"
+        },
+        {
+          "value": 57,
+          "status": "valid"
+        },
+        {
+          "value": 58,
+          "status": "valid"
+        },
+        {
+          "value": 59,
+          "status": "valid"
+        },
+        {
+          "value": 60,
+          "status": "valid"
+        },
+        {
+          "value": 61,
+          "status": "valid"
+        },
+        {
+          "value": 62,
+          "status": "valid"
+        },
+        {
+          "value": 63,
+          "status": "valid"
+        }
+      ]
+    }
+  ],
+  "hostCompile": {
+    "code": 0,
+    "log": ""
+  },
+  "hostExecution": {
+    "code": 0,
+    "log": "{\"v\":1,\"origin\":\"lesson-input\",\"unit\":\"adc-count\",\"count\":0,\"dropped\":0,\"samples\":[]}\r\n{\"v\":1,\"origin\":\"lesson-input\",\"unit\":\"adc-count\",\"count\":8,\"dropped\":0,\"samples\":[{\"value\":0,\"status\":\"valid\"},{\"value\":10,\"status\":\"valid\"},{\"value\":null,\"status\":\"missing\"},{\"value\":null,\"status\":\"malformed\"},{\"value\":4095,\"status\":\"valid\"},{\"value\":11,\"status\":\"valid\"},{\"value\":12,\"status\":\"valid\"},{\"value\":13,\"status\":\"valid\"}]}\r\n{\"v\":1,\"origin\":\"lesson-input\",\"unit\":\"adc-count\",\"count\":8,\"dropped\":2,\"samples\":[{\"value\":0,\"status\":\"valid\"},{\"value\":null,\"status\":\"missing\"},{\"value\":null,\"status\":\"malformed\"},{\"value\":4095,\"status\":\"valid\"},{\"value\":5,\"status\":\"valid\"},{\"value\":6,\"status\":\"valid\"},{\"value\":7,\"status\":\"valid\"},{\"value\":8,\"status\":\"valid\"}]}\r\n{\"v\":1,\"origin\":\"lesson-input\",\"unit\":\"adc-count\",\"count\":2,\"dropped\":0,\"samples\":[{\"value\":null,\"status\":\"missing\"},{\"value\":null,\"status\":\"missing\"}]}\r\n{\"v\":1,\"origin\":\"lesson-input\",\"unit\":\"adc-count\",\"count\":8,\"dropped\":0,\"samples\":[{\"value\":null,\"status\":\"malformed\"},{\"value\":null,\"status\":\"malformed\"},{\"value\":null,\"status\":\"malformed\"},{\"value\":null,\"status\":\"malformed\"},{\"value\":null,\"status\":\"malformed\"},{\"value\":null,\"status\":\"malformed\"},{\"value\":null,\"status\":\"malformed\"},{\"value\":0,\"status\":\"valid\"}]}\r\n{\"v\":1,\"origin\":\"lesson-input\",\"unit\":\"adc-count\",\"count\":3,\"dropped\":0,\"samples\":[{\"value\":12,\"status\":\"valid\"},{\"value\":null,\"status\":\"missing\"},{\"value\":0,\"status\":\"valid\"}]}\r\n{\"v\":1,\"origin\":\"lesson-input\",\"unit\":\"adc-count\",\"count\":8,\"dropped\":10,\"samples\":[{\"value\":0,\"status\":\"valid\"},{\"value\":0,\"status\":\"valid\"},{\"value\":0,\"status\":\"valid\"},{\"value\":0,\"status\":\"valid\"},{\"value\":0,\"status\":\"valid\"},{\"value\":0,\"status\":\"valid\"},{\"value\":0,\"status\":\"valid\"},{\"value\":0,\"status\":\"valid\"}]}\r\n{\"v\":1,\"origin\":\"lesson-input\",\"unit\":\"adc-count\",\"count\":8,\"dropped\":56,\"samples\":[{\"value\":56,\"status\":\"valid\"},{\"value\":57,\"status\":\"valid\"},{\"value\":58,\"status\":\"valid\"},{\"value\":59,\"status\":\"valid\"},{\"value\":60,\"status\":\"valid\"},{\"value\":61,\"status\":\"valid\"},{\"value\":62,\"status\":\"valid\"},{\"value\":63,\"status\":\"valid\"}]}\r\n"
+  },
+  "sketchHosts": [
+    {
+      "variant": "starter",
+      "compiled": {
+        "code": 0,
+        "log": ""
+      },
+      "execution": {
+        "code": 0,
+        "log": "Enter manual samples, comma-separated, followed by newline. ? means missing.\r\n{\"v\":1,\"origin\":\"lesson-input\",\"unit\":\"adc-count\",\"count\":8,\"dropped\":2,\"samples\":[{\"value\":null,\"status\":\"missing\"},{\"value\":null,\"status\":\"missing\"},{\"value\":null,\"status\":\"missing\"},{\"value\":4095,\"status\":\"valid\"},{\"value\":5,\"status\":\"valid\"},{\"value\":6,\"status\":\"valid\"},{\"value\":7,\"status\":\"valid\"},{\"value\":8,\"status\":\"valid\"}]}\r\n{\"v\":1,\"origin\":\"lesson-input\",\"unit\":\"adc-count\",\"count\":1,\"dropped\":0,\"samples\":[{\"value\":null,\"status\":\"missing\"}]}\r\n{\"v\":1,\"origin\":\"lesson-input\",\"unit\":\"adc-count\",\"count\":1,\"dropped\":0,\"samples\":[{\"value\":null,\"status\":\"malformed\"}]}\r\n"
+      },
+      "messages": [
+        {
+          "v": 1,
+          "origin": "lesson-input",
+          "unit": "adc-count",
+          "count": 8,
+          "dropped": 2,
+          "samples": [
+            {
+              "value": null,
+              "status": "missing"
+            },
+            {
+              "value": null,
+              "status": "missing"
+            },
+            {
+              "value": null,
+              "status": "missing"
+            },
+            {
+              "value": 4095,
+              "status": "valid"
+            },
+            {
+              "value": 5,
+              "status": "valid"
+            },
+            {
+              "value": 6,
+              "status": "valid"
+            },
+            {
+              "value": 7,
+              "status": "valid"
+            },
+            {
+              "value": 8,
+              "status": "valid"
+            }
+          ]
+        },
+        {
+          "v": 1,
+          "origin": "lesson-input",
+          "unit": "adc-count",
+          "count": 1,
+          "dropped": 0,
+          "samples": [
+            {
+              "value": null,
+              "status": "missing"
+            }
+          ]
+        },
+        {
+          "v": 1,
+          "origin": "lesson-input",
+          "unit": "adc-count",
+          "count": 1,
+          "dropped": 0,
+          "samples": [
+            {
+              "value": null,
+              "status": "malformed"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "variant": "reference",
+      "compiled": {
+        "code": 0,
+        "log": ""
+      },
+      "execution": {
+        "code": 0,
+        "log": "Enter manual samples, comma-separated, followed by newline. ? means missing.\r\n{\"v\":1,\"origin\":\"lesson-input\",\"unit\":\"adc-count\",\"count\":8,\"dropped\":2,\"samples\":[{\"value\":0,\"status\":\"valid\"},{\"value\":null,\"status\":\"missing\"},{\"value\":null,\"status\":\"malformed\"},{\"value\":4095,\"status\":\"valid\"},{\"value\":5,\"status\":\"valid\"},{\"value\":6,\"status\":\"valid\"},{\"value\":7,\"status\":\"valid\"},{\"value\":8,\"status\":\"valid\"}]}\r\n{\"v\":1,\"origin\":\"lesson-input\",\"unit\":\"adc-count\",\"count\":1,\"dropped\":0,\"samples\":[{\"value\":0,\"status\":\"valid\"}]}\r\n{\"v\":1,\"origin\":\"lesson-input\",\"unit\":\"adc-count\",\"count\":1,\"dropped\":0,\"samples\":[{\"value\":null,\"status\":\"malformed\"}]}\r\n"
+      },
+      "messages": [
+        {
+          "v": 1,
+          "origin": "lesson-input",
+          "unit": "adc-count",
+          "count": 8,
+          "dropped": 2,
+          "samples": [
+            {
+              "value": 0,
+              "status": "valid"
+            },
+            {
+              "value": null,
+              "status": "missing"
+            },
+            {
+              "value": null,
+              "status": "malformed"
+            },
+            {
+              "value": 4095,
+              "status": "valid"
+            },
+            {
+              "value": 5,
+              "status": "valid"
+            },
+            {
+              "value": 6,
+              "status": "valid"
+            },
+            {
+              "value": 7,
+              "status": "valid"
+            },
+            {
+              "value": 8,
+              "status": "valid"
+            }
+          ]
+        },
+        {
+          "v": 1,
+          "origin": "lesson-input",
+          "unit": "adc-count",
+          "count": 1,
+          "dropped": 0,
+          "samples": [
+            {
+              "value": 0,
+              "status": "valid"
+            }
+          ]
+        },
+        {
+          "v": 1,
+          "origin": "lesson-input",
+          "unit": "adc-count",
+          "count": 1,
+          "dropped": 0,
+          "samples": [
+            {
+              "value": null,
+              "status": "malformed"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "firmware": [
+    {
+      "variant": "starter",
+      "result": {
+        "operationId": "164142fd-e33e-4e6b-ad9b-312e95c7ee25",
+        "state": "succeeded",
+        "sourceHash": "06e0fc92262ac93762b206c5224faceb0ae6ac38b3b93b529e7b5cbc16f916d8",
+        "artifacts": [
+          "boot_app0.bin",
+          "sketch.ino.bin",
+          "sketch.ino.bootloader.bin",
+          "sketch.ino.elf",
+          "sketch.ino.merged.bin",
+          "sketch.ino.partitions.bin"
+        ],
+        "exitCode": 0,
+        "log": "Sketch uses 270024 bytes (20%) of program storage space. Maximum is 1310720 bytes.\nGlobal variables use 22188 bytes (6%) of dynamic memory, leaving 305492 bytes for local variables. Maximum is 327680 bytes.\n"
+      }
+    },
+    {
+      "variant": "reference",
+      "result": {
+        "operationId": "fe479256-db9a-478b-a932-ab7f1852eb72",
+        "state": "succeeded",
+        "sourceHash": "e83bb8124c6f245f8c0fcd51c77fc3878abae7204a29eb2332c9d90e895afe5e",
+        "artifacts": [
+          "boot_app0.bin",
+          "sketch.ino.bin",
+          "sketch.ino.bootloader.bin",
+          "sketch.ino.elf",
+          "sketch.ino.merged.bin",
+          "sketch.ino.partitions.bin"
+        ],
+        "exitCode": 0,
+        "log": "Sketch uses 269984 bytes (20%) of program storage space. Maximum is 1310720 bytes.\nGlobal variables use 22188 bytes (6%) of dynamic memory, leaving 305492 bytes for local variables. Maximum is 327680 bytes.\n"
+      }
+    }
+  ],
+  "physicalSamples": "NOT READ",
+  "uploadVerification": "NOT RUN",
+  "physicalVerification": "NOT RUN"
+}

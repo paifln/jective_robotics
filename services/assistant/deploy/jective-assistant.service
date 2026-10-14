@@ -1,0 +1,33 @@
+[Unit]
+Description=JECTIVE student assistant gateway
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=jective-assistant
+Group=jective-assistant
+WorkingDirectory=/opt/jective-assistant
+EnvironmentFile=/etc/jective-assistant/runtime.env
+LoadCredential=master.key:/etc/jective-assistant-master/master.key
+Environment=ASSISTANT_MASTER_KEY_FILE=%d/master.key
+ExecStart=/usr/bin/node /opt/jective-assistant/server.mjs
+Restart=on-failure
+RestartSec=5
+TimeoutStopSec=50
+UMask=0077
+StateDirectory=jective-assistant
+NoNewPrivileges=true
+PrivateTmp=true
+PrivateDevices=true
+ProtectSystem=strict
+ProtectHome=true
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectControlGroups=true
+RestrictSUIDSGID=true
+RestrictAddressFamilies=AF_INET AF_INET6 AF_UNIX
+LimitNOFILE=1024
+
+[Install]
+WantedBy=multi-user.target

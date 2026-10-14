@@ -1,0 +1,6 @@
+import {it,expect} from 'vitest';
+import {ToolchainService,buildSourceHash} from '../packages/toolchain';
+import type {Project} from '../packages/contracts';
+const project:Project={schemaVersion:1,id:'79c3c84b-06ef-4b89-80f2-e25f898605b1',name:'Upload rejection fixture',profileId:'esp32-devkit-reference',mode:'code',source:'void setup(){}\nvoid loop(){}',workspace:{},revision:0};
+it('upload cannot launch a CLI for an uncompiled, invalid-port or provisional project',async()=>{const service=new ToolchainService('THIS_EXECUTABLE_DOES_NOT_EXIST','test-results/unused-upload');await expect(service.upload(project,'79c3c84b-06ef-4b89-80f2-e25f898605b1','COM3')).rejects.toThrow('BUILD_STALE');await expect(service.upload(project,'79c3c84b-06ef-4b89-80f2-e25f898605b1','COM3;echo')).rejects.toThrow('PORT_INVALID');await expect(service.upload({...project,profileId:'jective-prototype'},'79c3c84b-06ef-4b89-80f2-e25f898605b1','COM3')).rejects.toThrow('WIRING_UNASSIGNED');});
+it('source, target board and logical wiring each invalidate build reuse',()=>{const hash=buildSourceHash(project);expect(buildSourceHash({...project,source:project.source+'\n// changed'})).not.toBe(hash);expect(buildSourceHash({...project,profileId:'esp32c3-reference'})).not.toBe(hash);expect(buildSourceHash({...project,wiring:{led:4}})).not.toBe(hash);});

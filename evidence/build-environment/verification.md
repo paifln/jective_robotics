@@ -1,0 +1,16 @@
+# Build environment content binding
+
+Post-release source change; immutable published installer 0.8.18 is unchanged.
+
+Successful builds now record an explicit `cli-selected-core-user-libraries-v1` fingerprint of the actual Arduino CLI executable, the complete selected ESP32 core version directory (including its built-in libraries/board definitions) and the user libraries directory. Hashing streams file bytes without timestamp caching, uses sorted logical paths, bounds bytes/files/depth and rejects linked entries or linked ancestors. Missing required inputs fail closed. The environment must match before/after successful compilation and again before upload; the manifest hash must also match the trusted hash held by the service. Changed inputs require a new compilation. Compilation uses `--clean` to avoid accepting stale cached core output after core changes. Snapshot hashing accepts cancellation and stops before upload/build success publication.
+
+Verification on Windows 11:
+
+- Full run: 485 tests in 167 files passed, 96.43% branch coverage; the new environment module has 89.36% branch coverage. Typecheck, lint and build passed.
+- Real file fixtures verify changed CLI/core/library content, library installation/removal, missing inputs, linked roots/ancestors, excessive nesting, cancellation, a changed environment during compilation and a rewritten manifest. Upload command is never invoked in the invalid cases. Fixture CLI/artifacts are explicitly synthetic test data.
+- Final normal Electron board-wizard GUI run passed (47.4 seconds). It used the real Arduino CLI and ESP32 core: valid source produced actual artifacts and deliberately invalid source produced real compiler errors. The final manifests captured identical environment hashes over 2185 files / 115163516 bytes. Stale source was refused by the UI. Device listing was replaced by an explicitly synthetic port only in the stale-upload assertion; no uploader or physical port was invoked.
+- Actual valid/invalid source snapshots, build manifests, successful artifacts, full unit/coverage reports, both genuine compiler UI runs and source hashes are retained in `.verification/build-environment/`.
+
+The initial full unit assertions passed but the new module's 78.57% coverage missed the required 80% per-file gate. Added meaningful missing-input/linked-ancestor/deep-tree checks raised it; the failed gate report is preserved. Cancellation support was added afterward and the full coverage run and real compiler GUI were repeated successfully.
+
+Limits: the scope intentionally does not include external compiler/SDK tool packages under `data/packages/esp32/tools`. Their content binding remains required follow-up. This fingerprint is local change detection, not signed provenance, a guarantee against concurrent hostile replace-and-restore attacks or proof of safe generated firmware. A missing/changed environment may currently surface a technical error code in existing compiler details; broader localized error presentation remains to improve. No physical upload/runtime, Windows 10, clean installer lifecycle or packaged verification of this source change was performed. Course remains 56/60 drafts and full master acceptance remains incomplete.

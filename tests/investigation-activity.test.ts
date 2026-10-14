@@ -1,0 +1,10 @@
+import {it,expect} from 'vitest';
+import {investigationExercise} from '../packages/content/investigation-activity';
+import {gradeActivity} from '../packages/content/learning-activities';
+import {mkdtemp,rm} from 'node:fs/promises';
+import {join,resolve,basename,sep} from 'node:path';
+import {tmpdir} from 'node:os';
+import {WorkspaceStore,inspectBackup,populateBackup} from '../packages/persistence/workspace';
+const answers={seed:'condition',goal:'observation',final:'observation',physical:'limit',duration:'condition'};
+it('distinguishes controlled inputs, observed states and limits',()=>{expect(gradeActivity(investigationExercise,{}).state).toBe('incomplete');expect(gradeActivity(investigationExercise,{...answers,physical:'observation'})).toEqual({state:'needs-practice',correct:4,total:5});expect(gradeActivity(investigationExercise,answers).state).toBe('checked');});
+it('retains corrected L48 answers and adaptive attempts through actual SQLite backup',async()=>{const root=await mkdtemp(join(tmpdir(),'jective-investigation-answers-')),store=new WorkspaceStore(join(root,'source.sqlite'));try{store.saveLearning({id:'L48',answers:{...answers,physical:'observation'},check:true});const saved=store.saveLearning({id:'L48',answers,check:true});expect(saved.state).toBe('checked');expect(saved.attempts).toBe(2);await store.backup(join(root,'backup.sqlite'));const restored=new WorkspaceStore(join(root,'restored.sqlite'));try{populateBackup(restored,inspectBackup(join(root,'backup.sqlite')));expect(restored.learning('L48')).toEqual(saved);}finally{restored.close();}}finally{store.close();if(!resolve(root).startsWith(resolve(tmpdir())+sep)||!basename(root).startsWith('jective-investigation-answers-'))throw new Error('UNSAFE_CLEANUP');await rm(root,{recursive:true,force:true});}});

@@ -1,0 +1,29 @@
+import {test,expect,_electron as electron} from '@playwright/test';
+import {mkdtemp,readFile,rm} from 'node:fs/promises';
+import {tmpdir} from 'node:os';
+import {join} from 'node:path';
+test('L30 exports repeated course outcomes and verifies real worker obstacle interruption',async()=>{
+ const root=await mkdtemp(join(tmpdir(),'jective-course-challenge-')),env:Record<string,string>=Object.fromEntries(Object.entries(process.env).filter((entry):entry is [string,string]=>entry[1]!==undefined));delete env.ELECTRON_RUN_AS_NODE;env.JECTIVE_WORKSPACE_ROOT=root;
+ const app=await electron.launch({executablePath:process.env.JECTIVE_EXECUTABLE,args:process.env.JECTIVE_EXECUTABLE?[]:['.'],env});
+ try{
+  const page=await app.firstWindow();page.on('dialog',dialog=>dialog.accept());await expect(page.getByRole('button',{name:'Learn',exact:true})).toBeVisible();await expect(page.locator('#launch-screen')).toHaveCount(0);
+  await page.getByRole('button',{name:'Learn',exact:true}).click();await page.getByRole('button',{name:/^L30 ·/}).click();await expect(page.getByRole('heading',{name:'Course challenge and priorities',level:3,exact:true})).toBeVisible();
+  const panel=page.locator('.course-challenge-panel');
+  for(const caseId of ['clear','obstacle','missing','threshold-boundary','manual-stop']){
+   await panel.getByLabel('Course scenario',{exact:true}).selectOption(caseId);await expect(panel.getByRole('button',{name:'Export course evidence',exact:true})).toHaveCount(0);
+   await panel.getByRole('button',{name:'Run three repeats',exact:true}).click();await expect(panel.getByRole('button',{name:'Export course evidence',exact:true})).toBeDisabled();await panel.getByLabel('Course explanation',{exact:true}).fill('Obstacle and invalid-distance stops take priority over line tracking and cannot rearm automatically.');
+   const path=join(root,`${caseId}.json`);await app.evaluate(({session},path)=>{session.defaultSession.once('will-download',(_event,item)=>item.setSavePath(path));},path);await panel.getByRole('button',{name:'Export course evidence',exact:true}).click();await expect.poll(async()=>{try{return JSON.parse(await readFile(path,'utf8')).runs.length;}catch{return -1;}}).toBe(3);
+   const report=JSON.parse(await readFile(path,'utf8'));expect(report.endpointRangeMeters).toBe(0);expect(report.runs.every((run:{outcome:{collision:boolean}})=>!run.outcome.collision)).toBe(true);expect(report.runs[1].trace).toEqual(report.runs[0].trace);expect(report.runs[2].trace).toEqual(report.runs[0].trace);expect(report.runs[0].outcome.coursePassed).toBe(caseId==='clear');
+   if(caseId==='obstacle'){expect(report.runs[0].outcome.bodyClearanceMeters).toBeGreaterThan(.15);expect(report.runs[0].outcome.stopRequestMs).toBe(2980);}
+   if(caseId==='missing'||caseId==='manual-stop')expect(report.runs[0].outcome.stopRequestMs).toBe(800);
+  }
+  await page.setViewportSize({width:800,height:900});await page.getByLabel('Language',{exact:true}).selectOption('ru');await panel.getByLabel('Сценарий трассы',{exact:true}).selectOption('obstacle');await panel.getByRole('button',{name:'Запустить три повтора',exact:true}).click();await expect(panel.getByRole('status')).toContainText('Остановка перед препятствием');await panel.locator('svg').evaluate(element=>element.scrollIntoView({block:'center'}));await panel.locator('svg').screenshot({path:'test-results/course-challenge-ru-plot.png'});
+  await page.getByLabel('Язык',{exact:true}).selectOption('kk');await panel.getByRole('button',{name:'Үш рет іске қосу',exact:true}).click();await expect(panel.getByRole('status')).toContainText('Кедергіге тоқтау');await panel.locator('table').evaluate(element=>element.scrollIntoView({block:'center'}));await panel.locator('table').screenshot({path:'test-results/course-challenge-kk-table.png'});await page.getByLabel('Тіл',{exact:true}).selectOption('en');await page.setViewportSize({width:1280,height:900});
+  for(const reference of [false,true]){
+   await page.getByRole('button',{name:'Learn',exact:true}).click();await page.getByRole('button',{name:/^L30 ·/}).click();await page.getByRole('button',{name:reference?'Load reference solution':'Load starter',exact:true}).click();await page.getByRole('button',{name:'Simulation',exact:true}).click();await expect(page.getByLabel('World',{exact:true})).toHaveValue('L30-obstacle');await page.getByRole('button',{name:'Run',exact:true}).click();await expect(page.locator('.feature pre')).toContainText('"status": "completed"',{timeout:20000});
+   const path=join(root,reference?'reference.json':'starter.json');await app.evaluate(({session},path)=>{session.defaultSession.once('will-download',(_event,item)=>item.setSavePath(path));},path);await page.getByRole('button',{name:'Export scenario and state',exact:true}).click();await expect.poll(async()=>{try{return JSON.parse(await readFile(path,'utf8')).trace.at(-1).status;}catch{return '';}}).toBe('completed');const trace=JSON.parse(await readFile(path,'utf8')).trace;
+   expect(trace.some((frame:{collision:boolean})=>frame.collision)).toBe(!reference);
+   if(reference){expect(trace.at(-1).variables.course_state).toBe(2);const lab=JSON.parse(await readFile(join(root,'obstacle.json'),'utf8')).runs[0];expect(trace.at(-1).pose.x).toBeCloseTo(lab.trace.at(-1).pose.x,10);const request=trace.find((frame:{variables:{course_state:number}})=>frame.variables.course_state===2);expect(request.timeMs).toBe(3000);expect(trace.filter((frame:{timeMs:number})=>frame.timeMs>=3080).every((frame:{left:number;right:number})=>frame.left===0&&frame.right===0)).toBe(true);}
+  }
+ }finally{await app.evaluate(({app})=>app.exit(0));if(app.process().exitCode===null&&app.process().signalCode===null)await new Promise<void>(resolve=>app.process().once('exit',()=>resolve()));await rm(root,{recursive:true,force:true,maxRetries:30,retryDelay:100});}
+});

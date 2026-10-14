@@ -1,0 +1,21 @@
+{
+  "scope": "Unpackaged source build; two targeted Electron scenarios, waveform visual inspection and one fixed 71-sample host C++ comparison. Not full-suite, installed or physical acceptance.",
+  "unitPassed": 198,
+  "targetedElectronPassed": 2,
+  "typecheck": "passed",
+  "lint": "passed",
+  "build": "passed",
+  "curriculum": "22/60 draft lessons; 38 remaining",
+  "contentGate": "NOT COMPLETE: requires 60 lessons and human technical language review",
+  "sourceSHA256": {
+    "packages/content/lesson-ramping.ts": "e74da6e1a9d11bc4856fd9cf4a875799d8aee0cd3697239d1a39f092c768b97e",
+    "packages/content/lessons.ts": "c6e0be40c0ad014d25361ee405a2ef5724ddd2824cf3ce9ad0eca140bbc7d584",
+    "packages/content/worksheets.ts": "b28d52ee93c720e5bdcc5f45810aa15a6dcd97520f1a458dde731821b6d6f2c3",
+    "packages/content/knowledge-check.ts": "04377b96a18ca1694916bd12f7fcad77232a368aa902941734d9c8af81b6bf84",
+    "packages/simulator/motor-ramp.ts": "dcd8bcec2c265d129dc3597d7cdaa338623905548ab483484e51e22d1e7c4461",
+    "apps/desktop/renderer/MotorRampPanel.tsx": "61990dac9da58a1f9066ee0d1d3bb4919c30ac480f179a97d58ca9a826a1fa61",
+    "apps/desktop/renderer/ContentPanel.tsx": "4a614b0eed0636216316b66573897f6db4705c5ce48bacc95ae23c7e523e9f67",
+    "apps/desktop/renderer/style.css": "7636120c0498b36d399cb487a9da05a50b002d9ec8123ef871bc11e72adb8b08",
+    "tests/e2e/motor-ramp.spec.ts": "23c49daa826ef4e18aad17a8cb311e1f4fc72d69355917cfe0b2f99c571fbba2"
+  }
+}

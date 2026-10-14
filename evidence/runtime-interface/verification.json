@@ -1,0 +1,145 @@
+{
+  "checkedAt": "2026-10-11T09:28:43.091Z",
+  "scope": "Real Runtime/CheckedMove C++ host tests with explicit GPIO/PWM/RTOS/serial substitutes; no physical task executes. Actual ESP32 and ESP32-C3 compilation only.",
+  "inputHashes": {
+    "firmware/jective-runtime/SafetyController.h": "6f83f75da9354262200353bb426760469c2aacb8a1ed8640dc6e233bd572e8a6",
+    "firmware/jective-runtime/JectiveRuntime.h": "ad15e264149df278aef55cee18e16d679a56d5e54be6b91a2f2c9fd58defd654",
+    "firmware/jective-runtime/CheckedMove.h": "29bc737d98c4f9971a962a2168178d74f92d16b8b06e5572a9301eb69a886be7",
+    "tests/firmware/runtime_interface_test.cpp": "91d43278cb59a6c4ec2514bb4249e470af3060f1ddab2a7693edffcd03267f27",
+    "tests/firmware/runtime-stubs/Arduino.h": "851540a5bff72d6c9391ac7c3d9f48e20eb2c2a610608c8734e3fe1de411cf14",
+    "tests/firmware/runtime-stubs/esp_system.h": "277063ce9fe50a22968d61a3727d74036e65298b49043f39ce92b5a7f91db916",
+    "scripts/runtime-interface-check.mjs": "a6f0aa4032554e5e827efe8b4b4eb9a7774a34ec4d6c13453ceac7b7c9f1e706"
+  },
+  "sourceHashes": {
+    "SafetyController.h": "6f83f75da9354262200353bb426760469c2aacb8a1ed8640dc6e233bd572e8a6",
+    "JectiveRuntime.h": "ad15e264149df278aef55cee18e16d679a56d5e54be6b91a2f2c9fd58defd654",
+    "CheckedMove.h": "29bc737d98c4f9971a962a2168178d74f92d16b8b06e5572a9301eb69a886be7"
+  },
+  "hostCompile": {
+    "code": 0,
+    "log": ""
+  },
+  "hostExecution": {
+    "code": 0,
+    "log": "[{\"id\":\"valid\",\"left\":10,\"right\":10,\"durationMs\":100,\"ready\":true,\"armed\":true,\"result\":\"Accepted\"},{\"id\":\"speed-limit\",\"left\":30,\"right\":-30,\"durationMs\":2000,\"ready\":true,\"armed\":true,\"result\":\"Accepted\"},{\"id\":\"too-fast\",\"left\":31,\"right\":10,\"durationMs\":100,\"ready\":true,\"armed\":true,\"result\":\"InvalidInput\"},{\"id\":\"zero-duration\",\"left\":10,\"right\":10,\"durationMs\":0,\"ready\":true,\"armed\":true,\"result\":\"InvalidInput\"},{\"id\":\"negative-duration\",\"left\":10,\"right\":10,\"durationMs\":-1,\"ready\":true,\"armed\":true,\"result\":\"InvalidInput\"},{\"id\":\"too-long\",\"left\":10,\"right\":10,\"durationMs\":2001,\"ready\":true,\"armed\":true,\"result\":\"InvalidInput\"},{\"id\":\"not-ready\",\"left\":10,\"right\":10,\"durationMs\":100,\"ready\":false,\"armed\":false,\"result\":\"RuntimeRejected\"},{\"id\":\"not-armed\",\"left\":10,\"right\":10,\"durationMs\":100,\"ready\":true,\"armed\":false,\"result\":\"RuntimeRejected\"}]\r\n"
+  },
+  "observedCases": [
+    {
+      "id": "valid",
+      "left": 10,
+      "right": 10,
+      "durationMs": 100,
+      "ready": true,
+      "armed": true,
+      "result": "Accepted"
+    },
+    {
+      "id": "speed-limit",
+      "left": 30,
+      "right": -30,
+      "durationMs": 2000,
+      "ready": true,
+      "armed": true,
+      "result": "Accepted"
+    },
+    {
+      "id": "too-fast",
+      "left": 31,
+      "right": 10,
+      "durationMs": 100,
+      "ready": true,
+      "armed": true,
+      "result": "InvalidInput"
+    },
+    {
+      "id": "zero-duration",
+      "left": 10,
+      "right": 10,
+      "durationMs": 0,
+      "ready": true,
+      "armed": true,
+      "result": "InvalidInput"
+    },
+    {
+      "id": "negative-duration",
+      "left": 10,
+      "right": 10,
+      "durationMs": -1,
+      "ready": true,
+      "armed": true,
+      "result": "InvalidInput"
+    },
+    {
+      "id": "too-long",
+      "left": 10,
+      "right": 10,
+      "durationMs": 2001,
+      "ready": true,
+      "armed": true,
+      "result": "InvalidInput"
+    },
+    {
+      "id": "not-ready",
+      "left": 10,
+      "right": 10,
+      "durationMs": 100,
+      "ready": false,
+      "armed": false,
+      "result": "RuntimeRejected"
+    },
+    {
+      "id": "not-armed",
+      "left": 10,
+      "right": 10,
+      "durationMs": 100,
+      "ready": true,
+      "armed": false,
+      "result": "RuntimeRejected"
+    }
+  ],
+  "firmware": [
+    {
+      "profileId": "esp32-devkit-reference",
+      "result": {
+        "operationId": "bf7ae482-b2cc-47ff-9e34-81b9716cdb2c",
+        "state": "succeeded",
+        "sourceHash": "aa9136da1d6d5de21a01111406999ea62d9b2df37189574aa1c6cfd7fbd3b10e",
+        "artifacts": [
+          "boot_app0.bin",
+          "sketch.ino.bin",
+          "sketch.ino.bootloader.bin",
+          "sketch.ino.elf",
+          "sketch.ino.merged.bin",
+          "sketch.ino.partitions.bin"
+        ],
+        "exitCode": 0,
+        "log": "Sketch uses 271703 bytes (20%) of program storage space. Maximum is 1310720 bytes.\nGlobal variables use 22624 bytes (6%) of dynamic memory, leaving 305056 bytes for local variables. Maximum is 327680 bytes.\n"
+      }
+    },
+    {
+      "profileId": "esp32c3-reference",
+      "result": {
+        "operationId": "5a5871e7-00b5-483a-8711-1a813ad097e7",
+        "state": "succeeded",
+        "sourceHash": "cf30e60013fef46addc0ee583e2cb943ab6471aa05fb1e561a0d60f1d43de144",
+        "artifacts": [
+          "boot_app0.bin",
+          "sketch.ino.bin",
+          "sketch.ino.bootloader.bin",
+          "sketch.ino.elf",
+          "sketch.ino.merged.bin",
+          "sketch.ino.partitions.bin"
+        ],
+        "exitCode": 0,
+        "log": "Sketch uses 301488 bytes (23%) of program storage space. Maximum is 1310720 bytes.\nGlobal variables use 14772 bytes (4%) of dynamic memory, leaving 312908 bytes for local variables. Maximum is 327680 bytes.\n"
+      }
+    }
+  ],
+  "uploadVerification": "NOT RUN",
+  "physicalVerification": "NOT RUN",
+  "limitations": [
+    "Host tests do not execute FreeRTOS safety task or real peripherals",
+    "No physical motor/stop latency claim",
+    "Runtime still lacks complete generator/host movement integration"
+  ]
+}

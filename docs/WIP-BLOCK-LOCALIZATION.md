@@ -1,0 +1,7 @@
+# Blockly label localization — unpublished work
+
+JECTIVE blocks now translate their presentation labels and dropdown captions into English, Russian and Kazakh. This includes function definitions, calls with 0–8 arguments, control flow, variables, indicator channels and simulated sensor labels/units. Identifiers and dropdown values remain stable. Presentation updates happen in place without serializing/reloading the workspace, so language changes retain connections, block IDs and undo history. Newly created blocks and flyout blocks receive the current language.
+
+Tests verify exact serialized-workspace and parsed-program equality across language changes, selected dropdown values, translated parameter and ON captions, and actual undo/redo after switching languages. All 137 unit tests pass. The existing package coverage gate passes at 993/1078 branches (92.11%); that gate covers packages, not the renderer localization helper. Typecheck, lint and application build pass.
+
+The targeted source Electron L11 test switches English → Russian → Kazakh → English, inspects visible function labels and reruns the actual lesson trace successfully. This is one targeted UI test; full regression E2E and installer acceptance remain pending. Technical translations still require human review, and this change does not prove localization completeness for every application screen or Blockly's standard context menus. Existing 0.5.0 artifacts remain unchanged.

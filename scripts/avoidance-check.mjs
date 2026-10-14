@@ -1,0 +1,15 @@
+import {build} from 'esbuild';
+import {mkdir,readFile,writeFile} from 'node:fs/promises';
+import {createHash} from 'node:crypto';
+await mkdir('test-results/avoidance',{recursive:true});
+await build({entryPoints:{world:'packages/content/avoidance-world.ts',inputs:'packages/content/avoidance-experiment.ts'},outdir:'test-results/avoidance',outExtension:{'.js':'.cjs'},bundle:true,platform:'node',format:'cjs'});
+const {avoidanceWorldExperiment}=await import('../test-results/avoidance/world.cjs');
+const {avoidanceScenarios,avoidanceExperiment}=await import('../test-results/avoidance/inputs.cjs');
+const worlds=['recovery','blocked'].map(avoidanceWorldExperiment),inputs=avoidanceScenarios.map(avoidanceExperiment);
+const contact=avoidanceWorldExperiment('body-contact');
+const sourceHashes={};for(const path of ['packages/simulator/obstacle-avoidance.ts','packages/content/avoidance-world.ts','packages/content/avoidance-experiment.ts','packages/content/avoidance-program.ts','packages/content/avoidance-artifact.ts','packages/content/lesson-avoidance.ts','packages/content/lessons.ts','packages/content/knowledge-check.ts','tests/e2e/avoidance.spec.ts','apps/desktop/renderer/AvoidancePanel.tsx','apps/desktop/renderer/ContentPanel.tsx','tests/avoidance-program.test.ts','tests/avoidance-world.test.ts','scripts/avoidance-check.mjs'])sourceHashes[path]=createHash('sha256').update(await readFile(path)).digest('hex');
+if(worlds.some(run=>run.rows.some(row=>row.collision)))throw new Error('AVOIDANCE_WORLD_COLLISION');
+await mkdir('evidence/obstacle-avoidance',{recursive:true});
+await writeFile('evidence/obstacle-avoidance/traces.json',JSON.stringify({worlds,inputs,contactDiagnostic:contact},null,2));
+await writeFile('evidence/obstacle-avoidance/verification.json',JSON.stringify({status:'SOURCE MODEL VERIFIED; L26 AUTHORED DRAFT; SOURCE WORKER VERIFIED',sourceHashes,worlds:worlds.map(run=>({scenario:run.scenario,states:[...new Set(run.rows.map(row=>row.control.state))],collisions:run.rows.filter(row=>row.collision).length})),scope:'Two declared world geometries, shared kinematics/ray/collision functions; not arbitrary-world safety or Blockly worker verification',physicalVerification:'NOT RUN'},null,2));
+console.log('Avoidance source-model traces and verification saved.');

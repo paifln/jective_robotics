@@ -1,0 +1,10 @@
+import {build} from 'esbuild';
+import {mkdir,readFile,writeFile} from 'node:fs/promises';
+import {createHash} from 'node:crypto';
+await mkdir('test-results/servo',{recursive:true});
+await build({entryPoints:['packages/content/servo-experiment.ts'],outfile:'test-results/servo/model.cjs',bundle:true,platform:'node',format:'cjs'});
+const {servoTrial,servoModelDefaults}=await import('../test-results/servo/model.cjs');
+const cases=['limited-sweep','absent','unsupported','feedback-loss','obstruction','manual-stop','invalid-target'].map(caseId=>servoTrial(servoModelDefaults,caseId));
+for(const trial of cases){if(trial.caseId==='limited-sweep'){if(trial.metrics.releaseTimesMs.length!==3||trial.rows.at(-1).signalEnabled)throw new Error('SERVO_SWEEP_EVIDENCE');}else if(trial.metrics.faultTimeMs===null||trial.rows.filter(row=>row.timeMs>=trial.metrics.faultTimeMs).some(row=>row.state!=='fault'||row.signalEnabled))throw new Error('SERVO_FAULT_EVIDENCE');}
+const sourceHashes={};for(const path of ['packages/content/guides.ts','packages/simulator/servo.ts','packages/content/servo-experiment.ts','packages/content/lesson-servo.ts','packages/content/lessons.ts','packages/content/knowledge-check.ts','apps/desktop/renderer/ServoPanel.tsx','apps/desktop/renderer/ContentPanel.tsx','tests/servo.test.ts','tests/e2e/servo.spec.ts','scripts/servo-check.mjs'])sourceHashes[path]=createHash('sha256').update(await readFile(path)).digest('hex');
+await mkdir('evidence/servo',{recursive:true});await writeFile('evidence/servo/responses.json',JSON.stringify({cases,narrowed:servoTrial({...servoModelDefaults,minimumDegrees:70,maximumDegrees:110})},null,2));await writeFile('evidence/servo/verification.json',JSON.stringify({status:'DOMAIN VERIFIED; L34 AUTHORED DRAFT',sourceHashes,scope:'Declared unloaded servo linkage model; no approved physical driver, pulse calibration, force/current measurement or physical torque-off claim',metrics:cases.map(trial=>({caseId:trial.caseId,...trial.metrics})),physicalVerification:'NOT RUN'},null,2));console.log('Seven servo cases, narrowed envelope and source hashes saved.');

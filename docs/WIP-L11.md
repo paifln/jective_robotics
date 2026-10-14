@@ -1,0 +1,9 @@
+# L11: functions and reusable behavior — unpublished work
+
+L11 is registered in the learning panel with English, Kazakh and Russian draft text, three assessment questions, a runnable starter and a reference solution. It covers parameter contracts, by-value isolation, explicit nested arguments, synchronous calls and side effects. The reference uses one `pulse(ms)` definition at two call sites (100 and 200 ms). The starter deliberately omits the shared final OFF instruction. The content audit finds 685 English learner-facing words; authored count is now 11/60, leaving 49 lessons missing. Technical translations still require educator review.
+
+Tests compare the actual starter and reference traces and robot states, and execute arguments 0, 1, 100, 60000, -1, 0.5 and 60001. Valid values finish with the indicator off; invalid values produce WAIT_RANGE without a later DONE message. The 60000 ms case runs to completion in the robot simulator. The quick indicator UI's ten-second horizon is explicitly explained in the lesson.
+
+All 135 unit tests pass with aggregate branch coverage 993/1078 (92.11%) and unchanged per-file thresholds. Typecheck, lint and application build pass. Two targeted source Electron tests pass: loading and executing L11's actual reference, and saving/reopening function workspaces with both simulation workers. Full regression E2E and installer acceptance have not been repeated for this change. Existing function compiler evidence checks the generator with a separate fixture; actual L11 starter/reference Arduino compilation remains pending. Upload and physical execution are NOT RUN.
+
+The content gate still correctly reports NOT COMPLETE because 60 lessons and reviewed translations are required. Reports are copied into `evidence/wip-L11/`. Existing 0.5.0 installer and source archive remain unchanged and do not contain the unpublished function work or L11. README's published release counts describe 0.5.0, not this worktree.

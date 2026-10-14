@@ -1,0 +1,235 @@
+{
+  "status": "NOT COMPLETE",
+  "authored": 20,
+  "required": 60,
+  "missing": [
+    "L21",
+    "L22",
+    "L23",
+    "L24",
+    "L25",
+    "L26",
+    "L27",
+    "L28",
+    "L29",
+    "L30",
+    "L31",
+    "L32",
+    "L33",
+    "L34",
+    "L35",
+    "L36",
+    "L37",
+    "L38",
+    "L39",
+    "L40",
+    "L41",
+    "L42",
+    "L43",
+    "L44",
+    "L45",
+    "L46",
+    "L47",
+    "L48",
+    "L49",
+    "L50",
+    "L51",
+    "L52",
+    "L53",
+    "L54",
+    "L55",
+    "L56",
+    "L57",
+    "L58",
+    "L59",
+    "L60"
+  ],
+  "lessons": [
+    {
+      "id": "L01",
+      "englishLearnerWords": 626,
+      "questions": 3,
+      "artifact": "program",
+      "translationStatus": "draft-review-required"
+    },
+    {
+      "id": "L02",
+      "englishLearnerWords": 634,
+      "questions": 3,
+      "artifact": "worksheet",
+      "translationStatus": "draft-review-required"
+    },
+    {
+      "id": "L03",
+      "englishLearnerWords": 634,
+      "questions": 3,
+      "artifact": "program",
+      "translationStatus": "draft-review-required"
+    },
+    {
+      "id": "L04",
+      "englishLearnerWords": 700,
+      "questions": 3,
+      "artifact": "program",
+      "translationStatus": "draft-review-required"
+    },
+    {
+      "id": "L05",
+      "englishLearnerWords": 711,
+      "questions": 3,
+      "artifact": "program",
+      "translationStatus": "draft-review-required"
+    },
+    {
+      "id": "L06",
+      "englishLearnerWords": 731,
+      "questions": 3,
+      "artifact": "program",
+      "translationStatus": "draft-review-required"
+    },
+    {
+      "id": "L07",
+      "englishLearnerWords": 752,
+      "questions": 3,
+      "artifact": "program",
+      "translationStatus": "draft-review-required"
+    },
+    {
+      "id": "L08",
+      "englishLearnerWords": 717,
+      "questions": 3,
+      "artifact": "program",
+      "translationStatus": "draft-review-required"
+    },
+    {
+      "id": "L09",
+      "englishLearnerWords": 806,
+      "questions": 3,
+      "artifact": "program",
+      "translationStatus": "draft-review-required"
+    },
+    {
+      "id": "L10",
+      "englishLearnerWords": 799,
+      "questions": 3,
+      "artifact": "program",
+      "translationStatus": "draft-review-required"
+    },
+    {
+      "id": "L11",
+      "englishLearnerWords": 685,
+      "questions": 3,
+      "artifact": "program",
+      "translationStatus": "draft-review-required"
+    },
+    {
+      "id": "L12",
+      "englishLearnerWords": 724,
+      "questions": 3,
+      "artifact": "program",
+      "translationStatus": "draft-review-required"
+    },
+    {
+      "id": "L13",
+      "englishLearnerWords": 777,
+      "questions": 3,
+      "artifact": "program",
+      "translationStatus": "draft-review-required"
+    },
+    {
+      "id": "L14",
+      "englishLearnerWords": 798,
+      "questions": 3,
+      "artifact": "program",
+      "translationStatus": "draft-review-required"
+    },
+    {
+      "id": "L15",
+      "englishLearnerWords": 821,
+      "questions": 3,
+      "artifact": "program",
+      "translationStatus": "draft-review-required"
+    },
+    {
+      "id": "L16",
+      "englishLearnerWords": 889,
+      "questions": 3,
+      "artifact": "program",
+      "translationStatus": "draft-review-required"
+    },
+    {
+      "id": "L17",
+      "englishLearnerWords": 780,
+      "questions": 3,
+      "artifact": "program",
+      "translationStatus": "draft-review-required"
+    },
+    {
+      "id": "L18",
+      "englishLearnerWords": 1004,
+      "questions": 3,
+      "artifact": "program",
+      "translationStatus": "draft-review-required"
+    },
+    {
+      "id": "L19",
+      "englishLearnerWords": 763,
+      "questions": 3,
+      "artifact": "worksheet",
+      "translationStatus": "draft-review-required"
+    },
+    {
+      "id": "L20",
+      "englishLearnerWords": 779,
+      "questions": 3,
+      "artifact": "worksheet",
+      "translationStatus": "draft-review-required"
+    }
+  ],
+  "guides": [
+    {
+      "id": "G01",
+      "physical": "NOT RUN",
+      "translation": "draft-review-required"
+    },
+    {
+      "id": "G02",
+      "physical": "NOT RUN",
+      "translation": "draft-review-required"
+    },
+    {
+      "id": "G03",
+      "physical": "NOT RUN",
+      "translation": "draft-review-required"
+    },
+    {
+      "id": "G04",
+      "physical": "NOT RUN",
+      "translation": "draft-review-required"
+    },
+    {
+      "id": "G05",
+      "physical": "NOT RUN",
+      "translation": "draft-review-required"
+    },
+    {
+      "id": "G06",
+      "physical": "NOT RUN",
+      "translation": "draft-review-required"
+    },
+    {
+      "id": "G07",
+      "physical": "NOT RUN",
+      "translation": "draft-review-required"
+    },
+    {
+      "id": "G08",
+      "physical": "NOT RUN",
+      "translation": "draft-review-required"
+    }
+  ],
+  "failures": [
+    "Exactly 60 unique substantive lessons required",
+    "Translations require human technical language review"
+  ]
+}

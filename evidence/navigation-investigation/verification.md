@@ -1,0 +1,11 @@
+Source verification: 2026-10-11
+
+L48 foundation supports two fixed distance-guarded strategies (0.4 m / 0.7 m stopping thresholds), two or three selected fixed worlds, 1–5 paired repetitions, uint32 seeds, noise 0–0.2 m and 1–300 actual simulator steps. Both strategies receive identical world, seed, noise and duration within each trial. Consecutive seeds wrap explicitly to uint32. Reports retain complete traces, goal/collision/invalid-sensor observations, first goal time and final states.
+
+Actual zero-noise observations: in the clear world, both strategies stop on an out-of-range distance reading; in the wall world the near strategy reaches the goal region during the trace while the early strategy does not; in the narrow world both remain stopped with invalid distance. These outcomes are model observations, not expected physical performance or navigation guarantees. A goal observed earlier need not remain true at the final state.
+
+Tests independently rerun RobotSimulation for every strategy/trial and compare full states, verify deterministic repetition and snapshot isolation, reject oversized/duplicate/unknown inputs, and reject inconsistent reports. The report schema checks declared fixed programs/worlds, pair ordering, seeds, time, trace length and recomputed metrics; it does not certify physics. The actual source Electron worker was tested twice for matching reports, excessive requests were rejected, and a terminated worker produced no reply.
+
+Typecheck, lint, build and known-source trace generation passed. Full unit suite: 424 passed, 0 failed; branch coverage 96.56%. unit.json and coverage-summary.json are the full run; worker-ui.json is the one actual worker scenario. model-verification.json and traces.json contain the source hashes and six actual paired trials.
+
+L48 is not yet registered or learner-facing: theory, panel, checked investigation exercise, cancellation fixtures and navigation/export UI remain to implement. Course gate remains 47/60. No physical board, Windows 10, live OpenAI, new installer or packaged worker verification occurred. The package checker now includes investigation and editor workers, but has not been executed against a newly staged package.

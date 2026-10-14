@@ -1,0 +1,120 @@
+{
+  "checkedAt": "2026-10-11T09:02:27.914Z",
+  "scope": "Bounded C++ host execution; actual Arduino CLI compile only; upload and physical NOT RUN",
+  "cases": [
+    {
+      "numerator": 0,
+      "denominator": 2,
+      "integerResult": 0,
+      "floatingResult": 0,
+      "lateConversion": 0,
+      "positive": false,
+      "origin": "bounded-teaching-model"
+    },
+    {
+      "numerator": 1,
+      "denominator": 2,
+      "integerResult": 0,
+      "floatingResult": 0.5,
+      "lateConversion": 0,
+      "positive": true,
+      "origin": "bounded-teaching-model"
+    },
+    {
+      "numerator": 3,
+      "denominator": 2,
+      "integerResult": 1,
+      "floatingResult": 1.5,
+      "lateConversion": 1,
+      "positive": true,
+      "origin": "bounded-teaching-model"
+    },
+    {
+      "numerator": 4,
+      "denominator": 2,
+      "integerResult": 2,
+      "floatingResult": 2,
+      "lateConversion": 2,
+      "positive": true,
+      "origin": "bounded-teaching-model"
+    },
+    {
+      "numerator": -3,
+      "denominator": 2,
+      "integerResult": -1,
+      "floatingResult": -1.5,
+      "lateConversion": -1,
+      "positive": false,
+      "origin": "bounded-teaching-model"
+    },
+    {
+      "numerator": 3,
+      "denominator": -2,
+      "integerResult": -1,
+      "floatingResult": -1.5,
+      "lateConversion": -1,
+      "positive": true,
+      "origin": "bounded-teaching-model"
+    }
+  ],
+  "hostCompile": {
+    "code": 0,
+    "log": ""
+  },
+  "hostExecution": {
+    "code": 0,
+    "log": ""
+  },
+  "firmware": [
+    {
+      "variant": "starter",
+      "expected": "succeeded",
+      "result": {
+        "operationId": "6d538da6-5afc-4342-937a-a8cd1719904e",
+        "state": "succeeded",
+        "sourceHash": "e70b7f6434cf80658d5a1743d722de826c84e19eb8684a73ffd85f83d7a9e71f",
+        "artifacts": [
+          "boot_app0.bin",
+          "sketch.ino.bin",
+          "sketch.ino.bootloader.bin",
+          "sketch.ino.elf",
+          "sketch.ino.merged.bin",
+          "sketch.ino.partitions.bin"
+        ],
+        "exitCode": 0,
+        "log": "Sketch uses 269516 bytes (20%) of program storage space. Maximum is 1310720 bytes.\nGlobal variables use 22116 bytes (6%) of dynamic memory, leaving 305564 bytes for local variables. Maximum is 327680 bytes.\n"
+      }
+    },
+    {
+      "variant": "corrected",
+      "expected": "succeeded",
+      "result": {
+        "operationId": "2ff2f5e7-153f-48ef-88c7-1f016c209900",
+        "state": "succeeded",
+        "sourceHash": "0c05b88872607da3b85ccf79af8a27e43595778a6886bc61144d41f58fc37afd",
+        "artifacts": [
+          "boot_app0.bin",
+          "sketch.ino.bin",
+          "sketch.ino.bootloader.bin",
+          "sketch.ino.elf",
+          "sketch.ino.merged.bin",
+          "sketch.ino.partitions.bin"
+        ],
+        "exitCode": 0,
+        "log": "Sketch uses 269988 bytes (20%) of program storage space. Maximum is 1310720 bytes.\nGlobal variables use 22116 bytes (6%) of dynamic memory, leaving 305564 bytes for local variables. Maximum is 327680 bytes.\n"
+      }
+    },
+    {
+      "variant": "out-of-scope",
+      "expected": "failed",
+      "result": {
+        "operationId": "57b10d23-6a21-4e5d-81a5-8cecdd04d3fc",
+        "state": "failed",
+        "sourceHash": "572209bc4f734bfcf8d08885748bd40c32378f6c2f15f6619c7537da9aba7aed",
+        "artifacts": [],
+        "exitCode": 1,
+        "log": "C:\\Users\\Kabessov\\Documents\\GitHub\\jective_robotics\\.toolchain\\workspace\\builds\\57b10d23-6a21-4e5d-81a5-8cecdd04d3fc\\sketch\\sketch.ino: In function 'void setup()':\nC:\\Users\\Kabessov\\Documents\\GitHub\\jective_robotics\\.toolchain\\workspace\\builds\\57b10d23-6a21-4e5d-81a5-8cecdd04d3fc\\sketch\\sketch.ino:14:18: error: 'localPasses' was not declared in this scope\n   14 |   Serial.println(localPasses); // Not declared in setup scope.\n      |                  ^~~~~~~~~~~\n\nUsed platform Version Path\nesp32:esp32   3.3.12  C:\\Users\\Kabessov\\Documents\\GitHub\\jective_robotics\\.toolchain\\workspace\\data\\packages\\esp32\\hardware\\esp32\\3.3.12\nError during build: exit status 1\n"
+      }
+    }
+  ]
+}

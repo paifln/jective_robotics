@@ -1,0 +1,23 @@
+import {it,expect} from 'vitest';
+import {RobotSimulation,type RobotState} from '../packages/simulator';
+import {dashboardArtifact} from '../packages/content/dashboard-artifact';
+import {dashboardSeries,dashboardCSV} from '../packages/simulator/dashboard-series';
+const recorded=(timeMs:number,values:Record<string,number>={}):Pick<RobotState,'timeMs'|'variables'>=>({timeMs,variables:{dashboard_time_ms:timeMs,dashboard_commit:timeMs+1,dashboard_analog_v:1,dashboard_distance_valid:1,dashboard_distance_m:.5,...values}});
+it('two-input reference preserves disconnected samples and recovers without fabricating distances',()=>{
+ const engine=new RobotSimulation(dashboardArtifact.reference,dashboardArtifact.world!);const history=Array.from({length:101},()=>engine.step());const points=dashboardSeries(history,3.3,2);expect(points).toHaveLength(10);expect(points.map(p=>p.timeMs)).toEqual(Array.from({length:10},(_,i)=>i*200));expect(points.filter(p=>p.distanceMeters===null).map(p=>p.timeMs)).toEqual([400,600,800]);expect(points.at(-1)!.distanceMeters).toBe(1.2);expect(points[0]!.analogVolts).toBeCloseTo(1,2);expect(points.at(-1)!.analogVolts).toBeCloseTo(2,2);expect(history.at(-1)!.status).toBe('completed');expect(dashboardCSV(points)).toContain('"400"');expect(dashboardCSV(points).split('\r\n')[3]).toMatch(/"","invalid"$/);
+});
+it('unguarded starter stops at disconnection and never exports its partially assigned row',()=>{
+ const engine=new RobotSimulation(dashboardArtifact.starter,dashboardArtifact.world!);const history=Array.from({length:31},()=>engine.step());expect(history.at(-1)!.status).toBe('error');expect(history.at(-1)!.error).toContain('DISTANCE_READING_INVALID');expect(dashboardSeries(history,3.3,2).map(p=>p.timeMs)).toEqual([0,200]);
+});
+it('cadence challenge doubles samples and fault rows while retaining numeric telemetry and valid zero',()=>{
+ const program=structuredClone(dashboardArtifact.reference);const repeat=program.setup[0]!;if(repeat.kind!=='repeat')throw new Error('Expected bounded collection');repeat.count=20;for(const instruction of repeat.body)if(instruction.kind==='wait')instruction.ms=100;
+ const engine=new RobotSimulation(program,{...dashboardArtifact.world!,distanceInput:{...dashboardArtifact.world!.distanceInput!,initialMeters:0}});const history=Array.from({length:101},()=>engine.step());const series=dashboardSeries(history,3.3,2);expect(series).toHaveLength(20);expect(series.filter(p=>p.distanceMeters===null)).toHaveLength(6);expect(series[0]!.distanceMeters).toBe(0);expect(history.at(-1)!.log).toContain('0 ms: distance_m=0.000000');expect(history.at(-1)!.log).toContain('1000 ms: analog_V=2.000147');expect(history.at(-1)!.log).toContain('1000 ms: time_ms=1000.000000');
+});
+it('recorded sample validation rejects invalid units, clocks, ranges and conflicting duplicates',()=>{
+ for(const [reference,maximum] of [[0,2],[4,2],[3.3,.1],[3.3,6],[NaN,2]])expect(()=>dashboardSeries([],reference!,maximum!)).toThrow('DASHBOARD_RANGE_CONFIG');
+ expect(dashboardSeries([recorded(0,{dashboard_commit:0})],3.3,2)).toEqual([]);expect(dashboardSeries([{timeMs:0,variables:{}} as RobotState],3.3,2)).toEqual([]);
+ const invalidValues:Record<string,number>[]=[{dashboard_time_ms:-1,dashboard_commit:0},{dashboard_time_ms:1,dashboard_commit:2},{dashboard_time_ms:.5,dashboard_commit:1.5},{dashboard_time_ms:120001,dashboard_commit:120002},{dashboard_analog_v:NaN},{dashboard_analog_v:4},{dashboard_analog_v:-1},{dashboard_distance_valid:2}];for(const values of invalidValues)expect(()=>dashboardSeries([recorded(0,values)],3.3,2)).toThrow('DASHBOARD_SAMPLE_INVALID');
+ const missingVoltage=recorded(0);delete missingVoltage.variables.dashboard_analog_v;expect(()=>dashboardSeries([missingVoltage],3.3,2)).toThrow('DASHBOARD_SAMPLE_INVALID');
+ for(const value of [-1,3,NaN])expect(()=>dashboardSeries([recorded(0,{dashboard_distance_m:value})],3.3,2)).toThrow('DASHBOARD_DISTANCE_INVALID');const missingDistance=recorded(0);delete missingDistance.variables.dashboard_distance_m;expect(()=>dashboardSeries([missingDistance],3.3,2)).toThrow('DASHBOARD_DISTANCE_INVALID');
+ expect(()=>dashboardSeries([recorded(20),recorded(0)],3.3,2)).toThrow('DASHBOARD_TIME_ORDER');expect(()=>dashboardSeries([recorded(0),recorded(0,{dashboard_analog_v:2})],3.3,2)).toThrow('DASHBOARD_SAMPLE_CONFLICT');expect(dashboardSeries([recorded(0),recorded(0)],3.3,2)).toHaveLength(1);expect(dashboardSeries([recorded(0,{dashboard_distance_valid:0,dashboard_distance_m:99})],3.3,2)[0]!.distanceMeters).toBeNull();expect(dashboardSeries([recorded(0,{dashboard_distance_m:0})],3.3,2)[0]!.distanceMeters).toBe(0);
+});

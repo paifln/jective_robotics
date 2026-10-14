@@ -1,0 +1,9 @@
+# 0.8.1 installer and native dialog branding
+
+The assisted installer has a Jective header image and a blue welcome/finish sidebar with white branding. The uninstaller uses the same sidebar. Installer/uninstaller icons were already configured; executable resource editing is now enabled too, with code signing explicitly disabled. The packaged application executable contains the Jective ICO, confirmed through Windows icon extraction and pixel comparison with its source ICO. Native confirmation windows for unsaved close, local deletion, backup restoration and firmware upload receive a 64-pixel logo and JECTIVE title. Browser JavaScript confirm boxes and Windows-owned file picker content retain their standard layout; the application window icon is branded.
+
+Type checking and lint pass. Three targeted source scenarios and four targeted installed-executable scenarios pass, including actual valid/invalid Arduino compilation, backup restoration, launch/design and icon/cancellation behavior in actual main handlers. OS message-box presentation is intercepted during automated tests; no native-dialog screenshot is claimed. The full regression is not rerun for this branding-only patch. The 0.8.0 baseline of 203 domain tests and 47 installed scenarios remains separate, unchanged evidence.
+
+Installer: release/JECTIVE Robotics Studio Setup 0.8.1.exe; 151001942 bytes; SHA256 d9cfd101d30d220ccba5d95d64c551aa52ba40142fd07a792a1dfca1658ef00e; Authenticode NotSigned. Isolated installation and uninstallation on this existing Windows 11 workstation are recorded under evidence/releases/0.8.1. Source ZIP verification is external to the archive.
+
+This patch does not complete the master specification. Curriculum remains 23/60 draft trilingual lessons, with previously documented software/hardware acceptance outstanding.

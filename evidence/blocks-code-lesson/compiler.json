@@ -1,0 +1,75 @@
+{
+  "checkedAt": "2026-10-11T08:45:43.849Z",
+  "scope": "Actual Arduino CLI compilation for ESP32 reference, no upload or physical observation",
+  "results": [
+    {
+      "name": "starter",
+      "expected": "succeeded",
+      "result": {
+        "operationId": "fc7186f8-529f-44ef-8889-2c851296c946",
+        "state": "succeeded",
+        "sourceHash": "e4ab5b0cbbc74caf5c8b3283d31992e75ac8add69419c4263c00cb202a843e94",
+        "artifacts": [
+          "boot_app0.bin",
+          "sketch.ino.bin",
+          "sketch.ino.bootloader.bin",
+          "sketch.ino.elf",
+          "sketch.ino.merged.bin",
+          "sketch.ino.partitions.bin"
+        ],
+        "exitCode": 0,
+        "log": "Sketch uses 268924 bytes (20%) of program storage space. Maximum is 1310720 bytes.\nGlobal variables use 22116 bytes (6%) of dynamic memory, leaving 305564 bytes for local variables. Maximum is 327680 bytes.\n"
+      }
+    },
+    {
+      "name": "reference",
+      "expected": "succeeded",
+      "result": {
+        "operationId": "0ca821ea-a7fb-44d6-9f47-0b6e0f125018",
+        "state": "succeeded",
+        "sourceHash": "16a8e45a8273ad76b52cc3859b1624e246751da6775dd609ce66ebacac601efc",
+        "artifacts": [
+          "boot_app0.bin",
+          "sketch.ino.bin",
+          "sketch.ino.bootloader.bin",
+          "sketch.ino.elf",
+          "sketch.ino.merged.bin",
+          "sketch.ino.partitions.bin"
+        ],
+        "exitCode": 0,
+        "log": "Sketch uses 268924 bytes (20%) of program storage space. Maximum is 1310720 bytes.\nGlobal variables use 22116 bytes (6%) of dynamic memory, leaving 305564 bytes for local variables. Maximum is 327680 bytes.\n"
+      }
+    },
+    {
+      "name": "independent-edited-copy",
+      "expected": "succeeded",
+      "result": {
+        "operationId": "3f2c90de-ca17-40d7-b5ee-fa0fe799adff",
+        "state": "succeeded",
+        "sourceHash": "7f7cd9dd935c70b9a55ba6a1452b010c393e6ba8182a457483643cc9a1a84397",
+        "artifacts": [
+          "boot_app0.bin",
+          "sketch.ino.bin",
+          "sketch.ino.bootloader.bin",
+          "sketch.ino.elf",
+          "sketch.ino.merged.bin",
+          "sketch.ino.partitions.bin"
+        ],
+        "exitCode": 0,
+        "log": "Sketch uses 268924 bytes (20%) of program storage space. Maximum is 1310720 bytes.\nGlobal variables use 22116 bytes (6%) of dynamic memory, leaving 305564 bytes for local variables. Maximum is 327680 bytes.\n"
+      }
+    },
+    {
+      "name": "deliberate-missing-semicolon",
+      "expected": "failed",
+      "result": {
+        "operationId": "18a8c0bf-6ef8-4323-84e0-b5d9dd2005c8",
+        "state": "failed",
+        "sourceHash": "fc089034742e70ddc0c653df25bebc59ac7831f00cb92a2c1837ee474ff9ad16",
+        "artifacts": [],
+        "exitCode": 1,
+        "log": "C:\\Users\\Kabessov\\Documents\\GitHub\\jective_robotics\\.toolchain\\workspace\\builds\\18a8c0bf-6ef8-4323-84e0-b5d9dd2005c8\\sketch\\sketch.ino: In function 'void loop()':\nC:\\Users\\Kabessov\\Documents\\GitHub\\jective_robotics\\.toolchain\\workspace\\builds\\18a8c0bf-6ef8-4323-84e0-b5d9dd2005c8\\sketch\\sketch.ino:20:30: error: expected ';' before 'delay'\n   20 |   Serial.println(\"Code copy\")\n      |                              ^\n      |                              ;\n   21 |   // block:l37-loop-wait\n   22 |   delay(250);\n      |   ~~~~~                       \n\nUsed platform Version Path\nesp32:esp32   3.3.12  C:\\Users\\Kabessov\\Documents\\GitHub\\jective_robotics\\.toolchain\\workspace\\data\\packages\\esp32\\hardware\\esp32\\3.3.12\nError during build: exit status 1\n"
+      }
+    }
+  ]
+}

@@ -1,0 +1,5 @@
+import {it,expect} from 'vitest';
+import {processRepeatableRequest} from '../packages/content/repeatable-worker';
+const operationId='8ef015f9-37bb-44a5-97c8-d6039345ff2b';
+it('returns the actual bounded experiment under its request identity',()=>{const result=processRepeatableRequest({operationId,inputs:{seed:1,comparisonSeed:2,steps:10,noiseMeters:.05}});expect(result.operationId).toBe(operationId);expect(result.ok).toBe(true);if(result.ok){expect(result.report.runs.near.first).toHaveLength(10);expect(result.report.runs.near.sameSeedMatches).toBe(true);}});
+it('rejects malformed or excessive work without throwing or reflecting invalid identities',()=>{for(const value of [null,[],{operationId:'x'.repeat(3000)},{operationId,inputs:{seed:1,comparisonSeed:2,steps:100000,noiseMeters:.05}},{operationId,inputs:{seed:1,comparisonSeed:2,steps:10,noiseMeters:.05},extra:true}]){const result=processRepeatableRequest(value);expect(result.ok).toBe(false);if(!result.ok)expect(result.error.length).toBeLessThanOrEqual(2000);expect(result.operationId.length).toBeLessThanOrEqual(36);}});

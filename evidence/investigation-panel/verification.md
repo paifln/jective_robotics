@@ -1,0 +1,11 @@
+Source verification: 2026-10-11
+
+InvestigationPanel runs the bounded L48 worker, validates a report against both the consistency schema and requested inputs, and shows paired observations without assigning an overall winner. It provides a prior prediction, explicit world/seed/noise/repetition/duration controls, aggregate observations, selectable recorded-state pixel replay, a frame slider and a self-reported conclusion. Export retains the validated experiment and the learner notes. Prediction editing is disabled during execution and while a report exists. Conditions edits terminate any worker, clear report/conclusion and unlock the prediction. Unmount cleanup, operation identity guards and a 10-second timeout are implemented.
+
+The isolated source Electron UI fixture mounts the actual component with the actual worker. It verifies twelve strategy results from six pairs, recorded frame 299 at 6000 ms, a rendered canvas, actual downloaded report parsing, retained prediction/conclusion and explicit self-reported/physical-NOT-RUN provenance. It also verifies prediction lock/reset, old-result removal, insufficient-world rejection, 480px panel containment and an intentionally horizontally scrollable result table. No renderer page errors occurred. replay.png was inspected. This is not a catalog navigation or packaged app test.
+
+L48 theory draft contains six substantive paragraphs in EN/RU/KK, examples, activities, questions and evidence expectations. A unit test reruns the actual example: open/narrow worlds stop on invalid readings, wall near strategy sees a goal but its final state is outside it, early strategy does not see it. Draft translation review remains required.
+
+Typecheck, lint and source build passed. Full unit suite: 425 passed, 0 failed; 96.56% branch coverage. unit.json/coverage-summary.json preserve that run; ui.json is the final one-scenario isolated UI run, including the added prediction-lock assertions. source-hashes.json records the final files.
+
+Not yet complete: L48 checked activity/persistence, runnable catalog artifact, intro/quiz, registration, normal navigation, cancellation/superseded/timeout fixtures, new package and physical verification. Course remains 47/60 and immutable released 0.8.13 remains 46/60. No Windows 10, installer lifecycle, physical board or live OpenAI verification was performed.

@@ -1,0 +1,71 @@
+{
+  "checkedAt": "2026-10-11T19:59:12.922Z",
+  "scope": "Source Electron multi-file UI plus actual Arduino CLI; original helper retained edit, BIN/ELF hashes and source snapshot checked. Not installed app or physical hardware acceptance.",
+  "valid": {
+    "operationId": "39ee3fd0-6384-4084-8b11-a3c57fa2fc04",
+    "state": "succeeded",
+    "exitCode": 0,
+    "sourceHash": "5fa3530ec5efd8eacd46e176b3e62c00d44a7c4fd8cb4fb6df3022ea0ab6d531",
+    "manifestSha256": "e564ece353d2051a275923f22346c0f9e14a9a86ff3adb24eb8daa74924bbe32",
+    "sourceFileHashes": {
+      "sketch.ino": "6030e330220af755e3394ef73e64de5860abbba72dc7b5b118b463d60d40fd1a",
+      "behavior.cpp": "66976581a5a06dbc9844ede2335941f974ab65f71dd85810bba39c0ede0460a4",
+      "behavior.h": "b52c1e1c357cd281481bbd15d78bb81bb3a78ece96efd0e1c18e4c38d6216987",
+      "config.h": "65ebddc6cb5e550dd4a442df63ef372b46bba90b649e1e58419b1a641d15c22a"
+    },
+    "environment": {
+      "scope": "cli-selected-core-installed-tools-user-libraries-v2",
+      "sha256": "05d780d8394605ad310a76c978d1015bd0b80fcc80305f8c4d3852b23cfb5533",
+      "files": 59748,
+      "bytes": 6852176031
+    },
+    "artifacts": [
+      {
+        "name": "boot_app0.bin",
+        "bytes": 8192,
+        "sha256": "f94c5d786a7a8fab06ac5d10e33bf37711a6697636dc037559ea19cc410a17f0"
+      },
+      {
+        "name": "sketch.ino.bin",
+        "bytes": 269120,
+        "sha256": "d75123ef63af14c969f132222a3aa3f9287d695e257bc2943a3cd95a77732947"
+      },
+      {
+        "name": "sketch.ino.bootloader.bin",
+        "bytes": 24992,
+        "sha256": "47bbbfca119fe87190f63a67af9d85adff6433bcf3812ec92a9b9c9416a53ad1"
+      },
+      {
+        "name": "sketch.ino.elf",
+        "bytes": 5686720,
+        "sha256": "ea13b72e733d1c4d81adfe3f3b83a5a7b98126c376136ea4ceccf7ec9ed456df"
+      },
+      {
+        "name": "sketch.ino.merged.bin",
+        "bytes": 4194304,
+        "sha256": "a6b7ae960111de28e26df835be396e421ee3abbf16c697dafd4afd2f0df50388"
+      },
+      {
+        "name": "sketch.ino.partitions.bin",
+        "bytes": 3072,
+        "sha256": "148b959cbff1c38aa8e1d5c0ba9d612c54997b945e56a63f41223eef650653a1"
+      }
+    ]
+  },
+  "invalid": {
+    "operationId": "40318dfb-6e57-4cc8-8c4a-c7dded43a2c9",
+    "state": "failed",
+    "exitCode": 1,
+    "artifacts": [],
+    "unknownPhaseDiagnostic": true,
+    "environment": {
+      "scope": "cli-selected-core-installed-tools-user-libraries-v2",
+      "sha256": "05d780d8394605ad310a76c978d1015bd0b80fcc80305f8c4d3852b23cfb5533",
+      "files": 59748,
+      "bytes": 6852176031
+    }
+  },
+  "upload": "NOT RUN",
+  "physical": "NOT RUN",
+  "previousIntegrityFailure": "Preserved; root cause unresolved, one successful rerun does not establish absence of intermittent defect."
+}

@@ -1,0 +1,154 @@
+{
+  "scope": "source Electron fresh-process/fresh-workspace launch; OS cache not cleared; Playwright overhead included",
+  "host": {
+    "platform": "win32",
+    "release": "10.0.26200",
+    "cpu": "AMD Ryzen 5 5600H with Radeon Graphics         ",
+    "logicalCores": 12,
+    "memoryGiB": 15.345630645751953
+  },
+  "rendererSha256": "01cead8617b8d49b5b0e5ff6926c42661d21721905cc38582701531b94377765",
+  "runs": [
+    {
+      "run": 1,
+      "launchMs": 2808.3856,
+      "workingSetMiB": 738.9375,
+      "processMemory": [
+        {
+          "type": "Browser",
+          "workingSetKiB": 162264
+        },
+        {
+          "type": "GPU",
+          "workingSetKiB": 168420
+        },
+        {
+          "type": "Utility",
+          "workingSetKiB": 95676
+        },
+        {
+          "type": "Tab",
+          "workingSetKiB": 232904
+        },
+        {
+          "type": "Utility",
+          "workingSetKiB": 97408
+        }
+      ]
+    },
+    {
+      "run": 2,
+      "launchMs": 2563.9193999999998,
+      "workingSetMiB": 738.12890625,
+      "processMemory": [
+        {
+          "type": "Browser",
+          "workingSetKiB": 162272
+        },
+        {
+          "type": "GPU",
+          "workingSetKiB": 168248
+        },
+        {
+          "type": "Utility",
+          "workingSetKiB": 95576
+        },
+        {
+          "type": "Tab",
+          "workingSetKiB": 232388
+        },
+        {
+          "type": "Utility",
+          "workingSetKiB": 97360
+        }
+      ]
+    },
+    {
+      "run": 3,
+      "launchMs": 2245.5005,
+      "workingSetMiB": 738.22265625,
+      "processMemory": [
+        {
+          "type": "Browser",
+          "workingSetKiB": 163232
+        },
+        {
+          "type": "GPU",
+          "workingSetKiB": 168612
+        },
+        {
+          "type": "Utility",
+          "workingSetKiB": 95632
+        },
+        {
+          "type": "Tab",
+          "workingSetKiB": 231100
+        },
+        {
+          "type": "Utility",
+          "workingSetKiB": 97364
+        }
+      ]
+    },
+    {
+      "run": 4,
+      "launchMs": 2619.8359,
+      "workingSetMiB": 739.48828125,
+      "processMemory": [
+        {
+          "type": "Browser",
+          "workingSetKiB": 162740
+        },
+        {
+          "type": "GPU",
+          "workingSetKiB": 169492
+        },
+        {
+          "type": "Utility",
+          "workingSetKiB": 96588
+        },
+        {
+          "type": "Tab",
+          "workingSetKiB": 231036
+        },
+        {
+          "type": "Utility",
+          "workingSetKiB": 97380
+        }
+      ]
+    },
+    {
+      "run": 5,
+      "launchMs": 2266.729300000001,
+      "workingSetMiB": 741.4140625,
+      "processMemory": [
+        {
+          "type": "Browser",
+          "workingSetKiB": 166688
+        },
+        {
+          "type": "GPU",
+          "workingSetKiB": 168924
+        },
+        {
+          "type": "Utility",
+          "workingSetKiB": 95652
+        },
+        {
+          "type": "Tab",
+          "workingSetKiB": 230592
+        },
+        {
+          "type": "Utility",
+          "workingSetKiB": 97352
+        }
+      ]
+    }
+  ],
+  "medianLaunchMs": 2563.9193999999998,
+  "comparisonWith8sTarget": "WITHIN TARGET ON THIS HOST",
+  "requiredBaselineAcceptance": "NOT VERIFIED",
+  "idle30MinuteMemory": "NOT RUN",
+  "block500EditP95": "NOT RUN",
+  "worldFPS": "NOT RUN"
+}

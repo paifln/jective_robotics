@@ -1,0 +1,35 @@
+{
+  "checkedAt": "2026-10-11T20:10:08.797Z",
+  "scope": "Isolated current-source Windows x64 unpacked directory; not new installer or complete installed learner acceptance",
+  "version": "0.8.18 snapshot, distinct from published installer",
+  "host": "Windows11Pro26200x64",
+  "resources": 273,
+  "audioRecordings": 136,
+  "startup": {
+    "rendererInitialized": true,
+    "elapsedMs": 1523
+  },
+  "singleInstance": {
+    "secondExitCode": 0,
+    "firstStillRunning": true
+  },
+  "asarTamperRejected": true,
+  "archiveRestored": true,
+  "archiveSha256": "f56b862f2bc3b7792a9d774bcb3923b6e22fee150208694a2159c7cde1753f90",
+  "exeSha256": "e03e6602a4c9af37c1a59878086d204d027f229602c69a7e3791151ea1fa15a8",
+  "workerFixture": "PASS under matching external Electron host;4files/92bytes,not realcompiler",
+  "serialEnumeration": {
+    "state": "PASS",
+    "count": 2,
+    "source": "Actual packaged serialport module, OS list; no port opened, identifiers omitted"
+  },
+  "publishedInstaller": {
+    "unchanged": true,
+    "bytes": 152508049,
+    "sha256": "8de7b4fddb70c34d21e8eaee78c257ba618618cf69a84a3d8935d1bf3f480897"
+  },
+  "installerLifecycle": "NOT RUN",
+  "windows10": "NOT RUN",
+  "physicalUpload": "NOT RUN",
+  "packagedCompilerGUI": "NOT RUN"
+}

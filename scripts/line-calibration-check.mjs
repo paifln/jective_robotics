@@ -1,0 +1,12 @@
+import {build} from 'esbuild';
+import {mkdir,readFile,writeFile} from 'node:fs/promises';
+import {createHash} from 'node:crypto';
+await mkdir('test-results/line-calibration',{recursive:true});
+await build({entryPoints:['packages/content/line-calibration.ts'],outfile:'test-results/line-calibration/model.cjs',bundle:true,platform:'node',format:'cjs'});
+const {lineCalibrationExample,justifyLineThreshold,classifyLine}=await import('../test-results/line-calibration/model.cjs');
+const actual=lineCalibrationExample(),revision=justifyLineThreshold(actual.dark.map(sample=>sample.reflectance),actual.light.map(sample=>sample.reflectance),.5,'Choose the midpoint between the recorded ideal dark and light samples.');
+const sourceHashes={};for(const path of ['packages/content/line-calibration.ts','packages/content/line-calibration-artifact.ts','packages/content/lesson-line-calibration.ts','packages/content/lessons.ts','packages/content/knowledge-check.ts','tests/e2e/line-calibration.spec.ts','apps/desktop/renderer/LineCalibrationPanel.tsx','apps/desktop/renderer/ContentPanel.tsx','packages/simulator/index.ts','tests/line-calibration.test.ts','scripts/line-calibration-check.mjs'])sourceHashes[path]=createHash('sha256').update(await readFile(path)).digest('hex');
+await mkdir('evidence/line-calibration',{recursive:true});
+await writeFile('evidence/line-calibration/samples.json',JSON.stringify({actual,referenceRevision:revision,declaredProbeValues:[0,.25,.5,.75,1,null].map(value=>({value,classification:classifyLine(value,actual.calibration)}))},null,2));
+await writeFile('evidence/line-calibration/verification.json',JSON.stringify({status:'DOMAIN VERIFIED; L27 AUTHORED DRAFT; SOURCE WORKER VERIFIED',sourceHashes,scope:'Actual ideal-model sample positions; separately declared probe values and reference rationale, not learner submission or measured noise',physicalVerification:'NOT RUN'},null,2));
+console.log('Line calibration samples and source verification saved.');

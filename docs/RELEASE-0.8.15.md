@@ -1,0 +1,11 @@
+# JECTIVE Robotics Studio 0.8.15
+
+Adds L49 requirement-to-test planning and L50 compiler investigation with substantive English, Russian and Kazakh theory and saved exercises. L49 distinguishes a learner-authored plan from an executed or certified test. L50 opens four independent source/profile examples in the ordinary Studio, teaches error causes and uses the actual compiler. Reports preserve requested source, resolved profile, raw compiler log, exit result and artifacts, even after subsequent editing. Opening a new investigation clears the previous visible result. Studio connection actions are collapsed; error navigation is bound to the current build directory rather than an external same-name file.
+
+Source verification: 438 tests across 154 files, 96.6% branches; typecheck/lint/full coverage pass before metadata bump. Normal Electron tests exercise all four real failed/edited-successful compiler pairs, actual downloaded reports, saved matching answers and RU/KK correction controls. A broader learner journey opens all 50 introductions and checks animation, themes, editor, simulator, languages and reviewed-source application. Source build and three Studio/L49/L50 compatibility scenarios pass after metadata bump. Light/dark and Kazakh 800px captures inspected.
+
+Staged package checks pass on Windows 11 Pro build 26200: startup/workspace IPC, single instance, seven security fuses, source/package asset and bundled Arduino CLI equality, all eight workers, and intentional ASAR one-byte tamper rejection/restoration. Full and production audits report zero known vulnerabilities at preparation. This does not prove clean installation/uninstallation, Windows 10, physical upload or motor/sensor behavior, live OpenAI, or full packaged learner UI; those remain NOT RUN.
+
+Installer: [JECTIVE Robotics Studio Setup 0.8.15.exe](../release/JECTIVE%20Robotics%20Studio%20Setup%200.8.15.exe), 152,307,757 bytes. SHA256: `81f7e6d716e0453f3d79e3fb33a0a9f5e866df14d5a32457948c2ef04c492689`. Authenticode: NotSigned. The published 0.8.14 installer remains unchanged.
+
+Course: 50/60 draft lessons. L51-L60, independent technical language review and remaining master acceptance are incomplete. [Verification evidence](../evidence/releases/0.8.15/verification.json).

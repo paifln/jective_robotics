@@ -1,0 +1,17 @@
+import {build} from 'esbuild';
+import {mkdir,writeFile,readFile} from 'node:fs/promises';
+import {createHash} from 'node:crypto';
+await mkdir('test-results/square-route',{recursive:true});
+await build({entryPoints:['packages/content/square-route.ts'],outfile:'test-results/square-route/model.cjs',bundle:true,platform:'node',format:'cjs'});
+const {squareRouteDefaults,compareSquareRevision,squareRouteTrials}=await import('../test-results/square-route/model.cjs');
+const comparison=compareSquareRevision(squareRouteDefaults,{...squareRouteDefaults,turnMs:1180},'The nominal quarter-turn was short at 1000 ms. Increase only turn duration to 1180 ms, then compare repeated endpoint and heading errors. This justification belongs to the reference experiment, not to a student submission.');
+const geometry=squareRouteTrials({...squareRouteDefaults,turnMs:1180,trackMeters:.2});
+const commandAsymmetry=squareRouteTrials({...squareRouteDefaults,turnMs:1180,rightCommandOffset:3});
+if(comparison.revision.summary.meanEndpointErrorMeters>=comparison.baseline.summary.meanEndpointErrorMeters)throw new Error('SQUARE_REFERENCE_NOT_IMPROVED');
+const sourceHashes={};
+for(const path of ['packages/content/square-route.ts','packages/content/square-route-artifact.ts','packages/content/lesson-square-route.ts','packages/content/lessons.ts','packages/content/knowledge-check.ts','apps/desktop/renderer/SquareRoutePanel.tsx','apps/desktop/renderer/ContentPanel.tsx','packages/simulator/index.ts','tests/square-route.test.ts','tests/e2e/square-route.spec.ts','scripts/square-route-check.mjs'])sourceHashes[path]=createHash('sha256').update(await readFile(path)).digest('hex');
+await mkdir('evidence/square-route',{recursive:true});
+await writeFile('evidence/square-route/traces.json',JSON.stringify({comparison,geometry,commandAsymmetry},null,2));
+const report={status:'DOMAIN EXPERIMENT VERIFIED; L24 AUTHORED DRAFT',uiScope:'L24 laboratory; source Electron UI/worker verification separately recorded',packaging:'Unpackaged source changes after immutable 0.8.1 release',sourceHashes,baselineEndpointErrorMeters:comparison.baseline.summary.meanEndpointErrorMeters,revisedEndpointErrorMeters:comparison.revision.summary.meanEndpointErrorMeters,geometryEndpointErrorMeters:geometry.summary.meanEndpointErrorMeters,asymmetryEndpointErrorMeters:commandAsymmetry.summary.meanEndpointErrorMeters,repeatability:'Identical deterministic inputs yield identical traces; not measured hardware repeatability',physicalVerification:'NOT RUN'};
+await writeFile('evidence/square-route/verification.json',JSON.stringify(report,null,2));
+console.log(JSON.stringify(report,null,2));

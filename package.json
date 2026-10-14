@@ -1,0 +1,124 @@
+{
+  "name": "jective-robotics-studio",
+  "version": "0.8.18",
+  "private": true,
+  "description": "Offline robotics desktop IDE",
+  "author": "JECTIVE",
+  "license": "UNLICENSED",
+  "main": "dist/main.cjs",
+  "scripts": {
+    "github:check": "node scripts/github-check.mjs",
+    "assistant:start": "node services/assistant/server.mjs",
+    "assistant:test": "node --test tests/assistant-gateway.node.mjs tests/assistant-server-hardening.node.mjs",
+    "architecture:check": "node scripts/architecture-check.mjs",
+    "architecture:test": "node --test tests/architecture-boundaries.node.mjs",
+    "build": "node scripts/build.mjs",
+    "start": "npm run build && node scripts/start.mjs",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint apps packages services tests scripts",
+    "test": "vitest run",
+    "test:integration": "vitest run tests/integration.test.ts",
+    "test:e2e": "npm run build && playwright test",
+    "firmware:check": "node scripts/compiler-check.mjs",
+    "functions:check": "node scripts/functions-lesson-check.mjs",
+    "pwm:check": "node scripts/pwm-check.mjs",
+    "distance:check": "node scripts/distance-check.mjs",
+    "print-value:check": "node scripts/print-value-check.mjs",
+    "content:validate": "node scripts/content-check.mjs",
+    "package": "npm run build && electron-builder --win nsis --x64",
+    "release:verify": "npm run security:audit && npm run architecture:test && npm run assistant:test && npm run requirements:check && npm run audio:test && npm run typecheck && npm run lint && npm test && npm run test:coverage && npm run content:validate && npm run firmware:check && npm run test:e2e",
+    "evidence": "node scripts/evidence.mjs",
+    "inventory": "node scripts/inventory.mjs",
+    "firmware:runtime": "node scripts/runtime-check.mjs",
+    "firmware:safety": "node scripts/safety-check.mjs",
+    "firmware:timing": "node scripts/timing-check.mjs",
+    "firmware:expressions": "node scripts/expression-check.mjs",
+    "toolchain:bundle": "node scripts/offline-bundle.mjs",
+    "toolchain:verify": "node scripts/offline-check.mjs",
+    "test:coverage": "vitest run --coverage",
+    "motor-model:check": "node scripts/motor-model-check.mjs",
+    "motor-ramp:check": "node scripts/motor-ramp-check.mjs",
+    "audio:check": "node scripts/lesson-audio-check.mjs",
+    "security:audit": "npm audit --audit-level=high",
+    "audio:test": "node --test tests/audio-catalog.node.mjs",
+    "requirements:check": "node scripts/requirements-check.mjs"
+  },
+  "dependencies": {
+    "blockly": "13.3.0",
+    "fflate": "0.8.3",
+    "monaco-editor": "0.57.0",
+    "react": "19.3.0",
+    "react-dom": "19.3.0",
+    "serialport": "13.0.0",
+    "zod": "4.3.6"
+  },
+  "devDependencies": {
+    "@electron/asar": "3.4.1",
+    "@electron/fuses": "1.8.0",
+    "@playwright/test": "1.58.2",
+    "@types/node": "24.10.1",
+    "@types/react": "19.2.7",
+    "@types/react-dom": "19.2.3",
+    "@vitest/coverage-v8": "5.0.3",
+    "electron": "44.7.0",
+    "electron-builder": "26.15.3",
+    "esbuild": "0.28.2",
+    "eslint": "10.12.0",
+    "typescript": "5.9.3",
+    "typescript-eslint": "8.71.1",
+    "vitest": "5.0.3"
+  },
+  "build": {
+    "appId": "org.jective.robotics.studio",
+    "productName": "JECTIVE Robotics Studio",
+    "directories": {
+      "output": "release"
+    },
+    "asar": true,
+    "electronFuses": {
+      "runAsNode": false,
+      "enableCookieEncryption": true,
+      "enableNodeOptionsEnvironmentVariable": false,
+      "enableNodeCliInspectArguments": false,
+      "enableEmbeddedAsarIntegrityValidation": true,
+      "onlyLoadAppFromAsar": true,
+      "grantFileProtocolExtraPrivileges": false
+    },
+    "files": [
+      "dist/**/*",
+      "package.json"
+    ],
+    "extraResources": [
+      {
+        "from": ".toolchain/bin",
+        "to": "tools",
+        "filter": [
+          "arduino-cli.exe"
+        ]
+      }
+    ],
+    "win": {
+      "target": [
+        "nsis"
+      ],
+      "icon": "assets/jective.ico",
+      "signExecutable": false
+    },
+    "nsis": {
+      "oneClick": false,
+      "perMachine": false,
+      "allowToChangeInstallationDirectory": true,
+      "deleteAppDataOnUninstall": false,
+      "installerIcon": "assets/jective.ico",
+      "uninstallerIcon": "assets/jective.ico",
+      "installerHeader": "assets/installer-header.bmp",
+      "installerSidebar": "assets/installer-sidebar.bmp",
+      "uninstallerSidebar": "assets/installer-sidebar.bmp"
+    },
+    "npmRebuild": false
+  },
+  "overrides": {
+    "dompurify": "3.4.16",
+    "global-agent": "4.1.3"
+  }
+}

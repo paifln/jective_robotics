@@ -1,0 +1,19 @@
+{
+  "scope": "Unpackaged source build; two targeted Electron scenarios and three fixed host-controller comparisons. Not full-suite, installed or physical acceptance.",
+  "unitPassed": 193,
+  "targetedElectronPassed": 2,
+  "typecheck": "passed",
+  "lint": "passed",
+  "build": "passed",
+  "curriculum": "20/60 draft lessons; 40 remaining",
+  "contentGate": "NOT COMPLETE: requires 60 lessons and human technical language review",
+  "sourceSHA256": {
+    "packages/content/lesson-motor-test.ts": "c9c6edee7da0d4b0b7ea511a40a2395a91c681d34e652c44bdd3d8982de63bee",
+    "packages/content/lessons.ts": "54b9f4badd1a9dbb7d90e4ded16e117ecfe0b3c49250a671b46b41eac105b05b",
+    "packages/content/worksheets.ts": "dd2cb2e14c90c9777f9112a6ac5d3cfe51d783df21e4007285c1112d415cc557",
+    "packages/content/knowledge-check.ts": "d13d4bd52f273ba68621624b944fe192c7f4d7572a158cd78082065244b37078",
+    "apps/desktop/renderer/MotorSafetyPanel.tsx": "0197b0666d280bceed969bf436afe5b8f6d2ab191cd5da04b3c03a7261cfd321",
+    "apps/desktop/renderer/ContentPanel.tsx": "f454cb6483d04c828d7fe3035625093e120f44b597f93d56ed36d89a77e860c8",
+    "tests/e2e/motor-safety.spec.ts": "f41d1b8a072527dce26fd1e8fe54d64f11f07a2571a7bea1cf68ffa46228d268"
+  }
+}

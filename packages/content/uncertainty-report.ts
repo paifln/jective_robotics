@@ -1,0 +1,13 @@
+import {z} from 'zod';
+import {WorldSchema,RobotStateSchema} from '../simulator';
+import {createRepeatableWorld} from './repeatable-experiment';
+import {MeasurementSeriesSchema,UncertaintyInputSchema,stationaryProgram,summarizeMeasurements} from './sensor-uncertainty';
+const canonical=(value:unknown)=>JSON.stringify(value,(_key,item:unknown)=>item!==null&&typeof item==='object'&&!Array.isArray(item)?Object.fromEntries(Object.entries(item).sort(([a],[b])=>a.localeCompare(b))):item);
+const summary=z.object({count:z.number().int().min(1).max(300),validCount:z.number().int().min(0).max(300),missingCount:z.number().int().min(0).max(300),minimum:z.number().finite().nullable(),maximum:z.number().finite().nullable(),mean:z.number().finite().nullable(),span:z.number().finite().nullable(),meanError:z.number().finite().nullable()}).strict();
+export const EnteredMeasurementReportSchema=z.object({origin:z.literal('learner-entered'),units:z.object({distance:z.literal('m')}).strict(),inputs:MeasurementSeriesSchema,summary,physicalVerification:z.literal('NOT RUN')}).strict().superRefine((value,ctx)=>{if(canonical(value.summary)!==canonical(summarizeMeasurements(value.inputs)))ctx.addIssue({code:'custom',message:'SUMMARY_MISMATCH'});});
+export const UncertaintyReportSchema=z.object({schemaVersion:z.literal(1),lessonId:z.literal('L46'),origin:z.literal('block-simulation'),units:z.object({distance:z.literal('m'),time:z.literal('ms')}).strict(),inputs:UncertaintyInputSchema,world:WorldSchema,program:z.unknown().refine(value=>canonical(value)===canonical(stationaryProgram),'PROGRAM_MISMATCH'),referenceMeters:z.literal(1.5),readings:MeasurementSeriesSchema.shape.readings,summary,trace:z.array(RobotStateSchema).min(1).max(300),physicalVerification:z.literal('NOT RUN')}).strict().superRefine((report,ctx)=>{
+ if(canonical(report.world)!==canonical(createRepeatableWorld(report.inputs.seed,report.inputs.noiseMeters)))ctx.addIssue({code:'custom',message:'WORLD_INPUT_MISMATCH'});
+ if(report.readings.length!==report.inputs.samples||report.trace.length!==report.inputs.samples)ctx.addIssue({code:'custom',message:'SAMPLE_COUNT_MISMATCH'});
+ if(report.trace.some((state,i)=>state.timeMs!==(i+1)*20||state.distance!==report.readings[i]||state.pose.x!==report.world.start.x||state.pose.y!==report.world.start.y||state.pose.heading!==report.world.start.heading||state.collision||state.left!==0||state.right!==0))ctx.addIssue({code:'custom',message:'TRACE_MISMATCH'});
+ if(canonical(report.summary)!==canonical(summarizeMeasurements({referenceMeters:report.referenceMeters,readings:report.readings})))ctx.addIssue({code:'custom',message:'SUMMARY_MISMATCH'});
+});

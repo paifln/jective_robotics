@@ -1,0 +1,9 @@
+L51 source progress, following published 0.8.15
+
+Registered substantive English/Russian/Kazakh theory and checks, four authored communication reference cases, a staged animated investigation diagram, and saved/exportable learner notes. Structural completion is self-reported; references do not use a physical device. Notes distinguish observation, hypothesis, next check, inference limits and optional results.
+
+Typecheck, lint and build pass. Full suite: 448 tests passed; branch coverage 96.68%. Tests verify actual SQLite backup rejection of a forged checked state while preserving original records. Custom communication and requirement-matrix records receive domain validation on both stored reads and backup inspection. The L52 motor-driver substitution foundation reviews role changes, retains other assigned components, rejects unknown roles and detects missing, duplicate, cross-component, reserved and unsupported pin assignments. A valid mapping still requires source-driver review and does not authorize hardware.
+
+Normal L51 catalog Electron UI passes incomplete/full record review, actual downloaded JSON, persisted notes reload, reference-only provenance, EN/RU/KK labels and responsive bounds. Light 800px and dark 640px controls and fields were visually inspected; cramped initial form layout was corrected. Broader learner navigation covers all 51 introductions, animations, themes, large Studio editor and simulator. UI receipts and downloaded notes are retained; no test creates a live hardware result.
+
+Content gate remains failing: 51/60 lessons and human technical translation review outstanding. Actual physical communication faults, Windows 10, clean installation and live OpenAI verification have NOT RUN for this change. Published 0.8.15 installer and release evidence remain unchanged. Next finish L52 substantive theory and interactive project substitution, persistence/export/compatibility verification, then L53-L60 and remaining master gates.

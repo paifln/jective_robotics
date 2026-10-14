@@ -1,0 +1,9 @@
+# Timed simulated button inputs — unpublished work
+
+World JSON now supports optional `buttonEvents`, an ordered array of `{timeMs, pressed}` changes. It is limited to 2000 entries, whole milliseconds from 0 through 119999, strict boolean values and strictly increasing timestamps. Unknown properties, duplicate timestamps and unsorted timelines are rejected. The initial button still defaults released; an event at time zero overrides it. Empty or absent timelines preserve previous behavior.
+
+The robot interpreter consumes all changes at or before its current simulation time when reading the button. A long wait therefore resumes with the latest value rather than replaying old inputs as new presses. Execution is sampled in 20 ms simulation ticks: shorter pulses between reads may be missed. This is an explicit input model, not a claim about physical contacts or measured bounce. Ten repeats of the same timeline produce identical canonical states and logs.
+
+Three added unit tests cover exact and between-tick timestamps, multiple changes during waits, initial values, ten-repeat determinism and malformed/oversized timelines. All 140 unit tests pass; aggregate package branch coverage is 1002/1086 (92.26%), with unchanged per-file thresholds. Typecheck, lint and build pass. A targeted source Electron test applies and exports the actual scheduled scenario, preserving events and simulation origin. The UI explains that the checkbox sets only the initial value when a timeline is present; the message has draft Russian and Kazakh translations.
+
+This provides infrastructure for L12/L13, but neither lesson is authored yet. The earlier full 26-test source regression predates this feature; only the targeted scenario UI test has been repeated afterward. No updated installer has been produced. Physical button verification is NOT RUN.

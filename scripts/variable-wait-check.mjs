@@ -1,0 +1,20 @@
+import {spawn} from 'node:child_process';
+import {mkdir,writeFile} from 'node:fs/promises';
+import {resolve} from 'node:path';
+import {build} from 'esbuild';
+const root='test-results/variable-wait';await mkdir(root,{recursive:true});
+await build({entryPoints:['packages/codegen/index.ts'],outfile:root+'/codegen.cjs',platform:'node',format:'cjs',bundle:true});
+const {generate}=await import('../test-results/variable-wait/codegen.cjs');
+const program={setup:[{kind:'set',name:'interval_ms',value:{kind:'number',value:240}}],loop:[{kind:'waitValue',value:{kind:'variable',name:'interval_ms'}}]};
+const source=generate(program,null);
+await writeFile(root+'/Arduino.h','#pragma once\n#include <cstdint>\ninline unsigned long recordedDelay=0;\ninline int calls=0;\ninline void delay(unsigned long value){recordedDelay=value;++calls;}\nstruct StubSerial {void begin(int){} void println(const char*){}};\ninline StubSerial Serial;\n');
+await writeFile(root+'/test.cpp',source+'\n#include <cassert>\nint main(){setup();loop();assert(calls==1 && recordedDelay==240);for(double value:{-1.0,0.5,60001.0}){jv_interval_ms=value;loop();assert(calls==1);}assert(!j_wait_ms(NAN));assert(!j_wait_ms(INFINITY));}\n'.replace('#include <cassert>','#include <cassert>\n#include <initializer_list>'));
+async function run(executable,args){return new Promise((done,reject)=>{let log='';const child=spawn(executable,args,{shell:false,windowsHide:true});child.stdout.on('data',d=>log+=d);child.stderr.on('data',d=>log+=d);child.once('error',reject);child.once('exit',code=>done({code,log}));});}
+const compile=await run(resolve('.toolchain/host/zig-x86_64-windows-0.15.2/zig.exe'),['c++','-std=c++17','-O2','-UNDEBUG','-include','tests/firmware/assertions-required.h','-I',root,root+'/test.cpp','-o',root+'/test.exe']);
+const execute=compile.code===0?await run(resolve(root+'/test.exe'),[]):null;
+await build({entryPoints:['packages/toolchain/index.ts'],outfile:root+'/toolchain.cjs',platform:'node',format:'cjs',bundle:true});
+const {ToolchainService}=await import('../test-results/variable-wait/toolchain.cjs');
+const service=new ToolchainService(resolve('.toolchain/bin/arduino-cli.exe'),resolve('.toolchain/workspace'));
+const arduino=await service.compile({schemaVersion:1,id:crypto.randomUUID(),name:'Variable wait compiler fixture',profileId:'esp32-devkit-reference',mode:'code',source,workspace:{},revision:0});
+await writeFile(root+'/verification.json',JSON.stringify({program,source,compile,execute,arduino,scope:'Generated C++ host execution with explicit delay stub and actual ESP32 compilation. Upload and hardware NOT RUN.'},null,2));
+console.log(compile.log,'Host execution: '+execute?.code,'ESP32 compile: '+arduino.state);if(compile.code!==0||execute?.code!==0||arduino.state!=='succeeded')process.exitCode=1;

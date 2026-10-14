@@ -1,0 +1,7 @@
+# Classroom timer mini-project
+
+Current source contains L06 with 731 learner-facing English words, complete draft Kazakh/Russian translations, three assessments, a deliberately defective starter and a corrected reference. The project combines labelled messages and an indicator in work/break phases. The lesson requires three timing cases, preserved failing evidence, a justified repair, an actual portable project and a reflection. The starter prints BREAK without switching the indicator off; the reference adds the missing transition.
+
+TypeScript and ESLint passed; all 41 unit/integration tests passed. A dedicated test verifies the starter defect and corrected phase times for 500/500, 600/400 and 200/800 millisecond cases. The Electron test loads the actual reference, exports a portable archive through the bridge, reads and validates the file, checks the recorded waits and OFF instruction, imports it after an unsaved title change and executes the imported blocks through the real simulation worker. It observes the expected OFF event at 600 milliseconds. Reports are in `evidence/wip-l06`.
+
+The working tree now has six authored lessons; 54 required lessons and technical language review remain missing. Simulation is the verified execution scope for this lesson. Hardware upload and physical timing tests were not run. Published 0.2.0 artifacts retain their two-lesson snapshot and are unchanged.

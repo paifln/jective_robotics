@@ -1,0 +1,7 @@
+# Explicit profile version selection
+
+Changing to another version of the same profile ID now requires a localized confirmation showing previous and proposed versions. Dismissing it preserves the old binding and source. Acceptance changes the embedded definition/hash, clears logical wiring and invalidates the displayed build. A visible Studio notice states these consequences. The selector also rejects a pending asynchronous selection if another selection supersedes it or the project ID changes before hashing completes.
+
+A real Electron scenario imports two versions with GPIO4/GPIO5, selects the first, dismisses the version change and verifies unchanged source, then accepts the change and verifies GPIO5 source and the new version/definition in SQLite recovery. It and the custom project save/reopen scenario passed in 9.1 seconds. Type checking and lint passed. Real compiler execution was not enabled for this latest run; earlier compilation evidence remains separate.
+
+This provides explicit version selection, not a complete reviewed-migration workflow. Applying the detailed comparison result, requiring a fresh wiring review, migration audit records and asynchronous selection fault fixtures remain work to complete. Physical verification and the full master specification remain incomplete. Published 0.4.0 artifacts are unchanged. E2E evidence is retained in evidence/wip-profile-version-selection/e2e.json.

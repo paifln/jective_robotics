@@ -1,0 +1,138 @@
+/* Shared desktop chrome. Reading size remains a separate learner preference. */
+body[data-theme="light"]{--page:#f4f5f7;--surface:#fff;--field:#f1f2f5;--ink:#20232b;--muted:#626875;--line:#e1e4ea;--accent:#211dff}
+body[data-theme="dark"]{--page:#14161b;--surface:#1c1f26;--field:#272b34;--ink:#edf0f6;--muted:#a6adbb;--line:#343945;--accent:#aaa6ff}
+body{font-family:"Segoe UI Variable","Segoe UI",Manrope,sans-serif;letter-spacing:-.01em}
+button,input,select,textarea{font-family:inherit}
+button{box-shadow:none!important;transition:background-color .14s ease,color .14s ease}
+body[data-theme] main>header{background:var(--surface)!important;border-bottom:1px solid var(--line);box-shadow:none;padding-inline:24px}
+main>header>label{font-size:11px;color:var(--muted);gap:8px}
+main>header select{font-size:12px;min-height:34px;border-radius:6px;padding:6px 10px}
+main>header .help-menu>button{font-size:12px;min-height:34px;border-radius:6px;padding:6px 12px}
+body[data-theme] main>header>button{background:transparent!important;color:var(--ink)!important;border:0;border-radius:7px}
+body[data-theme] main>header>button:hover{background:var(--field)!important}
+body[data-theme] main>nav.student-navigation{background:var(--surface)!important;border-right:1px solid var(--line);padding:14px 10px;gap:5px}
+body[data-theme] main>nav.student-navigation button{border:0;border-radius:7px;background:transparent!important;color:var(--muted)!important;font-size:13px;font-weight:550;min-height:42px;padding:10px 12px;box-shadow:none!important}
+body[data-theme] main>nav.student-navigation button:hover{background:var(--field)!important;color:var(--ink)!important}
+body[data-theme] main>nav.student-navigation button[aria-pressed=true]{background:var(--field)!important;color:var(--accent)!important;font-weight:750;box-shadow:inset 3px 0 var(--accent)!important}
+main>nav.student-navigation button svg{width:20px;height:20px}
+.feature.content,.feature.student-projects{margin:0;background:var(--surface);padding:22px 28px;min-height:calc(100dvh - 84px)}
+.feature.content>h2,.feature.student-projects>h2{font-size:21px;font-weight:750;letter-spacing:-.035em;margin:0 0 12px}
+.content .library-info{font-size:11px;color:var(--muted);margin-bottom:12px}
+.content>.toolbar{gap:4px;margin:0 0 14px;padding:0;border-bottom:1px solid var(--line)}
+body[data-theme] .content>.toolbar>button{background:transparent!important;color:var(--muted)!important;border:0;border-bottom:2px solid transparent;border-radius:0;padding:12px 14px;font-size:12px}
+body[data-theme] .content>.toolbar>button[aria-pressed=true]{background:transparent!important;color:var(--accent)!important;border-bottom-color:var(--accent);font-weight:750}
+.content>.toolbar>label{margin-left:auto;font-size:11px;gap:8px}
+.content>.toolbar input{min-height:32px;border-radius:6px;max-width:180px}
+.content .lesson-recommendation{font-size:11px;margin:12px 0 18px;gap:8px}
+.content .library-layout{gap:22px}
+.content .library-layout>aside{padding-right:16px;max-height:calc(100dvh - 250px)}
+.content .library-layout>aside button{font-size:12px;line-height:1.55;padding:11px 12px!important;margin:0!important;border-radius:5px!important}
+.content .library-layout>aside button small{font-size:10px;opacity:.8}
+.content .library-layout>article{padding:4px 12px 32px}
+.lesson-heading h3{font-size:26px!important;font-weight:750;line-height:1.35;letter-spacing:-.04em}
+.lesson-heading{margin-bottom:18px;gap:18px}
+.content .library-layout>article h4{letter-spacing:-.025em;font-weight:750}
+.content .lesson-badge,.content .lesson-duration{font-size:12px!important;line-height:1.6!important;color:var(--muted);margin:8px 0 18px}
+.content .component-photo,.content .hardware-tour{border-radius:8px;box-shadow:none;padding:18px;background:var(--field);border:0}
+.content .knowledge-check,.content .learning-exercise{border-radius:8px;box-shadow:none;background:var(--field);border:1px solid var(--line)}
+.content .lesson-actions{gap:6px;padding-block:8px!important;background:var(--surface)}
+.content .lesson-actions button{border-radius:5px;font-size:12px;padding:8px 12px}
+.student-projects .project-cards{border:0;border-radius:0;margin-top:14px}
+.student-projects .project-cards article{padding:18px 8px;border-bottom:1px solid var(--line)}
+.student-projects .project-cards h3{font-size:15px;font-weight:750}
+.student-projects .project-cards .toolbar button{border-radius:6px;font-size:12px;padding:7px 12px}
+.project-browser-toolbar{margin:16px 0;gap:12px}
+.project-search{font-size:12px}
+.project-search input{min-height:34px;border-radius:6px}
+.studio .workspace-heading{padding:14px 20px 10px;gap:14px}
+.studio .workspace-heading h1{font-size:20px;letter-spacing:-.035em;font-weight:750}
+.studio .view-switch{gap:2px;padding:3px;background:var(--field);border-radius:7px}
+body[data-theme] .studio .view-switch button{font-size:13px;min-height:29px;padding:6px 10px;border:0;border-radius:5px;background:transparent!important;color:var(--muted)!important}
+body[data-theme] .studio .view-switch button[aria-pressed=true]{background:var(--surface)!important;color:var(--ink)!important}
+.studio .student-settings{margin:0 20px 8px;border:0;border-radius:0;background:transparent;font-size:13px}
+.studio-toolbar{margin:0 20px 10px;gap:12px;min-height:46px}
+.studio-toolbar .studio-panes{gap:2px}
+body[data-theme] .studio-toolbar .studio-panes button{font-size:12px;padding:9px 11px;border:0;border-radius:5px;background:transparent!important;color:var(--muted)!important}
+body[data-theme] .studio-toolbar .studio-panes button[aria-pressed=true]{background:var(--field)!important;color:var(--ink)!important;font-weight:750}
+.studio-toolbar .studio-actions{gap:4px;justify-content:flex-end;min-height:38px}
+.studio-toolbar .action-button{width:34px;height:34px;border:0;border-radius:5px;background:transparent!important}
+.studio-toolbar .action-button:hover{background:var(--field)!important}
+.studio-toolbar .board-run-launch{border-radius:6px;font-size:13px;padding:9px 14px;min-height:34px}
+.studio .components-dock{margin:0 20px 10px;padding:10px 12px;border-radius:7px;background:var(--surface)}
+.components-heading>strong{font-size:12px;font-weight:700;color:var(--muted)}
+.component-cards{margin-top:7px;gap:10px}
+.component-card{border:0;border-radius:0;border-right:1px solid var(--line);padding:2px 10px}
+.component-card:last-child{border-right:0}
+.component-card svg{width:24px;height:24px}
+.component-card strong{font-size:13px}
+.component-card span,.component-card small{font-size:12px;line-height:1.5}
+.studio>.output{margin:0 20px 10px;border-radius:7px;padding:12px 16px;max-height:170px;background:var(--surface)}
+.studio>.output h2{font-size:11px;color:var(--muted);letter-spacing:.06em}
+.studio>.output pre{font-size:12px;line-height:1.65}
+.studio .panel{border:0;border-right:1px solid var(--line);border-radius:0;background:var(--surface)}
+.studio .panel:last-child{border-right:0}
+.studio .panel>h2{font-size:11px;min-height:30px;margin:0;padding:8px 12px;border-bottom:1px solid var(--line);color:var(--muted)}
+.studio .code-preview-help{font-size:13px;padding:8px 12px;background:var(--field);border:0}
+.studio .code-preview-help button{font-size:12px;border-radius:5px;padding:6px 9px}
+@media(min-width:801px) and (min-height:650px){
+ .studio{height:calc(100dvh - 84px);min-height:0;overflow:hidden}
+ .studio>.layout,.studio[data-pane=program][data-expanded=true]>.layout{height:auto;min-height:220px;flex:1;margin:0 20px 10px;border-radius:7px}
+ .studio .studio-editor{min-height:120px}
+ .studio .editors{min-height:0;height:100%}
+ .studio .panel{min-height:0;overflow:hidden}
+ .studio>.output:has(.compiler-journal[open]){max-height:240px;overflow:auto}
+ .studio:has(.student-settings[open]){height:auto;overflow:visible}
+ .studio:has(.student-settings[open])>.layout{min-height:400px}
+}
+@media(max-width:1000px){.feature.content,.feature.student-projects{padding:18px}.studio-toolbar,.studio .workspace-heading,.studio .components-dock,.studio>.output{margin-inline:12px}.studio .workspace-heading{padding-inline:0}.studio-toolbar .studio-actions{flex-basis:260px}.content>.toolbar>label{margin-left:0}}
+@media(max-width:800px){
+ body[data-theme] main>nav.student-navigation{padding:5px;gap:0;border-right:0}
+ body[data-theme] main>nav.student-navigation button{min-height:45px;padding:5px;font-size:10px;min-width:70px}
+ body[data-theme] main>nav.student-navigation button[aria-pressed=true]{box-shadow:inset 0 2px var(--accent)!important}
+ .content .library-layout>aside{max-height:130px;padding-right:0;border-right:0;border-bottom:1px solid var(--line);padding-bottom:12px}
+ .content .library-layout>article{padding:4px 0 20px}
+ .lesson-heading h3{font-size:23px!important}
+ .content>.toolbar{flex-wrap:wrap}
+ .studio-toolbar .studio-actions{justify-content:flex-start}
+ .studio .workspace-heading{padding-inline:12px}
+}
+@media(prefers-reduced-motion:reduce){button{transition:none}}
+
+body[data-theme="dark"] .studio .blocklyToolboxDiv{background:#22262f!important;color:#bec5d2!important}body[data-theme="dark"] .studio .blocklySvg pattern line{stroke:#363c48}body[data-theme="dark"] .studio .blocklyTreeSelected{background:#383951!important}
+
+@media(max-width:800px) and (min-height:650px){.studio{height:calc(100dvh - 142px);min-height:0;overflow:hidden}.studio>.layout,.studio[data-pane=program][data-expanded=true]>.layout{height:auto;min-height:180px;flex:1;margin:0 12px 8px;border-radius:7px}.studio .studio-editor{min-height:100px}.studio .editors{min-height:0;height:100%}.studio .panel{min-height:0;overflow:hidden}.studio .components-dock{margin-bottom:8px;padding:8px}.studio:has(.student-settings[open]){height:auto;overflow:visible}.studio:has(.student-settings[open])>.layout{min-height:400px}}
+
+body[data-theme="dark"] .studio .blocklySvg{background:#191c22!important}body[data-theme="dark"] .studio .blocklyToolbox{background:#22262f!important;color:#bec5d2!important}body[data-theme="light"] .studio .blocklySvg{background:#fafbfc!important}body[data-theme="light"] .studio .blocklyToolbox{background:#f1f2f5!important}
+
+.studio[data-expanded=true]>.components-dock,.studio[data-expanded=true] .student-settings{display:none}
+
+.feature.simulator-workspace,.feature.board-wizard{margin:0;border:0;border-radius:0;box-shadow:none;background:var(--surface);padding:22px 28px;min-height:calc(100dvh - 84px)}.simulator-workspace>h2,.board-wizard>h2{font-size:21px;letter-spacing:-.035em;font-weight:750;margin-top:0}.simulator-workspace .toolbar button,.board-wizard button{border-radius:6px;font-size:12px}.simulator-workspace select,.board-wizard select{border-radius:6px;min-height:34px;font-size:12px}.simulator-workspace>details{border:0;border-top:1px solid var(--line);border-radius:0;padding:14px 0}.simulation-stage canvas{border:3px solid #343945;border-radius:8px}.simulation-readings{border-radius:7px;background:var(--field);padding:12px}.simulation-readings strong{font-size:13px}.game-checks{gap:8px}.game-checks>div{border-radius:6px;padding:10px 12px;font-size:11px}.board-connection-row{padding:16px 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}.board-wizard .board-status{border-radius:7px;background:var(--field);padding:14px;font-size:13px}.board-wizard .serial-tools{border-radius:7px}.board-run-dialog .board-wizard{min-height:0;padding:12px}@media(max-width:800px){.feature.simulator-workspace,.feature.board-wizard{padding:18px}}
+
+.studio-toolbar .action-tooltip{left:auto;right:0;min-width:140px;width:max-content;max-width:280px;white-space:normal;line-height:1.45}
+
+.content .library-layout article h4{color:var(--ink);font-size:19px;font-weight:700;margin:28px 0 12px}.content .student-theory-notes>details{border:0;border-radius:0;background:transparent;padding:0}.content .student-theory-notes>details>summary{font-size:15px;font-weight:700;color:var(--ink);padding:12px 0;border-bottom:1px solid var(--line)}.content .student-theory-notes>details>div{padding:4px 0;background:transparent;border:0}.content .library-layout article>.student-task{padding:18px 20px;border:1px solid var(--line);border-left:3px solid var(--accent);border-radius:7px;background:var(--field)!important}.content .library-layout article>.student-task>h4{margin:0 0 12px}.content .student-task>p{margin:0 0 14px}.content .learning-exercise .learning-option,.content .knowledge-check .quiz-option{font-size:var(--reading-size,18px)!important;line-height:1.7}.content .learning-option input[type=checkbox],.content .quiz-option input[type=radio]{width:18px;height:18px;flex:none;accent-color:var(--accent)}.content .lesson-story figcaption,.content .foundation-scene figcaption,.content .component-photo figcaption{font-size:13px;line-height:1.6;color:var(--muted)}
+
+.content .student-theory-notes p,.content .lesson-story>p,.content .library-layout article>section>p,.content .student-task>p{color:var(--ink)}
+
+body[data-theme] :is(button,input,select,textarea,summary,a):focus-visible{outline:2px solid var(--accent);outline-offset:3px}body[data-theme] button:disabled{opacity:.65;cursor:not-allowed;background:var(--field)!important;color:var(--muted)!important;border-color:var(--line)!important}
+
+.student-projects .project-cards h3{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;line-height:1.6}.student-projects .project-cards article{min-width:0}.student-projects .project-cards .toolbar{flex-wrap:nowrap}.student-projects>p:not([role]){font-size:13px;color:var(--muted);max-width:80ch}@media(max-width:650px){.student-projects .project-cards .toolbar{justify-content:flex-start}.student-projects .project-cards h3{white-space:normal;overflow-wrap:anywhere}}
+
+.studio>.trace-tools{display:block;flex-shrink:0;margin:0 20px 10px;border:0;background:transparent;font-size:13px}.studio>.trace-tools>summary{width:max-content;max-width:100%;color:var(--muted);cursor:pointer}.studio>.trace-tools[open]{padding:8px 0}.studio>.trace-tools button{margin:8px 8px 0 0;font-size:12px}@media(max-width:1000px){.studio>.trace-tools{margin-inline:12px}}
+.studio:has(>.output:not([hidden])),.studio:has(>.trace-tools[open]){overflow-y:auto;overflow-x:hidden}
+.studio>.output{flex-shrink:0;overflow:auto}
+.studio-toolbar{position:sticky;top:0;z-index:4;flex-shrink:0;background:var(--page);padding-block:4px}
+.studio>.output>h2{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:0 0 8px}
+.results-toggle{display:grid;place-items:center;width:30px;height:30px;padding:4px;border:0;border-radius:5px;background:transparent!important;color:var(--muted)}
+.results-toggle:hover{background:var(--field)!important;color:var(--ink)}
+.studio>.output[data-collapsed=true]>:not(h2){display:none}
+.studio>.output[data-collapsed=true]>h2{margin-bottom:0}
+.photo-source{font-size:13px;color:var(--muted);border-top:1px solid var(--line);padding-top:10px}
+.photo-source p{overflow-wrap:anywhere;user-select:text}
+.photo-viewer-header{position:sticky;top:0;z-index:1;background:var(--surface)}
+.content .photo-viewer .photo-credit,.content .photo-viewer .photo-source p{font-size:13px!important;line-height:1.6!important}
+
+/* Keep file tabs from consuming the code area on narrow laptop windows. */
+@media(max-width:800px) and (min-height:650px){
+ .studio>.layout,.studio[data-pane=program][data-expanded=true]>.layout{min-height:320px}
+}

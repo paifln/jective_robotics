@@ -1,0 +1,6 @@
+import {it,expect} from 'vitest';
+import {processInvestigationRequest} from '../packages/content/investigation-worker';
+import {InvestigationReportSchema} from '../packages/content/investigation-report';
+const operationId='e6651393-c06a-42ba-878e-b497ecadf829',inputs={seed:1,repetitions:1,steps:300,noiseMeters:0,worlds:['clear','wall','narrow']};
+it('validates worker reports and preserves a valid operation ID',()=>{const result=processInvestigationRequest({operationId,inputs});expect(result.operationId).toBe(operationId);expect(result.ok).toBe(true);if(result.ok){expect(InvestigationReportSchema.safeParse(result.report).success).toBe(true);expect(result.report.trials).toHaveLength(3);}});
+it('rejects excessive trials, unrecognized payloads and invalid IDs',()=>{for(const value of [null,{operationId:'bad',inputs},{operationId,inputs:{...inputs,repetitions:6}},{operationId,inputs,code:'arbitrary source'},{operationId,inputs:{...inputs,worlds:['custom','wall']}}]){const result=processInvestigationRequest(value);expect(result.ok).toBe(false);if(!result.ok)expect(result.error.length).toBeLessThanOrEqual(2000);}expect(processInvestigationRequest({operationId,inputs:{...inputs,steps:0}}).operationId).toBe(operationId);expect(processInvestigationRequest(null).operationId).toBe('');});

@@ -1,0 +1,9 @@
+# Current-source packaged snapshot
+
+The complete `package.json` build settings were copied to `.verification/package-current-config.json`, changing only the output directory. `npx electron-builder --win --dir --x64 --config .verification/package-current-config.json`, `node scripts/security-package-check.mjs current-source-20261012`, `node .verification/package-worker-launch.mjs` and lint exited 0. The initial CLI parsing and diagnostic archive-root read failures are preserved separately; corrected reruns passed.
+
+The production packaged EXE initialized its renderer and workspace IPC on Windows 11 build 26200. A second instance exited while the first remained running. Every built asset matched its packaged hash, including all 136 Ogg recordings and the environment worker. Binary fuses were inspected. Deliberate ASAR whitespace modification failed with an integrity diagnostic; the original archive was restored and its hash checked.
+
+The actual worker loaded from the packaged ASAR using a matching external Electron 44.7.0 diagnostic host. A four-file, 92-byte fixture in a path with spaces and Cyrillic characters matched the direct snapshot, detected a same-size edit with a preserved timestamp and rejected a missing file. The actual packaged serialport module enumerated OS ports without opening one. These are module/resource checks, not actual compilation, upload or complete packaged learner acceptance.
+
+The snapshot still reports version 0.8.18 and is identified by its directory and binary/archive hashes. It must not be confused with the published installer, whose original hash was checked unchanged. A new installer was not produced. Clean installer lifecycle, Windows 10, disconnected full learner flow, current packaged compiler GUI and physical upload remain NOT RUN. The prior intermittent SDK fingerprint failure remains unresolved.

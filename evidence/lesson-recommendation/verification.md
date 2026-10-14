@@ -1,0 +1,5 @@
+# Next-lesson navigation
+
+Pure recommendation logic selects the first unfinished lesson whose prerequisites all have saved knowledge-check-passed states. Self-reported completion is excluded; broken prerequisite graphs yield no suggestion. This is a navigation hint, not practical/physical mastery certification. Other lessons stay accessible. ContentPanel refreshes the hint only after successful quiz persistence. Async unmounted results are ignored.
+
+Full532tests/180files PASS,96.35% package branches and per-file thresholds pass. Build/typecheck/lint PASS. Real source Electron scenario7.6s: actual L01 quiz grading and database write change suggestion toL02; selecting it opensL02, openingL60 remains allowed, and restarting the isolated app retainsL02.800x700 no horizontal page overflow; light/dark screenshots inspected. No seeded fake quiz progress or overridden IPC for this scenario. Correct test inputs come from the authored quiz bank; this does not establish pedagogical acceptance. Human translation/content review, declared Windows scaling, current packaged acceptance and physical verification remain pending.

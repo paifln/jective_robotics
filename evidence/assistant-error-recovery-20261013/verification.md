@@ -1,0 +1,9 @@
+# Learner assistant error recovery — 2026-10-13
+
+Added a pure localized assistant-error presentation module and used it for rejected ask responses. English/Russian/Kazakh messages explain disabled/busy/cancelled/timeout/oversized/empty responses, configuration issues, authentication/access/resource failures and request limits. Unknown/unavailable-service failures offer local hints/documentation. No backend diagnostic body, private paths, credentials or technical code is echoed into learner status. This is UI copy/routing, not a provider adapter, retry scheduler, billing meter or automatic recovery.
+
+Full domain suite: **541 tests / 183 files passed**, 32.96 seconds (`unit.json`). Two new unit tests exercise localized recovery and non-disclosure for known/unknown/inherited error codes. Existing service/cancellation/source-review tests also passed. Typecheck, lint and source build passed.
+
+Focused actual source Electron tests: **3 passed**, 17.4 seconds (`e2e.json`). Existing source-consent/review/cancellation and actual local HTTP fixture workflows remained functional. Explicit ask-response error fixtures exercised EN401/RU429/KK503 via the real sandboxed preload: localized guidance appears, dummy backend private diagnostic/code does not, failed answers remain empty and retry control becomes available. Settings validation failure/recovery coverage is retained. These are labeled response fixtures, not live OpenAI credentials/rate-limit/model tests or a human technical-language/accessibility review.
+
+Production snapshot current-source-ui-recovery-20261013 predates this source-only message change; neither it nor the published installer was overwritten/rebuilt. User preview PID 8928 was observed responding and left open. Physical ESP32/Jective, clean Windows 10, full installer/full GUI/content acceptance remain incomplete as previously documented.

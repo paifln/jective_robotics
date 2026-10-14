@@ -1,0 +1,11 @@
+import {test,expect,_electron as electron} from '@playwright/test';
+import {mkdtemp,readFile,rm} from 'node:fs/promises';
+import {tmpdir} from 'node:os';
+import {join} from 'node:path';
+test('three motor experiments export separately labeled simulation evidence',async()=>{
+ const root=await mkdtemp(join(tmpdir(),'jective-motor-model-ui-'));const env:Record<string,string>=Object.fromEntries(Object.entries(process.env).filter((e):e is [string,string]=>e[1]!==undefined));delete env.ELECTRON_RUN_AS_NODE;env.JECTIVE_WORKSPACE_ROOT=root;
+ const app=await electron.launch({executablePath:process.env.JECTIVE_EXECUTABLE,args:process.env.JECTIVE_EXECUTABLE?[]:['.'],env});
+ try{const page=await app.firstWindow();await expect(page.locator('#launch-screen')).toHaveCount(0);await page.getByRole('button',{name:'Learn',exact:true}).click();await page.getByRole('button',{name:/^L20 ·/}).click();await expect(page.getByRole('heading',{name:'First safe motor test',exact:true})).toBeVisible();const panel=page.locator('.motor-safety-panel');await expect(panel).toBeVisible();
+ for(const [kind,label] of [['startup','Startup'],['stop','Stop'],['communication-loss','Communication loss']]){await panel.getByRole('button',{name:'Run · '+label,exact:true}).click();await expect(panel.getByRole('status')).toHaveText('Disarmed · simulation · 26');const file=join(root,kind+'.json');await app.evaluate(({session},file)=>{session.defaultSession.once('will-download',(_event,item)=>item.setSavePath(file));},file);await panel.getByRole('button',{name:'Export experiment JSON',exact:true}).click();await expect.poll(async()=>{try{return JSON.parse(await readFile(file,'utf8')).scenario;}catch{return '';}}).toBe(kind);const result=JSON.parse(await readFile(file,'utf8'));expect(result.origin).toBe('simulation');expect(result.physicalVerification).toBe('NOT RUN');expect(result.actions[0].accepted).toBe(false);if(kind==='communication-loss')expect(result.samples.find((sample:{timeMs:number})=>sample.timeMs===400)).toMatchObject({mode:'disarmed',left:0,right:0});}
+ }finally{await app.evaluate(({app})=>app.exit(0));if(app.process().exitCode===null&&app.process().signalCode===null)await new Promise<void>(resolve=>app.process().once('exit',()=>resolve()));await rm(root,{recursive:true,force:true,maxRetries:30,retryDelay:100});}
+});

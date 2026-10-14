@@ -1,0 +1,3 @@
+import {it,expect} from 'vitest';
+import {ProtocolParser} from '../packages/devices';
+it('serial framing keeps raw output separate and validates actual runtime identity',()=>{const p=new ProtocolParser();expect(p.feed('Raw Қ')).toEqual([]);expect(p.feed('азақша\r\n')[0]?.kind).toBe('raw');const hello={v:1,type:'hello',firmware:'1.0',profile:'esp32-devkit-reference',device:'fixture',session:'fixture',capabilities:['indicator']};const line='@JECTIVE '+JSON.stringify(hello)+'\n';expect(p.feed(line.slice(0,12))).toEqual([]);expect(p.feed(line.slice(12))[0]?.kind).toBe('protocol');expect(p.feed('@JECTIVE {"v":99}\n')[0]?.kind).toBe('error');expect(p.feed('x'.repeat(40000))[0]?.text).toBe('SERIAL_FRAME_TOO_LARGE');});

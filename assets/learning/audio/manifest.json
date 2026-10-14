@@ -1,0 +1,1366 @@
+{
+  "schemaVersion": 1,
+  "format": "ogg-opus",
+  "entries": [
+    {
+      "id": "F01",
+      "locale": "en",
+      "file": "F01-en.ogg",
+      "textSha256": "bf29be87a3cdcb707c8cadd15d410f75e26914566e2880d5dac6d583b2fd5bd8",
+      "sha256": "98b30af93dd174efeef2354782cca4c7544c00f24d7d2fb17c25bbe1c82e0030",
+      "bytes": 250511,
+      "durationSeconds": 97.345,
+      "voice": "Microsoft Zira Desktop"
+    },
+    {
+      "id": "F01",
+      "locale": "ru",
+      "file": "F01-ru.ogg",
+      "textSha256": "850c11fd0bd77759e8fcd237449e8bd20e66000bbca12415d99061cf4423199c",
+      "sha256": "38642a34b4203c6be641b8ed4a247be3d0322ec26ef092d2825034de23189103",
+      "bytes": 357196,
+      "durationSeconds": 130.48,
+      "voice": "Microsoft Irina Desktop"
+    },
+    {
+      "id": "F02",
+      "locale": "en",
+      "file": "F02-en.ogg",
+      "textSha256": "41dc10a6ae2384f086ebc82e068a3843ffdf6fcaa1b34fc497abcd0df030e8a4",
+      "sha256": "9738980189b1c3087c2158ecaf3e6272a77bba013eeb58bdeb30c9792fe886b7",
+      "bytes": 238403,
+      "durationSeconds": 95.02,
+      "voice": "Microsoft Zira Desktop"
+    },
+    {
+      "id": "F02",
+      "locale": "ru",
+      "file": "F02-ru.ogg",
+      "textSha256": "e38687ac1ddc11f039c929d3b44080f8b93554f712db032520483120cb733540",
+      "sha256": "b0709d13e90ac5706b4f44bda44f068ed6c5a87984ade4d5e3cb3c81157f1497",
+      "bytes": 345088,
+      "durationSeconds": 127.695,
+      "voice": "Microsoft Irina Desktop"
+    },
+    {
+      "id": "F03",
+      "locale": "en",
+      "file": "F03-en.ogg",
+      "textSha256": "bffa578861e0f956a0e1e82f819755138ab6a6ad4e7453fbf20415937739a742",
+      "sha256": "55c25b00613bf048d1ff0f01430e10d8ace7d634a3ed0a622b88b518e760742e",
+      "bytes": 302103,
+      "durationSeconds": 114.0,
+      "voice": "Microsoft Zira Desktop"
+    },
+    {
+      "id": "F03",
+      "locale": "ru",
+      "file": "F03-ru.ogg",
+      "textSha256": "98c065856f4b0048c7ab1e7ac95bfeae0bed9a065fcfacf3d743d710f865d0f9",
+      "sha256": "78bb96a6d92c40a5c17267c55e689266f3485a9299b869be59dc13f9a65786b7",
+      "bytes": 411027,
+      "durationSeconds": 148.035,
+      "voice": "Microsoft Irina Desktop"
+    },
+    {
+      "id": "F04",
+      "locale": "en",
+      "file": "F04-en.ogg",
+      "textSha256": "4f755469063bfb6ca4c7098186e2e1827b7942d032e1b4212738d121de745f4c",
+      "sha256": "b293dfea8faf72b5549517c611e41da17731bfc51319c0c2bf09886d2b1e5aa9",
+      "bytes": 248795,
+      "durationSeconds": 96.52,
+      "voice": "Microsoft Zira Desktop"
+    },
+    {
+      "id": "F04",
+      "locale": "ru",
+      "file": "F04-ru.ogg",
+      "textSha256": "5529cbea03862df475b893c94137de8b1fe3a12c9b7deb75c8b9aaa98437a7e1",
+      "sha256": "736486ac5ada1bd0e90004d398f2b93faf8e206ba63a7e456c1bca94a12c2fbf",
+      "bytes": 336901,
+      "durationSeconds": 123.045,
+      "voice": "Microsoft Irina Desktop"
+    },
+    {
+      "id": "F05",
+      "locale": "en",
+      "file": "F05-en.ogg",
+      "textSha256": "e17dfbd1e54a2df4a8091f33c851e37638355497e1a997019412f0ac263b8191",
+      "sha256": "742b1e07586c36661050bc1ec013bb72801944889a0ddd94b9f1a38004088c45",
+      "bytes": 256171,
+      "durationSeconds": 99.475,
+      "voice": "Microsoft Zira Desktop"
+    },
+    {
+      "id": "F05",
+      "locale": "ru",
+      "file": "F05-ru.ogg",
+      "textSha256": "a9b837fab351e1bddef42241c6dd436aeccf3ae98f8f8ce83e1abfaf7fe99f15",
+      "sha256": "f5dbeee93f0867931f501ab985d67676e6b8a879c2a47c942966e05c2fc2f0ea",
+      "bytes": 372375,
+      "durationSeconds": 134.69,
+      "voice": "Microsoft Irina Desktop"
+    },
+    {
+      "id": "F06",
+      "locale": "en",
+      "file": "F06-en.ogg",
+      "textSha256": "71d51123d436c7ece8bc9bf89477fe7780657753f9e2aa6163c1fc93897f1287",
+      "sha256": "6cccd0ff2e874022007aeb01caa74ac4f4a85f63bd74fce99ec706eab70ed37d",
+      "bytes": 264429,
+      "durationSeconds": 102.19,
+      "voice": "Microsoft Zira Desktop"
+    },
+    {
+      "id": "F06",
+      "locale": "ru",
+      "file": "F06-ru.ogg",
+      "textSha256": "533460a1de76b17225502033cf96c41fc834d5d9b666af395511d5ca153ae5c9",
+      "sha256": "1e83948d3489975c5c989fe54f91be7fb49386549e973bfe4bd217da27e47171",
+      "bytes": 364812,
+      "durationSeconds": 131.845,
+      "voice": "Microsoft Irina Desktop"
+    },
+    {
+      "id": "F07",
+      "locale": "en",
+      "file": "F07-en.ogg",
+      "textSha256": "2399e434da018f9cf1b0c3f57fdfddc2b7f248b852f55ccd1db15b9ae867a53d",
+      "sha256": "97f656f35b7385eb3768d85418737c5453c93dea922c097d6562256d00b82ebe",
+      "bytes": 227385,
+      "durationSeconds": 90.98,
+      "voice": "Microsoft Zira Desktop"
+    },
+    {
+      "id": "F07",
+      "locale": "ru",
+      "file": "F07-ru.ogg",
+      "textSha256": "a8e11e1a5d9fcde561ed6edc719e069f7b082da01096541fba916159895a167a",
+      "sha256": "a49f4f6cac14af3a71ed11c975aa63534a6cee6a52120b909f662fbb9a7e0913",
+      "bytes": 336700,
+      "durationSeconds": 124.805,
+      "voice": "Microsoft Irina Desktop"
+    },
+    {
+      "id": "F08",
+      "locale": "en",
+      "file": "F08-en.ogg",
+      "textSha256": "d825f55e4b3edf616e6dc9d871d9666ab6fd8319068add86c0a1aeaac861eae2",
+      "sha256": "696683266f52a45b82c0e20e8d3cea559d6f6c5f1cb87d68a2b21a7d018bf33c",
+      "bytes": 246941,
+      "durationSeconds": 97.55,
+      "voice": "Microsoft Zira Desktop"
+    },
+    {
+      "id": "F08",
+      "locale": "ru",
+      "file": "F08-ru.ogg",
+      "textSha256": "f79e9c278b38764e25462a0bd6fd49d58d74a408376465fa3a926fc369a09fd1",
+      "sha256": "160acf01c12d4b62796d515d02635119aab891861468f747747f9d2d0ea67365",
+      "bytes": 343246,
+      "durationSeconds": 127.27,
+      "voice": "Microsoft Irina Desktop"
+    },
+    {
+      "id": "L01",
+      "locale": "en",
+      "file": "L01-en.ogg",
+      "textSha256": "b6a0f8b811cc83782223836923a663902db98e2326912a063bdccb31b18b2e37",
+      "sha256": "eb9a1a669c97a2249bfeaf3698ad825308f6d22098b13162b8164036a702f2b0",
+      "bytes": 227861,
+      "durationSeconds": 86.84,
+      "voice": "Microsoft Zira Desktop"
+    },
+    {
+      "id": "L01",
+      "locale": "ru",
+      "file": "L01-ru.ogg",
+      "textSha256": "c581d4da3e672de80d03a6120841240fc998d687a933b9a67061248605a2ef87",
+      "sha256": "903c77b086b337440d2878a0d81d52607f0991aa888f0fc4c14917c893a4dfb3",
+      "bytes": 299358,
+      "durationSeconds": 108.025,
+      "voice": "Microsoft Irina Desktop"
+    },
+    {
+      "id": "L02",
+      "locale": "en",
+      "file": "L02-en.ogg",
+      "textSha256": "ce40f6be8d6397ad17781a411092e41110e0fecdaf341575c8f7572d43af5229",
+      "sha256": "fa575deb96987abeeb786a44a9497b9f1922884883fafcff5bcda5d6dc029fa8",
+      "bytes": 274277,
+      "durationSeconds": 105.385,
+      "voice": "Microsoft Zira Desktop"
+    },
+    {
+      "id": "L02",
+      "locale": "ru",
+      "file": "L02-ru.ogg",
+      "textSha256": "b6a244345eae561f7bcc9e19678c1e32508e833820b7f1281a381c0d0786a23c",
+      "sha256": "837955cb45e3a8b6f4a2f0f35846bc1822bc8c6e8eab7da78d8d6d6fd7e7b688",
+      "bytes": 350017,
+      "durationSeconds": 128.375,
+      "voice": "Microsoft Irina Desktop"
+    },
+    {
+      "id": "L03",
+      "locale": "en",
+      "file": "L03-en.ogg",
+      "textSha256": "b92af0a17a7a6ed79f41e03393dd5bb423c67d7f3c4884b5f5d6ee9002b6dde7",
+      "sha256": "6c8b28ca72726a5e428db3ce1163c214011b84bf67b05082aa3c6390f36ce044",
+      "bytes": 248344,
+      "durationSeconds": 94.565,
+      "voice": "Microsoft Zira Desktop"
+    },
+    {
+      "id": "L03",
+      "locale": "ru",
+      "file": "L03-ru.ogg",
+      "textSha256": "cbef163e204aa2e82b2666e5c33726f0b1a2c485d55fbfd1aa904153b69396e2",
+      "sha256": "262c1b1c3bd5c52bafb66220430041e3026e8fcf06f859a2b2659d049bffe0f0",
+      "bytes": 309012,
+      "durationSeconds": 112.6,
+      "voice": "Microsoft Irina Desktop"
+    },
+    {
+      "id": "L04",
+      "locale": "en",
+      "file": "L04-en.ogg",
+      "textSha256": "0b808736cfe9f0cd78fb727be1c11f2a961e2684e9b122834271ab2a35f155ed",
+      "sha256": "4ec81f4e94de4ba45a13e2d00091e7b8b53c405e9801ba30ab8a37b793acbd4e",
+      "bytes": 301893,
+      "durationSeconds": 114.28,
+      "voice": "Microsoft Zira Desktop"
+    },
+    {
+      "id": "L04",
+      "locale": "ru",
+      "file": "L04-ru.ogg",
+      "textSha256": "19871b2803baf8a9c0bba8a2109776f285b2617cc3546c32ef1e1bee9cfc3a0b",
+      "sha256": "71b6870c14ab75cf543f03a12723a370ac1982c8d1e2cc4e687d13c8dae8ce58",
+      "bytes": 361238,
+      "durationSeconds": 130.855,
+      "voice": "Microsoft Irina Desktop"
+    },
+    {
+      "id": "L05",
+      "locale": "en",
+      "file": "L05-en.ogg",
+      "textSha256": "b741854b259882de6cfb26341428eff5941da4d8b8352f3f8f4db1bcf5d5f520",
+      "sha256": "ce2757b9305343750d66f9bd2d05734ce480469669cb855184034b65db522185",
+      "bytes": 373825,
+      "durationSeconds": 141.14,
+      "voice": "Microsoft Zira Desktop"
+    },
+    {
+      "id": "L05",
+      "locale": "ru",
+      "file": "L05-ru.ogg",
+      "textSha256": "71a37dbba1f55d4f6c111565cc763b26ab1f983f900d5762e77aa2460b870f1f",
+      "sha256": "54b7bb4bc9878568590cda59490c6e2b142ce1451ffe64513253bf5c3ac7f038",
+      "bytes": 409423,
+      "durationSeconds": 148.585,
+      "voice": "Microsoft Irina Desktop"
+    },
+    {
+      "id": "L06",
+      "locale": "en",
+      "file": "L06-en.ogg",
+      "textSha256": "eff4df8a1153783ebc30ef7434a22b3b3bdc9da7800640290403f2b81905cb41",
+      "sha256": "a89c9ae7b2cdb415ed43598bccd15a6ea6af32e3b16806750bc17c995d63e77b",
+      "bytes": 376968,
+      "durationSeconds": 143.915,
+      "voice": "Microsoft Zira Desktop"
+    },
+    {
+      "id": "L06",
+      "locale": "ru",
+      "file": "L06-ru.ogg",
+      "textSha256": "3615b85eaa1a4b4b04a5fbb00cb7d06c3669e026bdabacdb1075ce396b9dd7f9",
+      "sha256": "c39207fd423e3848758b707fc080507c96426d55bb69add112314a144e74b0a2",
+      "bytes": 414229,
+      "durationSeconds": 151.66,
+      "voice": "Microsoft Irina Desktop"
+    },
+    {
+      "id": "L07",
+      "locale": "en",
+      "file": "L07-en.ogg",
+      "textSha256": "f160ed424e0683384ea98ad34d3a602a1ce2c907228c3a73a1fb80ac9324baee",
+      "sha256": "6e4e7f278ace85de1bf545deae3c553148448aba64c0551fcc5744801a14ca47",
+      "bytes": 298753,
+      "durationSeconds": 112.93,
+      "voice": "Microsoft Zira Desktop"
+    },
+    {
+      "id": "L07",
+      "locale": "ru",
+      "file": "L07-ru.ogg",
+      "textSha256": "b5d0d0d6c2755ae27f021950430f35d8ab2c0c03397ef5d11c93202280b28e56",
+      "sha256": "685ca5e4ba1c0ed15440eb291005dc2fde01338dcf21d93547dec179c916cf56",
+      "bytes": 333625,
+      "durationSeconds": 121.93,
+      "voice": "Microsoft Irina Desktop"
+    },
+    {
+      "id": "L08",
+      "locale": "en",
+      "file": "L08-en.ogg",
+      "textSha256": "34eac2207a5a1e63e2c0a9d95b3e14cff8849f8cb8fc5ce4eaa4692d09329f30",
+      "sha256": "0c802484dd6d821f57ce63e52c325c62ad7cf181afa086c7cfce6ed96d320599",
+      "bytes": 323479,
+      "durationSeconds": 122.27,
+      "voice": "Microsoft Zira Desktop"
+    },
+    {
+      "id": "L08",
+      "locale": "ru",
+      "file": "L08-ru.ogg",
+      "textSha256": "e8d550cc3e4439714b1c8fa244228d615b00e17500e98d98e21c05d88ebc40d8",
+      "sha256": "9c0db0245de74cdc8f302e069139b3171fc029fcfed15eb8813bd276e8fec73b",
+      "bytes": 359187,
+      "durationSeconds": 130.23,
+      "voice": "Microsoft Irina Desktop"
+    },
+    {
+      "id": "L09",
+      "locale": "en",
+      "file": "L09-en.ogg",
+      "textSha256": "bd7db9a779be1f01f986d1e2f2721636c3b4300713c70fd23206b4d8ad73fdd5",
+      "sha256": "1d02f7bcf23001903f1fe26a0edb44e6c3883f610b881330b700748a381fe1c8",
+      "bytes": 349929,
+      "durationSeconds": 135.255,
+      "voice": "Microsoft Zira Desktop"
+    },
+    {
+      "id": "L09",
+      "locale": "ru",
+      "file": "L09-ru.ogg",
+      "textSha256": "b6c08f691929b284acb7fdba2ccdbe444b630b7cf4c8e2836031ed7233083399",
+      "sha256": "27026a6a988282d566fed354d827a81a11dda233d5dec0f1d993edfd103139c5",
+      "bytes": 378001,
+      "durationSeconds": 138.26,
+      "voice": "Microsoft Irina Desktop"
+    },
+    {
+      "id": "L10",
+      "locale": "en",
+      "file": "L10-en.ogg",
+      "textSha256": "836ebf146a340d2db81074f918d34a66297080d7213c156adbfa7c9a9891ff8f",
+      "sha256": "d92374f00244e2a24a379e4336a83a5e46e03ba1f75dd58f9770c614efb7d1a7",
+      "bytes": 364194,
+      "durationSeconds": 138.45,
+      "voice": "Microsoft Zira Desktop"
+    },
+    {
+      "id": "L10",
+      "locale": "ru",
+      "file": "L10-ru.ogg",
+      "textSha256": "5666bbb5ce5044bad23b5feb0eb4fe446dbf10e2c73131d4c2532076492f8bc4",
+      "sha256": "7099281bde0915a991135d24bd92c9a13763427ec168ebaa5537f0c26557a48f",
+      "bytes": 428838,
+      "durationSeconds": 156.05,
+      "voice": "Microsoft Irina Desktop"
+    },
+    {
+      "id": "L11",
+      "locale": "en",
+      "file": "L11-en.ogg",
+      "textSha256": "da667b2f287e3cf16d7b696f9271d444351918fbcf7f406dd1fd24a5b3d9f784",
+      "sha256": "8885943809de092286b19d222c6b279bdb36b0e5e16d4f45469640d34b56bca5",
+      "bytes": 334796,
+      "durationSeconds": 127.795,
+      "voice": "Microsoft Zira Desktop"
+    },
+    {
+      "id": "L11",
+      "locale": "ru",
+      "file": "L11-ru.ogg",
+      "textSha256": "e0e0ede4da03315989231a4d033265e15f1e04b008dc1d3fbfea88e01e485b6c",
+      "sha256": "5ed7ca8dc5f56fe5388aa208c8c94097bc5c99178d5c9af4df7d243e2a3fd058",
+      "bytes": 389881,
+      "durationSeconds": 140.43,
+      "voice": "Microsoft Irina Desktop"
+    },
+    {
+      "id": "L12",
+      "locale": "en",
+      "file": "L12-en.ogg",
+      "textSha256": "3fdf5f66bbcaed1d85d332647e63505876b6339a1c40a0640a3bd1fa5a4d5d09",
+      "sha256": "5ccbd552c15018677d273186ea76773678723177e1e68fac392f49ca9d5212a5",
+      "bytes": 348719,
+      "durationSeconds": 134.92,
+      "voice": "Microsoft Zira Desktop"
+    },
+    {
+      "id": "L12",
+      "locale": "ru",
+      "file": "L12-ru.ogg",
+      "textSha256": "b4616454d392c5394eec7101cabcbe4480361a2ba169f04bb4f5549a68a7ec81",
+      "sha256": "c111c920b408888b693ed15e03cc3ddd7ad529fbfcf672892169c02416a7b801",
+      "bytes": 380689,
+      "durationSeconds": 139.94,
+      "voice": "Microsoft Irina Desktop"
+    },
+    {
+      "id": "L13",
+      "locale": "en",
+      "file": "L13-en.ogg",
+      "textSha256": "46a852019a257eefee869f85279ad7679d12097124df2c6243a288458c23aed1",
+      "sha256": "47731e5f2489be02d6de9e627b35007056e8cd6266571f18214fde696b1c61cc",
+      "bytes": 447889,
+      "durationSeconds": 168.745,
+      "voice": "Microsoft Zira Desktop"
+    },
+    {
+      "id": "L13",
+      "locale": "ru",
+      "file": "L13-ru.ogg",
+      "textSha256": "14f810d4b226175bd27c067d48a29bad998beef2d1c6093733141843b70c01a2",
+      "sha256": "7d162a1a50d83ecfe2858b9b2b74d899fa489ce7a96861b0a720992aa1de6f1e",
+      "bytes": 457180,
+      "durationSeconds": 165.895,
+      "voice": "Microsoft Irina Desktop"
+    },
+    {
+      "id": "L14",
+      "locale": "en",
+      "file": "L14-en.ogg",
+      "textSha256": "3df5aa44fee5aa396093323287ef1454f85cd545abbbf96d387fbeab9182263c",
+      "sha256": "13ec1fadbb5ad72ff84edea3c19bd0a72d4980d6c2cebd98236df171f87092b3",
+      "bytes": 474146,
+      "durationSeconds": 176.28,
+      "voice": "Microsoft Zira Desktop"
+    },
+    {
+      "id": "L14",
+      "locale": "ru",
+      "file": "L14-ru.ogg",
+      "textSha256": "9427acbb93965f49994bf6803331fbbb9feb63479f8f0fa8dbb65c5af0943636",
+      "sha256": "af9884cc49a12657b80080aa9a755808f69da5ca33960d10043eea987bd59327",
+      "bytes": 458434,
+      "durationSeconds": 164.765,
+      "voice": "Microsoft Irina Desktop"
+    },
+    {
+      "id": "L15",
+      "locale": "en",
+      "file": "L15-en.ogg",
+      "textSha256": "2ba3855be9fa230f0a8393b59332589a37ceec479529cca3b21194f6ca4c771c",
+      "sha256": "f00fb03683d75ad38f6d77594623e2df9415839da91c998502c70a655bc075c8",
+      "bytes": 508705,
+      "durationSeconds": 191.485,
+      "voice": "Microsoft Zira Desktop"
+    },
+    {
+      "id": "L15",
+      "locale": "ru",
+      "file": "L15-ru.ogg",
+      "textSha256": "74665d6565bf5eae82b7396cdbfb43dc6afc9b2bb443a92b6348bb5ce3e7f97f",
+      "sha256": "cbc47ffb3fefeb75370c966dfd2c2d789b922481c6d53fa0b29fbbe5ef72a96b",
+      "bytes": 504380,
+      "durationSeconds": 184.02,
+      "voice": "Microsoft Irina Desktop"
+    },
+    {
+      "id": "L16",
+      "locale": "en",
+      "file": "L16-en.ogg",
+      "textSha256": "043df9abfd0bd3851dea092b687ec64663e2c85651143b4825df8f43943ed935",
+      "sha256": "6b7500c2f411440ed14f994a3d6690ab7ce95318b34641caf5fe4d2156ef7f08",
+      "bytes": 548301,
+      "durationSeconds": 201.64,
+      "voice": "Microsoft Zira Desktop"
+    },
+    {
+      "id": "L16",
+      "locale": "ru",
+      "file": "L16-ru.ogg",
+      "textSha256": "790ba3350b1b77792fed295f3e717fc8c59fb3cdfd32720395906b6222f8b4e1",
+      "sha256": "48e0919fd173d989b8d6624d1ae56d6e77ff200eb2961c95cd5b21c0ee51e94c",
+      "bytes": 558790,
+      "durationSeconds": 200.93,
+      "voice": "Microsoft Irina Desktop"
+    },
+    {
+      "id": "L17",
+      "locale": "en",
+      "file": "L17-en.ogg",
+      "textSha256": "6357a89ebc67f626cb4ae6b55c8a9b9d01cc21c6902396f327479e9cfcf51344",
+      "sha256": "19f4b7ab8e09f49d3c36513236ce3ac1c461ad393d7441fca3b94d49902873d1",
+      "bytes": 467001,
+      "durationSeconds": 176.305,
+      "voice": "Microsoft Zira Desktop"
+    },
+    {
+      "id": "L17",
+      "locale": "ru",
+      "file": "L17-ru.ogg",
+      "textSha256": "7b21bf7f5270fdfd9dd443df717c66f796409575d3537852ab90ff89d62cdec4",
+      "sha256": "2e09e87aa5cc226142836eb32f9c8023fe7b87867e85fe5443a5d8fb6523e7d4",
+      "bytes": 443416,
+      "durationSeconds": 161.93,
+      "voice": "Microsoft Irina Desktop"
+    },
+    {
+      "id": "L18",
+      "locale": "en",
+      "file": "L18-en.ogg",
+      "textSha256": "c8496e42de897aef18369c675a5b0ce543c4231ab9b44ccce6bdd4de864f394b",
+      "sha256": "5f741adbd542f27f798bc670719cfdf11251f66aac6c823661bb6e6ccf63528f",
+      "bytes": 479760,
+      "durationSeconds": 178.745,
+      "voice": "Microsoft Zira Desktop"
+    },
+    {
+      "id": "L18",
+      "locale": "ru",
+      "file": "L18-ru.ogg",
+      "textSha256": "05944c9af7f6d7b20019967f1aea71577c94e001704669940471256ad08fb428",
+      "sha256": "999e8c6154b26da6933d9abf06c333cad43b8f178a116988d48f1a64193f38cc",
+      "bytes": 517546,
+      "durationSeconds": 187.08,
+      "voice": "Microsoft Irina Desktop"
+    },
+    {
+      "id": "L19",
+      "locale": "en",
+      "file": "L19-en.ogg",
+      "textSha256": "ffbdabfc48ccde37972de8c9cf86b35add951216cc9cce071256cf5bdd212c5e",
+      "sha256": "1628424fa24194794233297e2293bc349664566deeccde921cd5e80a72803cbb",
+      "bytes": 381205,
+      "durationSeconds": 144.35,
+      "voice": "Microsoft Zira Desktop"
+    },
+    {
+      "id": "L19",
+      "locale": "ru",
+      "file": "L19-ru.ogg",
+      "textSha256": "46a2a7233d17bc9ce4f5c0723355b4c9800cf63322e7624ec10b7ae69b8f43f7",
+      "sha256": "5d94a0f5c166fe88aece0d5d401f4d99159938a1e8830008ab8bb41c4842d237",
+      "bytes": 392343,
+      "durationSeconds": 144.42,
+      "voice": "Microsoft Irina Desktop"
+    },
+    {
+      "id": "L20",
+      "locale": "en",
+      "file": "L20-en.ogg",
+      "textSha256": "8aeeacbe4c9585df8676d4e3738291720b6c27dc826715eb9b90e7a38a50ad81",
+      "sha256": "0ed01971ee4aded85dd6a013738a39b4ec668fa933235a167299162f5e1bc4fd",
+      "bytes": 449909,
+      "durationSeconds": 169.695,
+      "voice": "Microsoft Zira Desktop"
+    },
+    {
+      "id": "L20",
+      "locale": "ru",
+      "file": "L20-ru.ogg",
+      "textSha256": "868e5e8f67e82d3822a14b4a29275d5a74cde4c29c58cf064396363c0de216f7",
+      "sha256": "964e2210039e853f736c0957dd6fd01437b9e0d12f02c910130270fca76ac5e0",
+      "bytes": 459506,
+      "durationSeconds": 165.46,
+      "voice": "Microsoft Irina Desktop"
+    },
+    {
+      "id": "L21",
+      "locale": "en",
+      "file": "L21-en.ogg",
+      "textSha256": "9e94974cb9ef4562939c99d4ab651a2bf7f0612081ebe0ed9462080263c72c34",
+      "sha256": "c5c2c26038229d813fb4256c480db7f887761ef8c0775036c0a46e282587d9ac",
+      "bytes": 448703,
+      "durationSeconds": 167.22,
+      "voice": "Microsoft Zira Desktop"
+    },
+    {
+      "id": "L21",
+      "locale": "ru",
+      "file": "L21-ru.ogg",
+      "textSha256": "0f6b308b8917513cf76271495ab0a69037a015d0666a158f9d730a47a0450f70",
+      "sha256": "90d84f6649b290901d37c754e6b88d80e9e8aad6c22caaa43f4768d2280fd338",
+      "bytes": 439273,
+      "durationSeconds": 158.315,
+      "voice": "Microsoft Irina Desktop"
+    },
+    {
+      "id": "L22",
+      "locale": "en",
+      "file": "L22-en.ogg",
+      "textSha256": "7ed8e957c917bc44ddfe344841423d166a075519e6d9d0d56dac4cda4c824fd8",
+      "sha256": "c41d43e25d6f70946baf8d71a96d44f0e6677820c67b7e6b6c9c6b4f3e4b1fd5",
+      "bytes": 484464,
+      "durationSeconds": 180.99,
+      "voice": "Microsoft Zira Desktop"
+    },
+    {
+      "id": "L22",
+      "locale": "ru",
+      "file": "L22-ru.ogg",
+      "textSha256": "992815026370f5a64cf0f005def513a38a56d32536875d82a3a3dfa3f43c2862",
+      "sha256": "51adc2ae3437c7a71867ac8d6e101d8f62276ab6c34e6a6e6c2fddbadc93a95b",
+      "bytes": 492806,
+      "durationSeconds": 177.415,
+      "voice": "Microsoft Irina Desktop"
+    },
+    {
+      "id": "L23",
+      "locale": "en",
+      "file": "L23-en.ogg",
+      "textSha256": "5b48afb670f4439a9c7ecba5e68855050103b2b5d57ffb1aa49b95933f76134b",
+      "sha256": "a2f69704553e8867e4627306ef59ae26d762f8cad2fbf7f92bbbb6c8a5c7e7d7",
+      "bytes": 472803,
+      "durationSeconds": 176.715,
+      "voice": "Microsoft Zira Desktop"
+    },
+    {
+      "id": "L23",
+      "locale": "ru",
+      "file": "L23-ru.ogg",
+      "textSha256": "0f5081dbec1b88653ccebd68038b1716146f261dc527ca71fefed02154eb06e5",
+      "sha256": "8db4d44247ce07a5222084912a009e9558348d0d590187b7705f3e83b7c61eff",
+      "bytes": 469209,
+      "durationSeconds": 169.21,
+      "voice": "Microsoft Irina Desktop"
+    },
+    {
+      "id": "L24",
+      "locale": "en",
+      "file": "L24-en.ogg",
+      "textSha256": "ea47a19feba5c5e7ec99acd1a67297454dad15aa335d3edea4a1aeeb154fa7d4",
+      "sha256": "43e2fbe191b9d8fab3d51f14a1d6ceaf9a361b3918c6e57c439a79ed6a2dc83c",
+      "bytes": 258414,
+      "durationSeconds": 98.155,
+      "voice": "Microsoft Zira Desktop"
+    },
+    {
+      "id": "L24",
+      "locale": "ru",
+      "file": "L24-ru.ogg",
+      "textSha256": "19e9c2e442532803b10e7a01684f74d4ae2ead704add29a784e234e7788afcde",
+      "sha256": "b90e49501c1d4fe8c91f62affcd857c605db4aafe46b83b98c8f871ebfd9f570",
+      "bytes": 311058,
+      "durationSeconds": 112.18,
+      "voice": "Microsoft Irina Desktop"
+    },
+    {
+      "id": "L25",
+      "locale": "en",
+      "file": "L25-en.ogg",
+      "textSha256": "86198f3fa0f1911e278143800e57ac71b96f6cc6d33c00dc37e48380935d8f7e",
+      "sha256": "46a24c9bc5981c8a41941ce61638b8ac4733fb2c032b7c9655b8b83b7eb83e27",
+      "bytes": 269404,
+      "durationSeconds": 101.71,
+      "voice": "Microsoft Zira Desktop"
+    },
+    {
+      "id": "L25",
+      "locale": "ru",
+      "file": "L25-ru.ogg",
+      "textSha256": "80c2ceb2bd5128507b1a0ad61c0f73e6037380c83e68e9eb06eb1bc13a9c8aa9",
+      "sha256": "7002b3f686849b3f792cce12ab136dd127e5e168e03652dc4fb2dc7a157d3a75",
+      "bytes": 324556,
+      "durationSeconds": 117.255,
+      "voice": "Microsoft Irina Desktop"
+    },
+    {
+      "id": "L26",
+      "locale": "en",
+      "file": "L26-en.ogg",
+      "textSha256": "8761cefb3d867760ee22ad59dedb139d980fb0b59497e0b77aefaec409a89883",
+      "sha256": "12ebe68d835473ca82387f87919189b7056f3479aa4f0c4e9865779cf3f8ed94",
+      "bytes": 326369,
+      "durationSeconds": 122.44,
+      "voice": "Microsoft Zira Desktop"
+    },
+    {
+      "id": "L26",
+      "locale": "ru",
+      "file": "L26-ru.ogg",
+      "textSha256": "ccded655c6051e2224c7bb2bac24ce397220cdb1e9ec529a6ffb82416d5782f4",
+      "sha256": "36c22432fb79e03f0e334ff415b952e273ff89c9e80928b430c550f3f48808b3",
+      "bytes": 376942,
+      "durationSeconds": 137.01,
+      "voice": "Microsoft Irina Desktop"
+    },
+    {
+      "id": "L27",
+      "locale": "en",
+      "file": "L27-en.ogg",
+      "textSha256": "3a5c0411656195f7712e7e98d9cc05b31bb3a958058192df7af30f2f4e9b9ec7",
+      "sha256": "db027a9160435b0217a30bbd44fa79cdf9627c8e026d4e9adcc28d733eb71dda",
+      "bytes": 314273,
+      "durationSeconds": 118.585,
+      "voice": "Microsoft Zira Desktop"
+    },
+    {
+      "id": "L27",
+      "locale": "ru",
+      "file": "L27-ru.ogg",
+      "textSha256": "1c463c3351ac37a5d91dc510fe212fbf59a353ee98844c67317f2ecb910fdc28",
+      "sha256": "3a1b623c3e944539f40dcabf8895c94f16ec0a75a7ffe8bf05c9ed69b9dc3c8b",
+      "bytes": 350401,
+      "durationSeconds": 127.26,
+      "voice": "Microsoft Irina Desktop"
+    },
+    {
+      "id": "L28",
+      "locale": "en",
+      "file": "L28-en.ogg",
+      "textSha256": "2dcb160673f42fb40d0fc5062cb2a5d9f3d010afce3245f75643433f9f33d85b",
+      "sha256": "bfa0519791d96342a09d5dad1b542828dca631f81a29c0569be092a30ae49fc0",
+      "bytes": 432646,
+      "durationSeconds": 164.73,
+      "voice": "Microsoft Zira Desktop"
+    },
+    {
+      "id": "L28",
+      "locale": "ru",
+      "file": "L28-ru.ogg",
+      "textSha256": "ec407ffff98a3570a6d4e6d0756ae0fbf583e8f5b7956ab250b8c9a60e4aa60a",
+      "sha256": "5a13c8f22b3f8bf35fe92426102d696caa3e5586cac16d9787e4fe6e8d7d7a35",
+      "bytes": 478326,
+      "durationSeconds": 174.02,
+      "voice": "Microsoft Irina Desktop"
+    },
+    {
+      "id": "L29",
+      "locale": "en",
+      "file": "L29-en.ogg",
+      "textSha256": "cdacde213153fe6e3555c744ad4104cb072fe873e14b6cf64ea1a9069f2ae9eb",
+      "sha256": "0da926a4c91c8da50c27895096fc607e8387df4c11571237501a2890ba063d0e",
+      "bytes": 494798,
+      "durationSeconds": 187.38,
+      "voice": "Microsoft Zira Desktop"
+    },
+    {
+      "id": "L29",
+      "locale": "ru",
+      "file": "L29-ru.ogg",
+      "textSha256": "5772ee812245d8968861b9f7d33d645d44513e6145c22fe419ba2e244ba5d5bf",
+      "sha256": "f7c6b1a340ae401fd1a408d00ab6485c4e6a3babf6ce503489c79d14bca68c42",
+      "bytes": 561032,
+      "durationSeconds": 203.975,
+      "voice": "Microsoft Irina Desktop"
+    },
+    {
+      "id": "L30",
+      "locale": "en",
+      "file": "L30-en.ogg",
+      "textSha256": "d44c6d697c47c589eaeced47e0dd204444ca0ab37f8fd3427f64d05af5c9ae81",
+      "sha256": "b264663090d635deca4b70e95ffe24fd15003a1dc62ef0154e1599e59dbd4dea",
+      "bytes": 490917,
+      "durationSeconds": 185.015,
+      "voice": "Microsoft Zira Desktop"
+    },
+    {
+      "id": "L30",
+      "locale": "ru",
+      "file": "L30-ru.ogg",
+      "textSha256": "6b70e45d860f06e011f1d4e0e9c2c8da0e2eb977c9efa324072cf04f8a34f7a9",
+      "sha256": "1c4535b1d077717b58fb3750ce14e1b04699ac186bda074e55dab1cd26eafc61",
+      "bytes": 559356,
+      "durationSeconds": 201.64,
+      "voice": "Microsoft Irina Desktop"
+    },
+    {
+      "id": "L31",
+      "locale": "en",
+      "file": "L31-en.ogg",
+      "textSha256": "e2a15da092ff2f842b869de47de1bfe4171cc4117ab5e13e7db277458e347ef6",
+      "sha256": "ad13d50b7937d692641ee3d4afb6b7c966f316ef4554416cc0d09e10c918f6bf",
+      "bytes": 529555,
+      "durationSeconds": 198.985,
+      "voice": "Microsoft Zira Desktop"
+    },
+    {
+      "id": "L31",
+      "locale": "ru",
+      "file": "L31-ru.ogg",
+      "textSha256": "2fc98c1a192c24769405cd7fcd68e67a37f0ce35dec0eeb0e33c7bd8d5fba3ef",
+      "sha256": "2153b491a51824eb81efd6d56404b5d1394cad0a697155ceef4cfae6b7a52c49",
+      "bytes": 565436,
+      "durationSeconds": 206.105,
+      "voice": "Microsoft Irina Desktop"
+    },
+    {
+      "id": "L32",
+      "locale": "en",
+      "file": "L32-en.ogg",
+      "textSha256": "cd47884e668c3f8bc64239a562d403b2fdea47f4374a05bafc562718566feab2",
+      "sha256": "6bda7f0e4ff7d137a5040732b81faaaca992060cddc6ab5b20a92ad6bf780031",
+      "bytes": 506587,
+      "durationSeconds": 188.56,
+      "voice": "Microsoft Zira Desktop"
+    },
+    {
+      "id": "L32",
+      "locale": "ru",
+      "file": "L32-ru.ogg",
+      "textSha256": "fd35717864c01d39864bf678459b56697df2172d938117cba70ae0682ae1ab2e",
+      "sha256": "5404f2f22d093aa8f918c17c34de1b6312698a2022ab62c7b733d8fc52b31e9d",
+      "bytes": 573933,
+      "durationSeconds": 206.255,
+      "voice": "Microsoft Irina Desktop"
+    },
+    {
+      "id": "L33",
+      "locale": "en",
+      "file": "L33-en.ogg",
+      "textSha256": "f301f7f97f2228b402e064f2c1cde1807f0e6c0d0263d72884468cbed0c0c3f7",
+      "sha256": "c167895f82dae7b7ed3ecf3da7e1927a47f4d3462fd70bc92023507c63ce82d7",
+      "bytes": 519830,
+      "durationSeconds": 196.435,
+      "voice": "Microsoft Zira Desktop"
+    },
+    {
+      "id": "L33",
+      "locale": "ru",
+      "file": "L33-ru.ogg",
+      "textSha256": "de0766f9e78b0ffa23423bb9101a5444ec0a5a61b74ac5d5d45f7e5905326733",
+      "sha256": "3d11d1d77e07773f8d3c811c924f1d8b7050fa111d41bd62234fa15e0b75847e",
+      "bytes": 565627,
+      "durationSeconds": 202.025,
+      "voice": "Microsoft Irina Desktop"
+    },
+    {
+      "id": "L34",
+      "locale": "en",
+      "file": "L34-en.ogg",
+      "textSha256": "393d8956022a5a816a840e19dc72174bdbdc129b98aa7617593de69720ec4aa0",
+      "sha256": "063c0aa68509bd165f755f0a21cadd33889d122b5940cb755eb13518eb2cdd1c",
+      "bytes": 577599,
+      "durationSeconds": 216.94,
+      "voice": "Microsoft Zira Desktop"
+    },
+    {
+      "id": "L34",
+      "locale": "ru",
+      "file": "L34-ru.ogg",
+      "textSha256": "35a6859f7f768de1ebb1facd816a177f44b582f5bf67355bc4444de25e96cda5",
+      "sha256": "9dc1eb6943aeccfcc421ea6ded487de77ca45be7404b33346688f48771ad2ebf",
+      "bytes": 588861,
+      "durationSeconds": 212.995,
+      "voice": "Microsoft Irina Desktop"
+    },
+    {
+      "id": "L35",
+      "locale": "en",
+      "file": "L35-en.ogg",
+      "textSha256": "f797e3cb0010e3fb05bd92d4d4a87650ee101e89838c33977a801b56346ccf84",
+      "sha256": "41be1a58bc026b874c8b7a033c72a1af75cbec9cf4289fe47d1098a6658fa62f",
+      "bytes": 599361,
+      "durationSeconds": 224.035,
+      "voice": "Microsoft Zira Desktop"
+    },
+    {
+      "id": "L35",
+      "locale": "ru",
+      "file": "L35-ru.ogg",
+      "textSha256": "1369f46b30f0a17cea5a44f186fa5a349f8210f21e4e7390ada44bf838875c5d",
+      "sha256": "5a120ec996b40fc05d41619d1b0b429d91d47c2752aaad52999cffea212529e8",
+      "bytes": 566770,
+      "durationSeconds": 204.435,
+      "voice": "Microsoft Irina Desktop"
+    },
+    {
+      "id": "L36",
+      "locale": "en",
+      "file": "L36-en.ogg",
+      "textSha256": "8032714b5c12cdc25da1122240b7e8783eaf6fb5e7ed6d060eee25a936c4650a",
+      "sha256": "e068ad1b949997aeb907e20ffe32957d2618ce2894a289a00e3619e20e85635a",
+      "bytes": 632421,
+      "durationSeconds": 236.165,
+      "voice": "Microsoft Zira Desktop"
+    },
+    {
+      "id": "L36",
+      "locale": "ru",
+      "file": "L36-ru.ogg",
+      "textSha256": "11c1b93308dfa004ea200cbe3f8ff832e3b6a4a6f9f96b7061a7a47ce19b99e4",
+      "sha256": "574ca5bc89c57f8b684d53aead38e5884004b1dd0c1e2b1f7466c6382cb04e28",
+      "bytes": 658735,
+      "durationSeconds": 236.485,
+      "voice": "Microsoft Irina Desktop"
+    },
+    {
+      "id": "L37",
+      "locale": "en",
+      "file": "L37-en.ogg",
+      "textSha256": "bf803d9c0b2a62bb967ccace2d2e6f8196b3dbf3309e07bf8102e7787a30975b",
+      "sha256": "5f7827550e0580de90caeb7289e388c1216f123f61177bec1b80cee372b9cb0b",
+      "bytes": 512229,
+      "durationSeconds": 196.635,
+      "voice": "Microsoft Zira Desktop"
+    },
+    {
+      "id": "L37",
+      "locale": "ru",
+      "file": "L37-ru.ogg",
+      "textSha256": "2be108ee9eee0c9bbe373b24026bcc59069d1e8bd832416c377e04599e6c4892",
+      "sha256": "80ffe99b656fb166d1143cf96da4e8903a4346dda6dd58d7a813192d9a4111a2",
+      "bytes": 625610,
+      "durationSeconds": 227.785,
+      "voice": "Microsoft Irina Desktop"
+    },
+    {
+      "id": "L38",
+      "locale": "en",
+      "file": "L38-en.ogg",
+      "textSha256": "73147d7f78cea5aadcf5734edd2822e567b89b91a66f67edbdafd1dccd264751",
+      "sha256": "83b9ed742523124038179b3cce9b5a4d155843737810be49afd2706d45c9db43",
+      "bytes": 485984,
+      "durationSeconds": 186.775,
+      "voice": "Microsoft Zira Desktop"
+    },
+    {
+      "id": "L38",
+      "locale": "ru",
+      "file": "L38-ru.ogg",
+      "textSha256": "930b2848067479b3ddc2d2c5567e4000773f8175ec59da37adfb46b274cea053",
+      "sha256": "46daa172a16d308279536c9e40789fb7aef6e496783ec4117b584f76cf6bb713",
+      "bytes": 611116,
+      "durationSeconds": 222.67,
+      "voice": "Microsoft Irina Desktop"
+    },
+    {
+      "id": "L39",
+      "locale": "en",
+      "file": "L39-en.ogg",
+      "textSha256": "871143ba56e12cb62204e168c66bb2961eca20bf4e8a635cfef921d18e6212e8",
+      "sha256": "ab74ea3e21d86b58dcdf1de15f2cce0be4f5feaba2519db7dc503483995aadbf",
+      "bytes": 575912,
+      "durationSeconds": 217.655,
+      "voice": "Microsoft Zira Desktop"
+    },
+    {
+      "id": "L39",
+      "locale": "ru",
+      "file": "L39-ru.ogg",
+      "textSha256": "53067d3021e60bb2a10e7b36bfc1b93458c6fe2918f5622ea172673816af6773",
+      "sha256": "d9dc90634efdd9589ef55a1b47ce3c3115a47fcc8fab3e557349b1d4c206ba13",
+      "bytes": 673907,
+      "durationSeconds": 244.19,
+      "voice": "Microsoft Irina Desktop"
+    },
+    {
+      "id": "L40",
+      "locale": "en",
+      "file": "L40-en.ogg",
+      "textSha256": "36ab7e22931d80b1ecb5458132a81cbc287dd202ac2755d825f9376a039b2414",
+      "sha256": "d401b678717e7575a50be188344c4aa47bd93d8ee0e1b1a7e4cf3cf70f0361d9",
+      "bytes": 589050,
+      "durationSeconds": 220.7,
+      "voice": "Microsoft Zira Desktop"
+    },
+    {
+      "id": "L40",
+      "locale": "ru",
+      "file": "L40-ru.ogg",
+      "textSha256": "eb651109fe2d0c003a8649a7425f1bf2f0d5a763b218f5bcdd1af80042163836",
+      "sha256": "776bb0b960240379853b2052f2743b5ef0889f9d35f4829c816b3bc9dfd70fc1",
+      "bytes": 752027,
+      "durationSeconds": 269.4,
+      "voice": "Microsoft Irina Desktop"
+    },
+    {
+      "id": "L41",
+      "locale": "en",
+      "file": "L41-en.ogg",
+      "textSha256": "549dd519e803f23c9134603a5a7e887002989b96af1ef21d701edcef19f2f26e",
+      "sha256": "df35ca6176f37154894acb05bd677bbcc2dfb5999db7e56e52e018f1bdf50bbf",
+      "bytes": 620029,
+      "durationSeconds": 236.455,
+      "voice": "Microsoft Zira Desktop"
+    },
+    {
+      "id": "L41",
+      "locale": "ru",
+      "file": "L41-ru.ogg",
+      "textSha256": "bfed55cc5ceac9c9194994ee563efdbb629b6c38254ec092804a984f81d71082",
+      "sha256": "e2e7fda30869341e1ad9800d93d1bd5a17961928d5422f1b942d26bc275e27ce",
+      "bytes": 756222,
+      "durationSeconds": 274.705,
+      "voice": "Microsoft Irina Desktop"
+    },
+    {
+      "id": "L42",
+      "locale": "en",
+      "file": "L42-en.ogg",
+      "textSha256": "fa06b8aeb8739ec0c0dacb12fd63630aa23a9c14a58aa134ab83b170a83711e6",
+      "sha256": "b5669a14654e562c1581d4ccf162a3befd206277a320de2b710dda87f5d9c93e",
+      "bytes": 586280,
+      "durationSeconds": 223.54,
+      "voice": "Microsoft Zira Desktop"
+    },
+    {
+      "id": "L42",
+      "locale": "ru",
+      "file": "L42-ru.ogg",
+      "textSha256": "6ff83010d0394f4bb41e957dd652480b73f6fc097bf4837ad185782d53cc0a51",
+      "sha256": "0b6a26979e8a70dc2c712db77df2b9e4941cdb6a55867232b1fc8c9636219765",
+      "bytes": 766278,
+      "durationSeconds": 277.665,
+      "voice": "Microsoft Irina Desktop"
+    },
+    {
+      "id": "L43",
+      "locale": "en",
+      "file": "L43-en.ogg",
+      "textSha256": "3ce346296f7b3db2b4c766ad74d5b2f914e421a180c1a01ed5ee73eb795ba485",
+      "sha256": "3a7fa85a4e1549b91870febbabc3a3a84f50418f0204b0c14351f8f2b8bddc7b",
+      "bytes": 662510,
+      "durationSeconds": 256.06,
+      "voice": "Microsoft Zira Desktop"
+    },
+    {
+      "id": "L43",
+      "locale": "ru",
+      "file": "L43-ru.ogg",
+      "textSha256": "973964ea587d0dcda9f8de1688f6e0ac7567fc2acf8eaa6b58db1788fbd24aee",
+      "sha256": "a5e26494f0e977bf167eb296610a977575654e5c30616b15bdc68e985a1e8634",
+      "bytes": 837378,
+      "durationSeconds": 308.115,
+      "voice": "Microsoft Irina Desktop"
+    },
+    {
+      "id": "L44",
+      "locale": "en",
+      "file": "L44-en.ogg",
+      "textSha256": "5be32101f2fd997586a36313f455ee34eda199b4defba119c8c0fb977adbcf97",
+      "sha256": "a6f33fd0448ba4725a8966ea6cc5d6c2317b5b7089e039410d2c5301614f1716",
+      "bytes": 666308,
+      "durationSeconds": 254.23,
+      "voice": "Microsoft Zira Desktop"
+    },
+    {
+      "id": "L44",
+      "locale": "ru",
+      "file": "L44-ru.ogg",
+      "textSha256": "f490513598d87392cd79d7da96862c5b97596d88fe7b7003afbd68c65c8141e0",
+      "sha256": "283ffaa306c93017742523e8b613bcee726cdd0096b2f721afa589e8037c4d5a",
+      "bytes": 815830,
+      "durationSeconds": 296.205,
+      "voice": "Microsoft Irina Desktop"
+    },
+    {
+      "id": "L45",
+      "locale": "en",
+      "file": "L45-en.ogg",
+      "textSha256": "96003f1eab6a2f6e4889fd88e0872dd9b0b2ac4f0e7474abcc7bca59c2aafd9f",
+      "sha256": "491effd8af4194a7ddf2fd429f8712d3f8867562fb032eca6585c5974c03b407",
+      "bytes": 515890,
+      "durationSeconds": 197.895,
+      "voice": "Microsoft Zira Desktop"
+    },
+    {
+      "id": "L45",
+      "locale": "ru",
+      "file": "L45-ru.ogg",
+      "textSha256": "8bd69168ab5c5533ee0a18528488607cbb0043066a3aa8c85606139ce93b26c9",
+      "sha256": "95c701cc427af3ae7963b6883cd012a40e5b43dd3e8bc63186f129b585aab2e6",
+      "bytes": 680317,
+      "durationSeconds": 245.82,
+      "voice": "Microsoft Irina Desktop"
+    },
+    {
+      "id": "L46",
+      "locale": "en",
+      "file": "L46-en.ogg",
+      "textSha256": "5444226da0ccfa81c368ba2360e6cdc7590594b24b982b139aa52bb9ab665b8f",
+      "sha256": "61d1c8be19c8b35d2750ff51b331764f50d37afe2b6d34f1c89b02ca9bc8a148",
+      "bytes": 542177,
+      "durationSeconds": 207.875,
+      "voice": "Microsoft Zira Desktop"
+    },
+    {
+      "id": "L46",
+      "locale": "ru",
+      "file": "L46-ru.ogg",
+      "textSha256": "f6614b3bd71d0f2cd9b236840fc8aa96e11d933f896aa9a9b25b260fb4a36aa0",
+      "sha256": "e96ddda6defd101db89a5bda7cf8ec86f278eb47a57574de026d3d1d8ebead5f",
+      "bytes": 736255,
+      "durationSeconds": 266.29,
+      "voice": "Microsoft Irina Desktop"
+    },
+    {
+      "id": "L47",
+      "locale": "en",
+      "file": "L47-en.ogg",
+      "textSha256": "9e25bb7b9376409ea179b26612d514af53e8c45b1d280dd26e55018b39854c9e",
+      "sha256": "20aa75a16b8106b0cae67970206de0fea93e069fcb25db83a7badf5e0925c1ee",
+      "bytes": 526733,
+      "durationSeconds": 203.68,
+      "voice": "Microsoft Zira Desktop"
+    },
+    {
+      "id": "L47",
+      "locale": "ru",
+      "file": "L47-ru.ogg",
+      "textSha256": "767248692883c02e3b6379f68b9ef22c4d718c6ccaa22a90771d9dca9325ffce",
+      "sha256": "6a79d8f09f4449cddfd14ecdbe035040ecd176711a374ccab87a1210cc62e327",
+      "bytes": 669450,
+      "durationSeconds": 244.51,
+      "voice": "Microsoft Irina Desktop"
+    },
+    {
+      "id": "L48",
+      "locale": "en",
+      "file": "L48-en.ogg",
+      "textSha256": "8522b97951f90953c1c8929b6bbab700632144842fc9f0ca76b1ea1f0605f929",
+      "sha256": "861d23e4740c6e4993e5015dc28c7ab1cf68668f48865f7f271731530e433e7b",
+      "bytes": 558544,
+      "durationSeconds": 213.04,
+      "voice": "Microsoft Zira Desktop"
+    },
+    {
+      "id": "L48",
+      "locale": "ru",
+      "file": "L48-ru.ogg",
+      "textSha256": "cf29d3d8e47baa86fa88f132c98d4d5c7018678c7ab3d9b289cc44a9fe8faece",
+      "sha256": "f7051c40401eb9a82008de1aa58e0916ceed445d2a8f6a0949820231920596eb",
+      "bytes": 753367,
+      "durationSeconds": 272.05,
+      "voice": "Microsoft Irina Desktop"
+    },
+    {
+      "id": "L49",
+      "locale": "en",
+      "file": "L49-en.ogg",
+      "textSha256": "17565551ec3abc82c912bcb417cf5e62378051b369e027d1500c97636904a0b3",
+      "sha256": "2cf49ebccab704366a51b8a906d0c3ff12eb73bdb86f58edfdbcb473f105ce77",
+      "bytes": 559063,
+      "durationSeconds": 212.95,
+      "voice": "Microsoft Zira Desktop"
+    },
+    {
+      "id": "L49",
+      "locale": "ru",
+      "file": "L49-ru.ogg",
+      "textSha256": "19364f3f3a450499977b701e078f69dcc704757b8f7a12ba06d07fd2afebe458",
+      "sha256": "f7fbe5867816bea7d7e6a70c500160dd2a1d3251653f1084eb5ca526ebd920be",
+      "bytes": 746196,
+      "durationSeconds": 268.37,
+      "voice": "Microsoft Irina Desktop"
+    },
+    {
+      "id": "L50",
+      "locale": "en",
+      "file": "L50-en.ogg",
+      "textSha256": "13e630ac6e8fd69a5668d6ca27606e80a9c04777c1076caf9a06f1ed7ce5c9a9",
+      "sha256": "6bd06ad868b5d96dca7d4b6690a033a85ece735c1a7b98f581f558dd304d951f",
+      "bytes": 623124,
+      "durationSeconds": 237.45,
+      "voice": "Microsoft Zira Desktop"
+    },
+    {
+      "id": "L50",
+      "locale": "ru",
+      "file": "L50-ru.ogg",
+      "textSha256": "a8667972568b695f55e1191a1e4a5a82baec365b18ac7b761cbc8ee953378a86",
+      "sha256": "32209048d9fd93cdea4ff3e349ba41fde78ce8cefc7691b1f916148454dde884",
+      "bytes": 823371,
+      "durationSeconds": 296.245,
+      "voice": "Microsoft Irina Desktop"
+    },
+    {
+      "id": "L51",
+      "locale": "en",
+      "file": "L51-en.ogg",
+      "textSha256": "299b5c03e4819eb2807d504b164ca5791001ca017dfabc8902f68cacb56129f0",
+      "sha256": "b73d9a339a933764ffb364c1f21a072b8f21c91695f2f115cca13b1fd223fef8",
+      "bytes": 646703,
+      "durationSeconds": 243.74,
+      "voice": "Microsoft Zira Desktop"
+    },
+    {
+      "id": "L51",
+      "locale": "ru",
+      "file": "L51-ru.ogg",
+      "textSha256": "08e48786f951ed2807f1eef781357d8498a66ac1c6c4fb70809e8c5f2b18f026",
+      "sha256": "9fe4ab0c06a00e674b18170924c5e8d312e800426ec98ac48a8dc2a0e522719b",
+      "bytes": 859703,
+      "durationSeconds": 307.69,
+      "voice": "Microsoft Irina Desktop"
+    },
+    {
+      "id": "L52",
+      "locale": "en",
+      "file": "L52-en.ogg",
+      "textSha256": "f909e28b6bf2d74f3b26780f9e039e02f864a3d6e4bc3fec2c063d9808460957",
+      "sha256": "ca9b2fbaa49e1ae7f6142ca4e9da0b1761966470bdf8a22b525c47900c582252",
+      "bytes": 628346,
+      "durationSeconds": 237.15,
+      "voice": "Microsoft Zira Desktop"
+    },
+    {
+      "id": "L52",
+      "locale": "ru",
+      "file": "L52-ru.ogg",
+      "textSha256": "e06b746258a94ef4f9ef228acb43f95ed3f82336b1177e8f564dc19b8dfac2d2",
+      "sha256": "e37fe12ef128887794135da4ac9057548ca08575aa5f08b420a0e5faf890ba8e",
+      "bytes": 797669,
+      "durationSeconds": 287.475,
+      "voice": "Microsoft Irina Desktop"
+    },
+    {
+      "id": "L53",
+      "locale": "en",
+      "file": "L53-en.ogg",
+      "textSha256": "3ab3d2c85dab5c3725e1515c2fda56967fb32b4059adc9c11849230e908f29a0",
+      "sha256": "a42347b6523414d853035ab1913932906dd2fae5949175200df81aaedc143f7f",
+      "bytes": 712804,
+      "durationSeconds": 270.04,
+      "voice": "Microsoft Zira Desktop"
+    },
+    {
+      "id": "L53",
+      "locale": "ru",
+      "file": "L53-ru.ogg",
+      "textSha256": "228ca46db5f1e6b5371e6df443f06e682f0323f5bcadbdcca11d440c80ac789a",
+      "sha256": "456aedc5df0529704cebe292327b1db74bb085a9193c2dbf385a291f92ff52ba",
+      "bytes": 915660,
+      "durationSeconds": 331.67,
+      "voice": "Microsoft Irina Desktop"
+    },
+    {
+      "id": "L54",
+      "locale": "en",
+      "file": "L54-en.ogg",
+      "textSha256": "90a256add2c162699460a192233286d448e1aa5ad1edc1ce7b4352d8d55f80c9",
+      "sha256": "e2e4b29aa8055a7436f5e108b95f713415e60581cac44afe74e899fae7285831",
+      "bytes": 704584,
+      "durationSeconds": 270.66,
+      "voice": "Microsoft Zira Desktop"
+    },
+    {
+      "id": "L54",
+      "locale": "ru",
+      "file": "L54-ru.ogg",
+      "textSha256": "698b2e39e5e28be88d7132226b8673208ec177cf2e660fe79c826c2301ac699c",
+      "sha256": "069aa67bf971c6efe24ca983edc47eae87712eed9b55ca8ca1913284c043b248",
+      "bytes": 666037,
+      "durationSeconds": 244.93,
+      "voice": "Microsoft Irina Desktop"
+    },
+    {
+      "id": "L55",
+      "locale": "en",
+      "file": "L55-en.ogg",
+      "textSha256": "3b8cfb20f7ef93ff25536ed025079e584bd080d466c9309c25b71ec819da7224",
+      "sha256": "2a672c4ce0b118c57ef43d544506ea72ccfaf5b57265e954eb974d354db7c622",
+      "bytes": 665484,
+      "durationSeconds": 254.6,
+      "voice": "Microsoft Zira Desktop"
+    },
+    {
+      "id": "L55",
+      "locale": "ru",
+      "file": "L55-ru.ogg",
+      "textSha256": "caa2e06b1111b5c648c46348f91f78427d614ed4f75b8074ad12e30203f2da2b",
+      "sha256": "cf17c761fbae5629e278fd45f987dfe0b8d9201eb67c095dfe1ad86c2c72d521",
+      "bytes": 731646,
+      "durationSeconds": 267.48,
+      "voice": "Microsoft Irina Desktop"
+    },
+    {
+      "id": "L56",
+      "locale": "en",
+      "file": "L56-en.ogg",
+      "textSha256": "a89f27c54e3f98fdcffc8ccd4380491e8e58bf6f7ebad7228c8173e1d7ce92ec",
+      "sha256": "0f4dd0754563f7bf0e08cfd0a18da563ade3505a34c2347260bb7f1d5dd33723",
+      "bytes": 722707,
+      "durationSeconds": 271.24,
+      "voice": "Microsoft Zira Desktop"
+    },
+    {
+      "id": "L56",
+      "locale": "ru",
+      "file": "L56-ru.ogg",
+      "textSha256": "6135f2091ae8f2b8c2e569ada34ae58a79f7193f29c64058efff888a21097f7b",
+      "sha256": "68a7b6304752a1b4421cd2494c34f2a7cf856d7362bf7552d571c3c3f45e9846",
+      "bytes": 734912,
+      "durationSeconds": 266.385,
+      "voice": "Microsoft Irina Desktop"
+    },
+    {
+      "id": "L57",
+      "locale": "en",
+      "file": "L57-en.ogg",
+      "textSha256": "cd1bcaaf3d2b47c55cb75dd1c6a28c4680dea76c4d7d8be3e1d4377bb749957d",
+      "sha256": "71bc2d12e676ffe54ad9b6aa5a7f9fd03a46e1af297827c82ece1741934418bb",
+      "bytes": 777409,
+      "durationSeconds": 290.315,
+      "voice": "Microsoft Zira Desktop"
+    },
+    {
+      "id": "L57",
+      "locale": "ru",
+      "file": "L57-ru.ogg",
+      "textSha256": "1a95c361c11ef5dabf8fd1c5bf038c9bbb690127ac52fe99597d9ccb585f4ed1",
+      "sha256": "63b3cd10ac0c7b7653b4b277318504548dee326340aa27c2921acf7d4fc43313",
+      "bytes": 979647,
+      "durationSeconds": 350.77,
+      "voice": "Microsoft Irina Desktop"
+    },
+    {
+      "id": "L58",
+      "locale": "en",
+      "file": "L58-en.ogg",
+      "textSha256": "296efe8a05ee83711bbe8aab7dd776eefd92590ac3e647a96213cd21377b31e4",
+      "sha256": "7efe770645819dfb2d34b742f2183f91b7314b67c8598827321d113abed54d32",
+      "bytes": 819227,
+      "durationSeconds": 304.09,
+      "voice": "Microsoft Zira Desktop"
+    },
+    {
+      "id": "L58",
+      "locale": "ru",
+      "file": "L58-ru.ogg",
+      "textSha256": "9195dd63de326da426c49b563a3cfe23b773b711861644ab24a694a6565a0bed",
+      "sha256": "bd5fcefbddc28cd9867833f1971dbf597161a0c194f19fc56f43d8dbdfba9d38",
+      "bytes": 985067,
+      "durationSeconds": 353.59,
+      "voice": "Microsoft Irina Desktop"
+    },
+    {
+      "id": "L59",
+      "locale": "en",
+      "file": "L59-en.ogg",
+      "textSha256": "1feabf34d0ea714d83a2f90e2afaba220868821c8ea84dcbaaac62e2b698827a",
+      "sha256": "531ce913af37a5e5249ed5d2cc684890813e4d13d1b0c9b5b2447f2fdcad9879",
+      "bytes": 688360,
+      "durationSeconds": 264.805,
+      "voice": "Microsoft Zira Desktop"
+    },
+    {
+      "id": "L59",
+      "locale": "ru",
+      "file": "L59-ru.ogg",
+      "textSha256": "8f561326e1ee1a724bdb4c80b52779be067a2d62063dfd34eac35a25512e246d",
+      "sha256": "918bc50dddf2683fa50b44455eecbcb5956a782cdddf8f876f35dad5a5567447",
+      "bytes": 826744,
+      "durationSeconds": 300.965,
+      "voice": "Microsoft Irina Desktop"
+    },
+    {
+      "id": "L60",
+      "locale": "en",
+      "file": "L60-en.ogg",
+      "textSha256": "6d269017022db5b8cd206c123e0b7dbe13ac1bce5cce9c10842387bddec2e035",
+      "sha256": "d84362cf434d4175c3e3eb6d9ed3cd02d3bef71a35f9767ff453d4793fadf233",
+      "bytes": 651065,
+      "durationSeconds": 248.325,
+      "voice": "Microsoft Zira Desktop"
+    },
+    {
+      "id": "L60",
+      "locale": "ru",
+      "file": "L60-ru.ogg",
+      "textSha256": "3a65c3414c7986bbbd97221cfc2a1bacb605add2c6cbde83a9e5e00897c068e4",
+      "sha256": "bdec98da87cc56aea84160f5367041d23009da6b3177503e89d1121b7e294e9c",
+      "bytes": 752818,
+      "durationSeconds": 275.46,
+      "voice": "Microsoft Irina Desktop"
+    }
+  ]
+}

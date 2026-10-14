@@ -1,0 +1,9 @@
+# L12: debugging a state machine — unpublished work
+
+L12 includes English, Kazakh and Russian draft content, three assessment questions, a starter/reference pair and an automatically supplied four-press scenario. It models IDLE → ACTIVE → DONE → IDLE with rising-edge detection, mutually exclusive transition branches and entry logs. The starter deliberately omits the return transition and reports MISSING_RETURN. The reference fixes the transition without altering the input scenario. A localized SVG state diagram is shown in the learning panel; its actual rendered screenshot was inspected.
+
+Tests establish the failing third press and a passing fourth press after repair, one transition for held or initially pressed inputs, release/rearm behavior and ten-repeat determinism. Hardware generation explicitly rejects the simulated button because there is no configured real sensor driver; these projects are simulation-only and no successful hardware compilation is claimed. All 142 unit tests pass; aggregate package branch coverage is 1005/1088 (92.37%) with unchanged per-file thresholds. Typecheck, lint and application build pass.
+
+The targeted source Electron test displays the diagram, loads each actual lesson project, verifies automatic scenario selection and runs both through the robot worker. It confirms MISSING_RETURN in the starter and STATE_ACTIVE on the fourth reference press. The test passes. Existing full regression evidence predates L12 and is not presented as covering this change. No updated installer is available.
+
+Content validation counts 724 English learner words in L12 and 12/60 authored lessons, leaving 48 missing; technical translations remain drafts. Reports and the diagram screenshot are in `evidence/wip-L12/`. Physical hardware, clean Windows 10 and clean disconnected installation verification remain NOT RUN.

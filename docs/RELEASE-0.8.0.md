@@ -1,0 +1,11 @@
+# 0.8.0 pixel game development release
+
+The simulator shows a tracked pixel robot, brick walls, asphalt paths, grass tiles and a circular checked finish. Game feedback checks actual code execution, retained collision history and the current goal state. Studio has a components dock below the editor: board/motor/sensor icons, localized GPIO roles, profile validation and the opened serial port. Configuration, port opening and physical component verification are separate states. See [DESIGN-0.8.0.md](DESIGN-0.8.0.md).
+
+The release packages the L18–L23 dashboards, numeric messages, assembly inspection, motor safety, differential steering, ramp/reversal and timed-motion instruction. Curriculum is 23/60; translations remain drafts requiring human technical review.
+
+203 unit/integration tests pass. Domain branch coverage is 1499/1579 (94.93%) with unchanged per-file gates. Type checking and lint pass. The earlier source regression passes 45 scenarios with real compilation skipped, before final presentation/port-state refinements. All 47 final installed-executable Electron scenarios pass with real compilation, zero skips and zero flakes. The game scenario tests a successful finish, a real collision, duplicate GPIO assignments and narrow/dark/Russian layout. Screenshots: evidence/pixel-game.
+
+The installer and uninstaller are verified in an isolated Unicode folder on this existing Windows 11 build 26200 workstation. Artifact: release/JECTIVE Robotics Studio Setup 0.8.0.exe; 151017907 bytes; SHA256 53ab3d9a31074781130bb83445bbd9231543e841eb96922843f95219ed166649; Authenticode NotSigned. Native executable resource editing remains disabled; the window and installer use configured Jective icons. Source ZIP CRC and workspace-byte verification are recorded separately.
+
+The full master specification is NOT COMPLETE. Remaining scope includes 37 lessons, language review, additional hardware drivers and runtime integration, and physical/clean-OS acceptance. Automatic physical motor/sensor connection detection is not implemented; assigned GPIOs and an open COM port do not prove connected components. Physical upload, actuation and hardware acceptance are NOT RUN. This is an intermediate development release.

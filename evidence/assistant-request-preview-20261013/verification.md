@@ -1,0 +1,11 @@
+# Pending assistant request preview — 2026-10-13
+
+AssistantPanel now captures one validated question/context payload before the request and uses that exact payload both for IPC and the pending-request preview. Editing the selected file elsewhere in Studio cannot replace the displayed pending context with newer unsent source. Question/sharing controls are disabled while busy, matching the existing file selector. They return after completion/cancel, and the preview snapshot is cleared on completion, cancellation or project/file lifecycle changes. Existing source-revision checks still reject stale answers.
+
+The question textarea now has a localized explicit accessible name. The initial test failed to find its exact implicit label after typing (`before-label-e2e.json`); this receipt is not evidence of a successful disabled-control assertion. Source inspection confirmed the controls had no busy-disabled attributes before the change. Final test finds the explicit name, verifies disabled/reenabled controls and preserves the typed question.
+
+Actual isolated source Electron suite: **3 passed / 13.7 seconds** (`after-e2e.json`). Multi-file review fixture holds a request, edits the selected helper file through real Monaco, returns to Help and verifies preview remains byte-for-text equal to the captured request context. Further source edits invalidate the delayed answer. Successful answer and cancel restore controls; original reviewed source/export/consent checks remain passing. Settings/focus/error and real loopback HTTP truncated/manual-retry/complete-response workflows also passed. These are labeled deferred IPC/provider fixtures, not live OpenAI or hardware verification.
+
+Source build/typecheck/lint passed. No domain/dependency change in this step; previous full 544-test suite is separately retained under assistant-protocol-20261013. This verifies editing while pending, not model output quality or all context-selection capabilities required by the master prompt.
+
+The current immutable package and published installer were not rebuilt/overwritten; they predate this source change. User preview PID 8928 was observed responding and left open. Clean Windows 10, installer/full GUI/content/human accessibility/language/live provider and physical hardware acceptance remain incomplete.

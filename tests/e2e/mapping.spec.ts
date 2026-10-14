@@ -1,0 +1,18 @@
+import {test,expect,_electron as electron} from '@playwright/test';
+import {mkdtemp,rm} from 'node:fs/promises';
+import {tmpdir} from 'node:os';
+import {join} from 'node:path';
+test('L08 loads its mapping blocks and computes the midpoint through the robot worker',async()=>{
+ const root=await mkdtemp(join(tmpdir(),'jective-mapping-'));const env:Record<string,string>=Object.fromEntries(Object.entries(process.env).filter((entry):entry is [string,string]=>entry[1]!==undefined));delete env.ELECTRON_RUN_AS_NODE;env.JECTIVE_WORKSPACE_ROOT=root;
+ const app=await electron.launch({executablePath:process.env.JECTIVE_EXECUTABLE,args:process.env.JECTIVE_EXECUTABLE?[]:['.'],env});
+ try{
+  const page=await app.firstWindow();page.on('dialog',d=>d.accept());await expect(page.locator('.monaco-editor').first()).toHaveAttribute('data-source',new RegExp('digitalWrite'.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')));
+  await page.getByRole('button',{name:'Learn',exact:true}).click();await page.getByRole('button',{name:/^L08 ·/}).click();
+  await expect(page.locator('.content article')).toContainText('saturation');
+  await page.getByRole('button',{name:'Load reference solution',exact:true}).click();await expect(page.getByLabel('Project name')).toHaveValue('L08 learner project');
+  await expect(page.locator('.monaco-editor').first()).toHaveAttribute('data-source',new RegExp('jv_bounded_input'.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')));
+  await page.getByRole('button',{name:'Simulation',exact:true}).click();await page.getByRole('button',{name:'Reset',exact:true}).click();await expect(page.locator('.feature pre')).toContainText('"timeMs": 0');
+  await page.getByRole('button',{name:'Step 20 ms',exact:true}).click();await expect(page.locator('.feature pre')).toContainText('"output_request_pct": 15');
+  await expect(page.locator('.feature pre')).toContainText('"input_value": 50');
+ }finally{await app.evaluate(({app})=>app.exit(0));await rm(root,{recursive:true,force:true,maxRetries:30,retryDelay:100});}
+});

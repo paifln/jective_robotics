@@ -1,0 +1,11 @@
+import {build} from 'esbuild';
+import {mkdir,readFile,writeFile} from 'node:fs/promises';
+import {createHash} from 'node:crypto';
+await mkdir('test-results/orientation',{recursive:true});
+await build({entryPoints:['packages/content/orientation-experiment.ts'],outfile:'test-results/orientation/model.cjs',bundle:true,platform:'node',format:'cjs'});
+const {orientationTrial}=await import('../test-results/orientation/model.cjs');
+const cases=['normal','missing-signal','moving-calibration'].map(caseId=>orientationTrial(2,1,caseId)),analytic=orientationTrial(2,0);
+const final=analytic.rows.at(-1);if(Math.abs(final.uncalibratedErrorDegrees-16)>1e-9||Math.abs(final.calibratedErrorDegrees)>1e-9||final.truthHeadingDegrees!==-10)throw new Error('ORIENTATION_ANALYTIC_ENDPOINT');
+if(cases[1].rows.filter(row=>row.timeMs>=4000).some(row=>row.calibratedHeadingDegrees!==null||row.uncalibratedHeadingDegrees!==null)||cases[2].calibration!==null||cases[2].calibrationFault!=='GYRO_STATIONARY_REQUIRED')throw new Error('ORIENTATION_FAILURE_EVIDENCE');
+const sourceHashes={};for(const path of ['packages/simulator/orientation.ts','packages/content/orientation-experiment.ts','packages/content/lesson-orientation.ts','packages/content/lessons.ts','packages/content/knowledge-check.ts','apps/desktop/renderer/OrientationPanel.tsx','apps/desktop/renderer/ContentPanel.tsx','tests/orientation.test.ts','tests/e2e/orientation.spec.ts','scripts/orientation-check.mjs'])sourceHashes[path]=createHash('sha256').update(await readFile(path)).digest('hex');
+await mkdir('evidence/orientation',{recursive:true});await writeFile('evidence/orientation/responses.json',JSON.stringify({cases,analytic},null,2));await writeFile('evidence/orientation/verification.json',JSON.stringify({status:'DOMAIN VERIFIED; L35 AUTHORED DRAFT; UNPACKAGED SOURCE',sourceHashes,analyticEndpoint:{truthDegrees:-10,uncalibratedErrorDegrees:final.uncalibratedErrorDegrees,calibratedErrorDegrees:final.calibratedErrorDegrees},scope:'Declared gyro-rate noise and bias, relative heading integration from a supplied initial orientation; missing estimates remain unknown and moving calibration rejected. No real IMU, absolute-heading acquisition or physical calibration.',physicalVerification:'NOT RUN'},null,2));console.log('Orientation model cases and analytical endpoint verified.');

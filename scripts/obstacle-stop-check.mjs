@@ -1,0 +1,12 @@
+import {build} from 'esbuild';
+import {mkdir,readFile,writeFile} from 'node:fs/promises';
+import {createHash} from 'node:crypto';
+await mkdir('test-results/obstacle-stop',{recursive:true});
+await build({entryPoints:['packages/content/obstacle-stop.ts'],outfile:'test-results/obstacle-stop/model.cjs',bundle:true,platform:'node',format:'cjs'});
+const {obstacleStopCases,obstacleStopExperiment}=await import('../test-results/obstacle-stop/model.cjs');
+const runs=obstacleStopCases.map(scenario=>obstacleStopExperiment(scenario));
+const unsafe=obstacleStopExperiment('missing',.3,false);
+const sourceHashes={};for(const path of ['packages/content/obstacle-stop.ts','packages/content/obstacle-stop-artifact.ts','packages/content/lesson-obstacle-stop.ts','packages/content/lessons.ts','packages/content/knowledge-check.ts','tests/e2e/obstacle-stop.spec.ts','apps/desktop/renderer/ObstacleStopPanel.tsx','apps/desktop/renderer/ContentPanel.tsx','packages/simulator/index.ts','tests/obstacle-stop.test.ts','scripts/obstacle-stop-check.mjs'])sourceHashes[path]=createHash('sha256').update(await readFile(path)).digest('hex');
+const report={status:'DOMAIN VERIFIED; L25 AUTHORED DRAFT; SOURCE LAB IMPLEMENTED',packaging:'Unpackaged source after 0.8.1',sourceHashes,scenarios:runs.map(run=>({scenario:run.scenario,status:run.trace.at(-1).status,displacementMeters:run.displacementMeters,stopping:run.stopping,stopped:run.trace.at(-1).variables.stopped,collision:run.trace.some(state=>state.collision),distanceSource:run.trace.at(-1).distanceSource})),unsafeMissingStatus:unsafe.trace.at(-1).status,physicalVerification:'NOT RUN'};
+if(report.scenarios.some(scenario=>scenario.status!=='completed'||scenario.collision)||report.unsafeMissingStatus!=='error')throw new Error('OBSTACLE_STOP_EVIDENCE_FAILED');
+await mkdir('evidence/obstacle-stop',{recursive:true});await writeFile('evidence/obstacle-stop/traces.json',JSON.stringify({runs,unsafe},null,2));await writeFile('evidence/obstacle-stop/verification.json',JSON.stringify(report,null,2));console.log(JSON.stringify(report,null,2));

@@ -1,0 +1,9 @@
+# PWM IR, Blockly and simulation — unpublished work
+
+The instruction model now supports PWM expression values with optional indicator channel 1/2. Validation checks expressions and channel IDs; execution checks finite duty percentages from 0 through 100. Both indicator interpreters, including parameterized function execution, emit explicit numeric PWM events. Robot state exposes ledDuty and ledSecondaryDuty and keeps the existing boolean indicator state consistent with positive duty. Binary ON/OFF maps to 100/0 percent when mixed with PWM commands.
+
+Blockly includes an expression-valued PWM block with localized captions and persistent channel selection. Actual Blockly serialization/language tests preserve the expression and both channels. The indicator worker response schema accepts numeric PWM events, the UI prints percent units, and robot state output exposes duty percentages. This represents commanded duty, not measured luminous brightness or motor speed.
+
+All 158 unit tests pass with package branch coverage 1107/1191 (92.94%) and unchanged per-file thresholds. Typecheck, lint and application build pass. The targeted source Electron test opens a real PWM-block project and executes it through both workers, verifying channel-one 25% and channel-two 75%. It passes. Tests also cover bounded sweeps, function parameters, invalid evaluated duties, invalid channels and interaction with binary indicator commands.
+
+Hardware generation deliberately remains blocked with PWM_DRIVER_REQUIRED, and unassigned indicator wiring still fails explicitly. Profile-aware C++/LEDC integration, hardware compilation and L15 content remain outstanding. This supersedes the Blockly/simulator limitations in WIP-PWM-PROFILE.md; it does not establish physical PWM behavior. Reports are in `evidence/wip-pwm-simulation/`. Authored lesson count remains 14/60 and no new installer has been produced.

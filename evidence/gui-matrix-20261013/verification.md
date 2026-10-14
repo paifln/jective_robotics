@@ -1,0 +1,7 @@
+# Selected source GUI matrix — 2026-10-13
+
+Executed 44 tests from 43 files: **44 passed**, approximately 4.8 minutes, actual exit 0. `selection.json` records the exact files and exclusion scope; `execution.json` records timestamps/exit; `e2e.json` is the complete reporter output. Selected tests explicitly choose English and already place their windows offscreen/hidden. Ten otherwise matching tests without that window treatment were omitted, as were real compiler prerequisites and tests without explicit English setup. These exclusions are not PASS or accepted limitations of the product.
+
+Coverage includes actual local project/version persistence, Code-copy preservation, assessment/progress restart, multiple simulated learning scenarios and evidence export, worker cancellation/timeouts, labeled assistant fixtures, serialized configuration, source consent/review, board-driver browsing, raw-journal pages, serial export without opening hardware, and world-file validation. Each individual test's explicit fixtures remain scoped as stated in its source/report; none imply physical hardware acceptance.
+
+This run used the source build before the later localized accessible-label, stable navigation CSS, lesson-key and interactive-visual corrections. Those changes have separately scoped verification in `../localized-controls-20261013/verification.md`; this report is not silently promoted to the later source snapshot. The full Electron suite, packaged application, NSIS lifecycle and Windows 10/hardware acceptance remain incomplete.

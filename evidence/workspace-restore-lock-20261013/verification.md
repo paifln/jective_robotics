@@ -1,0 +1,5 @@
+# Exclusive workspace restoration
+
+All trusted main-process IPC operations reserve their lifetime until completion. Workspace restoration requires no operation in flight and prevents new operations until its dialog, validation, retained backup and replacement finish. Reservations are released in finally, including user cancellation and errors. Successful restoration clears the previous document path/revision so saving cannot silently overwrite its old external file.
+
+Actual source Electron test, isolated workspace, real SQLite and project files: an open restore dialog rejects autosave and second restore; cancellation releases the lock; an open save dialog rejects restore; restore preserves snapshot/recent metadata and the prior database backup; the next save chooses a new external path and the old file bytes stay identical. Native file dialogs use explicit automated choices. A managed assistant chat regression also PASS. Typecheck and lint PASS. No hardware, remote services or installer lifecycle tested here.

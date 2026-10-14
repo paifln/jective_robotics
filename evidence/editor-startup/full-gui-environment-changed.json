@@ -1,0 +1,138 @@
+{
+  "config": {
+    "configFile": "C:\\Users\\Kabessov\\Documents\\GitHub\\jective_robotics\\playwright.config.ts",
+    "rootDir": "C:/Users/Kabessov/Documents/GitHub/jective_robotics/tests/e2e",
+    "forbidOnly": false,
+    "fullyParallel": false,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "projects": [
+      {
+        "outputDir": "C:/Users/Kabessov/Documents/GitHub/jective_robotics/test-results/playwright-output",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "",
+        "name": "",
+        "testDir": "C:/Users/Kabessov/Documents/GitHub/jective_robotics/tests/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 60000
+      }
+    ],
+    "quiet": false,
+    "reporter": [
+      [
+        "list",
+        null
+      ],
+      [
+        "json",
+        {
+          "outputFile": "test-results/e2e.json"
+        }
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "runAgents": "none",
+    "shard": null,
+    "tags": [],
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.58.2",
+    "workers": 1,
+    "webServer": null
+  },
+  "suites": [
+    {
+      "title": "multifile-editor.spec.ts",
+      "file": "multifile-editor.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "real file tabs preserve independent undo, saved sources and helper-file diagnostic navigation",
+          "ok": false,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 660000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "failed",
+                  "duration": 457367,
+                  "error": {
+                    "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoContainText\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\nLocator: locator('.output>pre')\nTimeout: 300000ms\n\u001b[32m- Expected substring  - 1\u001b[39m\n\u001b[31m+ Received string     + 2\u001b[39m\n\n\u001b[32m- State: succeeded\u001b[39m\n\u001b[31m+ BUILD_ENVIRONMENT_CHANGED\u001b[39m\n\u001b[31m+ BUILD_ENVIRONMENT_CHANGED\u001b[39m\n\nCall log:\n\u001b[2m  - Expect \"toContainText\" with timeout 300000ms\u001b[22m\n\u001b[2m  - waiting for locator('.output>pre')\u001b[22m\n\u001b[2m    5 × locator resolved to <pre aria-live=\"polite\">Checking the approved compiler and board support…</pre>\u001b[22m\n\u001b[2m      - unexpected value \"Checking the approved compiler and board support…\"\u001b[22m\n\u001b[2m    106 × locator resolved to <pre aria-live=\"polite\">Checking toolchain files before compilation. This…</pre>\u001b[22m\n\u001b[2m        - unexpected value \"Checking toolchain files before compilation. This can take a while…\"\u001b[22m\n\u001b[2m    29 × locator resolved to <pre aria-live=\"polite\">Compiling your code with Arduino CLI…</pre>\u001b[22m\n\u001b[2m       - unexpected value \"Compiling your code with Arduino CLI…\"\u001b[22m\n\u001b[2m    108 × locator resolved to <pre aria-live=\"polite\">Compilation finished. Checking that toolchain fil…</pre>\u001b[22m\n\u001b[2m        - unexpected value \"Compilation finished. Checking that toolchain files stayed unchanged…\"\u001b[22m\n\u001b[2m    52 × locator resolved to <pre aria-live=\"polite\">BUILD_ENVIRONMENT_CHANGED↵BUILD_ENVIRONMENT_CHANG…</pre>\u001b[22m\n\u001b[2m       - unexpected value \"BUILD_ENVIRONMENT_CHANGED\u001b[22m\n\u001b[2mBUILD_ENVIRONMENT_CHANGED\"\u001b[22m\n",
+                    "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoContainText\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\nLocator: locator('.output>pre')\nTimeout: 300000ms\n\u001b[32m- Expected substring  - 1\u001b[39m\n\u001b[31m+ Received string     + 2\u001b[39m\n\n\u001b[32m- State: succeeded\u001b[39m\n\u001b[31m+ BUILD_ENVIRONMENT_CHANGED\u001b[39m\n\u001b[31m+ BUILD_ENVIRONMENT_CHANGED\u001b[39m\n\nCall log:\n\u001b[2m  - Expect \"toContainText\" with timeout 300000ms\u001b[22m\n\u001b[2m  - waiting for locator('.output>pre')\u001b[22m\n\u001b[2m    5 × locator resolved to <pre aria-live=\"polite\">Checking the approved compiler and board support…</pre>\u001b[22m\n\u001b[2m      - unexpected value \"Checking the approved compiler and board support…\"\u001b[22m\n\u001b[2m    106 × locator resolved to <pre aria-live=\"polite\">Checking toolchain files before compilation. This…</pre>\u001b[22m\n\u001b[2m        - unexpected value \"Checking toolchain files before compilation. This can take a while…\"\u001b[22m\n\u001b[2m    29 × locator resolved to <pre aria-live=\"polite\">Compiling your code with Arduino CLI…</pre>\u001b[22m\n\u001b[2m       - unexpected value \"Compiling your code with Arduino CLI…\"\u001b[22m\n\u001b[2m    108 × locator resolved to <pre aria-live=\"polite\">Compilation finished. Checking that toolchain fil…</pre>\u001b[22m\n\u001b[2m        - unexpected value \"Compilation finished. Checking that toolchain files stayed unchanged…\"\u001b[22m\n\u001b[2m    52 × locator resolved to <pre aria-live=\"polite\">BUILD_ENVIRONMENT_CHANGED↵BUILD_ENVIRONMENT_CHANG…</pre>\u001b[22m\n\u001b[2m       - unexpected value \"BUILD_ENVIRONMENT_CHANGED\u001b[22m\n\u001b[2mBUILD_ENVIRONMENT_CHANGED\"\u001b[22m\n\n    at C:\\Users\\Kabessov\\Documents\\GitHub\\jective_robotics\\tests\\e2e\\multifile-editor.spec.ts:18:1343",
+                    "location": {
+                      "file": "C:\\Users\\Kabessov\\Documents\\GitHub\\jective_robotics\\tests\\e2e\\multifile-editor.spec.ts",
+                      "column": 1343,
+                      "line": 18
+                    },
+                    "snippet": "  16 |  await files.getByRole('tab',{name:'sketch.ino',exact:true}).click();await input.focus();await page.keyboard.press('Control+Home');await page.keyboard.insertText('// main edit\\n');await expect(editor).toHaveAttribute('data-source','// main edit\\n'+original.source);await files.getByRole('tab',{name:'behavior.cpp',exact:true}).click();await expect(editor).toHaveAttribute('data-source',helper);await files.getByRole('tab',{name:'sketch.ino',exact:true}).click();await input.focus();for(let i=0;i<12&&await editor.getAttribute('data-source')!==original.source;i++)await page.keyboard.press('Control+z');await expect(editor).toHaveAttribute('data-source',original.source);await page.getByRole('button',{name:'Save project',exact:true}).click();await expect.poll(async()=>JSON.parse(await readFile(path,'utf8')).sourceFiles['behavior.cpp']).toBe(helper);expect(JSON.parse(await readFile(path,'utf8')).source).toBe(original.source);\n  17 |  await files.locator('details>summary').click();await files.getByRole('textbox',{name:'New file name',exact:true}).fill('../escape.cpp');await files.getByRole('button',{name:'Add file',exact:true}).click();await expect(files.getByRole('status')).toContainText('unique supported name');await expect(files.getByRole('tab')).toHaveCount(4);await files.getByRole('textbox',{name:'New file name',exact:true}).fill('extra.h');await files.getByRole('button',{name:'Add file',exact:true}).click();await expect(editor).toHaveAttribute('data-file','extra.h');await input.focus();await page.keyboard.insertText('// scratch header');await expect(editor).toHaveAttribute('data-source','// scratch header');await files.getByRole('button',{name:'Remove current file',exact:true}).click();await expect(editor).toHaveAttribute('data-file','sketch.ino');await expect(files.getByRole('tab')).toHaveCount(4);await expect(files.getByRole('button',{name:'Remove current file',exact:true})).toBeDisabled();await files.locator('details>summary').click();\n> 18 |  await files.getByRole('tab',{name:'behavior.cpp',exact:true}).click();await input.focus();await page.keyboard.press('Control+Home');for(let i=0;i<5;i++)await page.keyboard.press('ArrowDown');await page.keyboard.press('Home');await page.keyboard.press('Home');await page.keyboard.press('Shift+End');const line=helper.split('\\n')[5]!,badLine=line.replace('config::firstMs?','config::unknownPhase?');await page.keyboard.insertText(badLine);await expect(editor).toHaveAttribute('data-source',helper.replace(line,badLine));await files.getByRole('tab',{name:'config.h',exact:true}).click();await page.getByRole('button',{name:'Compile — check code for the board',exact:true}).click();await expect(page.locator('.output>pre')).toContainText('State: failed',{timeout:buildWaitMs});await expect(editor).toHaveAttribute('data-file','config.h');await page.locator('.diagnostics').getByRole('button',{name:/behavior\\.cpp:6:.*unknownPhase/}).click();await expect(editor).toHaveAttribute('data-file','behavior.cpp');await page.keyboard.press('Home');await page.keyboard.press('Home');await page.keyboard.press('Shift+End');await page.keyboard.insertText(line);await expect(editor).toHaveAttribute('data-source',helper);await page.getByRole('button',{name:'Compile — check code for the board',exact:true}).click();await expect(page.locator('.output>pre')).toContainText('State: succeeded',{timeout:buildWaitMs});await page.getByRole('button',{name:'Save project',exact:true}).click();await expect.poll(async()=>JSON.parse(await readFile(path,'utf8')).sourceFiles['behavior.cpp']).toBe(helper);expect(JSON.parse(await readFile(path,'utf8')).sourceFiles['extra.h']).toBeUndefined();\n     |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               ^\n  19 |  await mkdir('test-results/multifile-editor-ui',{recursive:true});await page.setViewportSize({width:800,height:700});await files.scrollIntoViewIfNeeded();expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);await expect(files.getByRole('tab',{name:'behavior.cpp',exact:true})).toHaveAttribute('aria-selected','true');await expect(files.getByRole('tab',{name:'behavior.cpp',exact:true})).toHaveCSS('background-color','rgb(33, 29, 255)');await page.screenshot({path:'test-results/multifile-editor-ui/editor-800-light.png'});await page.getByRole('button',{name:'Color theme',exact:true}).click();await expect(page.getByLabel('Language',{exact:true})).toHaveCSS('background-color','rgb(34, 48, 71)');await expect(files.getByRole('tab',{name:'behavior.cpp',exact:true})).toHaveCSS('background-color','rgb(33, 29, 255)');await page.screenshot({path:'test-results/multifile-editor-ui/editor-800-dark.png'});expect(errors).toEqual([]);\n  20 |  }finally{await app.evaluate(({app})=>app.exit(0));if(app.process().exitCode===null&&app.process().signalCode===null)await new Promise<void>(r=>app.process().once('exit',()=>r()));await rm(root,{recursive:true,force:true,maxRetries:20,retryDelay:100});}\n  21 | });"
+                  },
+                  "errors": [
+                    {
+                      "location": {
+                        "file": "C:\\Users\\Kabessov\\Documents\\GitHub\\jective_robotics\\tests\\e2e\\multifile-editor.spec.ts",
+                        "column": 1343,
+                        "line": 18
+                      },
+                      "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoContainText\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\nLocator: locator('.output>pre')\nTimeout: 300000ms\n\u001b[32m- Expected substring  - 1\u001b[39m\n\u001b[31m+ Received string     + 2\u001b[39m\n\n\u001b[32m- State: succeeded\u001b[39m\n\u001b[31m+ BUILD_ENVIRONMENT_CHANGED\u001b[39m\n\u001b[31m+ BUILD_ENVIRONMENT_CHANGED\u001b[39m\n\nCall log:\n\u001b[2m  - Expect \"toContainText\" with timeout 300000ms\u001b[22m\n\u001b[2m  - waiting for locator('.output>pre')\u001b[22m\n\u001b[2m    5 × locator resolved to <pre aria-live=\"polite\">Checking the approved compiler and board support…</pre>\u001b[22m\n\u001b[2m      - unexpected value \"Checking the approved compiler and board support…\"\u001b[22m\n\u001b[2m    106 × locator resolved to <pre aria-live=\"polite\">Checking toolchain files before compilation. This…</pre>\u001b[22m\n\u001b[2m        - unexpected value \"Checking toolchain files before compilation. This can take a while…\"\u001b[22m\n\u001b[2m    29 × locator resolved to <pre aria-live=\"polite\">Compiling your code with Arduino CLI…</pre>\u001b[22m\n\u001b[2m       - unexpected value \"Compiling your code with Arduino CLI…\"\u001b[22m\n\u001b[2m    108 × locator resolved to <pre aria-live=\"polite\">Compilation finished. Checking that toolchain fil…</pre>\u001b[22m\n\u001b[2m        - unexpected value \"Compilation finished. Checking that toolchain files stayed unchanged…\"\u001b[22m\n\u001b[2m    52 × locator resolved to <pre aria-live=\"polite\">BUILD_ENVIRONMENT_CHANGED↵BUILD_ENVIRONMENT_CHANG…</pre>\u001b[22m\n\u001b[2m       - unexpected value \"BUILD_ENVIRONMENT_CHANGED\u001b[22m\n\u001b[2mBUILD_ENVIRONMENT_CHANGED\"\u001b[22m\n\n\n  16 |  await files.getByRole('tab',{name:'sketch.ino',exact:true}).click();await input.focus();await page.keyboard.press('Control+Home');await page.keyboard.insertText('// main edit\\n');await expect(editor).toHaveAttribute('data-source','// main edit\\n'+original.source);await files.getByRole('tab',{name:'behavior.cpp',exact:true}).click();await expect(editor).toHaveAttribute('data-source',helper);await files.getByRole('tab',{name:'sketch.ino',exact:true}).click();await input.focus();for(let i=0;i<12&&await editor.getAttribute('data-source')!==original.source;i++)await page.keyboard.press('Control+z');await expect(editor).toHaveAttribute('data-source',original.source);await page.getByRole('button',{name:'Save project',exact:true}).click();await expect.poll(async()=>JSON.parse(await readFile(path,'utf8')).sourceFiles['behavior.cpp']).toBe(helper);expect(JSON.parse(await readFile(path,'utf8')).source).toBe(original.source);\n  17 |  await files.locator('details>summary').click();await files.getByRole('textbox',{name:'New file name',exact:true}).fill('../escape.cpp');await files.getByRole('button',{name:'Add file',exact:true}).click();await expect(files.getByRole('status')).toContainText('unique supported name');await expect(files.getByRole('tab')).toHaveCount(4);await files.getByRole('textbox',{name:'New file name',exact:true}).fill('extra.h');await files.getByRole('button',{name:'Add file',exact:true}).click();await expect(editor).toHaveAttribute('data-file','extra.h');await input.focus();await page.keyboard.insertText('// scratch header');await expect(editor).toHaveAttribute('data-source','// scratch header');await files.getByRole('button',{name:'Remove current file',exact:true}).click();await expect(editor).toHaveAttribute('data-file','sketch.ino');await expect(files.getByRole('tab')).toHaveCount(4);await expect(files.getByRole('button',{name:'Remove current file',exact:true})).toBeDisabled();await files.locator('details>summary').click();\n> 18 |  await files.getByRole('tab',{name:'behavior.cpp',exact:true}).click();await input.focus();await page.keyboard.press('Control+Home');for(let i=0;i<5;i++)await page.keyboard.press('ArrowDown');await page.keyboard.press('Home');await page.keyboard.press('Home');await page.keyboard.press('Shift+End');const line=helper.split('\\n')[5]!,badLine=line.replace('config::firstMs?','config::unknownPhase?');await page.keyboard.insertText(badLine);await expect(editor).toHaveAttribute('data-source',helper.replace(line,badLine));await files.getByRole('tab',{name:'config.h',exact:true}).click();await page.getByRole('button',{name:'Compile — check code for the board',exact:true}).click();await expect(page.locator('.output>pre')).toContainText('State: failed',{timeout:buildWaitMs});await expect(editor).toHaveAttribute('data-file','config.h');await page.locator('.diagnostics').getByRole('button',{name:/behavior\\.cpp:6:.*unknownPhase/}).click();await expect(editor).toHaveAttribute('data-file','behavior.cpp');await page.keyboard.press('Home');await page.keyboard.press('Home');await page.keyboard.press('Shift+End');await page.keyboard.insertText(line);await expect(editor).toHaveAttribute('data-source',helper);await page.getByRole('button',{name:'Compile — check code for the board',exact:true}).click();await expect(page.locator('.output>pre')).toContainText('State: succeeded',{timeout:buildWaitMs});await page.getByRole('button',{name:'Save project',exact:true}).click();await expect.poll(async()=>JSON.parse(await readFile(path,'utf8')).sourceFiles['behavior.cpp']).toBe(helper);expect(JSON.parse(await readFile(path,'utf8')).sourceFiles['extra.h']).toBeUndefined();\n     |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               ^\n  19 |  await mkdir('test-results/multifile-editor-ui',{recursive:true});await page.setViewportSize({width:800,height:700});await files.scrollIntoViewIfNeeded();expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);await expect(files.getByRole('tab',{name:'behavior.cpp',exact:true})).toHaveAttribute('aria-selected','true');await expect(files.getByRole('tab',{name:'behavior.cpp',exact:true})).toHaveCSS('background-color','rgb(33, 29, 255)');await page.screenshot({path:'test-results/multifile-editor-ui/editor-800-light.png'});await page.getByRole('button',{name:'Color theme',exact:true}).click();await expect(page.getByLabel('Language',{exact:true})).toHaveCSS('background-color','rgb(34, 48, 71)');await expect(files.getByRole('tab',{name:'behavior.cpp',exact:true})).toHaveCSS('background-color','rgb(33, 29, 255)');await page.screenshot({path:'test-results/multifile-editor-ui/editor-800-dark.png'});expect(errors).toEqual([]);\n  20 |  }finally{await app.evaluate(({app})=>app.exit(0));if(app.process().exitCode===null&&app.process().signalCode===null)await new Promise<void>(r=>app.process().once('exit',()=>r()));await rm(root,{recursive:true,force:true,maxRetries:20,retryDelay:100});}\n  21 | });\n    at C:\\Users\\Kabessov\\Documents\\GitHub\\jective_robotics\\tests\\e2e\\multifile-editor.spec.ts:18:1343"
+                    }
+                  ],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-11T19:32:57.758Z",
+                  "annotations": [],
+                  "attachments": [],
+                  "errorLocation": {
+                    "file": "C:\\Users\\Kabessov\\Documents\\GitHub\\jective_robotics\\tests\\e2e\\multifile-editor.spec.ts",
+                    "column": 1343,
+                    "line": 18
+                  }
+                }
+              ],
+              "status": "unexpected"
+            }
+          ],
+          "id": "b93d3b9bb0dc9f030a6a-3fbc0ed034d41bfff508",
+          "file": "multifile-editor.spec.ts",
+          "line": 7,
+          "column": 5
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2026-10-11T19:32:56.559Z",
+    "duration": 458610.404,
+    "expected": 0,
+    "skipped": 0,
+    "unexpected": 1,
+    "flaky": 0
+  }
+}

@@ -1,0 +1,24 @@
+import {generate,type Program} from '../codegen';
+import {copy,type LearningActivity} from './learning-activities';
+import type {LessonArtifact} from './index';
+
+export function blocksCodeProgram(intervalMs=500):Program{return {setup:[{kind:'print',text:'BOOT ONCE',blockId:'l37-setup-message'}],loop:[{kind:'print',text:'LOOP STEP',blockId:'l37-loop-message'},{kind:'wait',ms:intervalMs,blockId:'l37-loop-wait'}]};}
+export function findGeneratedLine(source:string,needle:string){const lines=source.split('\n'),index=lines.findIndex(line=>line.includes(needle));if(index<0)throw new Error('L37_MAPPING_MISSING');return {line:index+1,source:lines[index]!.trim()};}
+export function blocksCodeMapping(intervalMs=500){const program=blocksCodeProgram(intervalMs),source=generate(program,null);const find=(needle:string)=>findGeneratedLine(source,needle);const mappings=[{id:'include',role:'Arduino declarations',...find('#include <Arduino.h>')},{id:'setup',role:'Run once',...find('void setup()')},{id:'serial',role:'Serial initialization',...find('Serial.begin(115200)')},{id:'l37-setup-message',role:'Setup message',...find('Serial.println("BOOT ONCE")')},{id:'loop',role:'Repeat body',...find('void loop()')},{id:'l37-loop-message',role:'Loop message',...find('Serial.println("LOOP STEP")')},{id:'l37-loop-wait',role:'Timed wait',...find(`delay(${intervalMs})`)}];return {schemaVersion:1,origin:'actual-code-generator',program,source,mappings,scope:'Serial-only generated teaching program. No physical hardware driver or compiler execution implied.'};}
+export const blocksCodeArtifact:LessonArtifact={starter:blocksCodeProgram(),reference:blocksCodeProgram(250)};
+export const blocksCodeExercise:Extract<LearningActivity,{kind:'match'}>={id:'L37',kind:'match',
+ prompt:copy('Match each part of the generated program to where it belongs. You may use the walkthrough above.','Сопоставь каждую часть с её местом в сгенерированной программе. Можно пользоваться разбором выше.','Әр бөлікті жасалған бағдарламадағы орнына сәйкестендір. Жоғарыдағы талдауды қолдануға болады.'),
+ hint:copy('Includes provide declarations. setup runs once after reset; loop repeats. A command stays in the container where you placed its block.','include подключает объявления. setup выполняется один раз после сброса, loop повторяется. Команда остаётся в том контейнере, куда ты поместил блок.','include анықтамаларды қосады. setup қалпына келтіргеннен кейін бір рет, loop қайталанып орындалады. Команда блок қойылған контейнерде қалады.'),
+ explanation:copy('Arduino.h is included before the functions. Serial.begin and BOOT ONCE belong to setup. LOOP STEP and delay(500) belong to loop. The generator inserts serial initialization; that line is not a separate student block.','Arduino.h подключается перед функциями. Serial.begin и BOOT ONCE относятся к setup. LOOP STEP и delay(500) относятся к loop. Настройку Serial добавляет генератор: отдельного ученического блока для этой строки нет.','Arduino.h функциялар алдында қосылады. Serial.begin мен BOOT ONCE setup ішінде. LOOP STEP пен delay(500) loop ішінде. Serial баптауын генератор қосады; бұл жолдың бөлек оқушы блогы жоқ.'),
+ categories:[{id:'includes',label:copy('Before the functions: includes','Перед функциями: include','Функциялар алдында: include')},{id:'setup',label:copy('setup: once after reset','setup: один раз после сброса','setup: қалпына келтірген соң бір рет')},{id:'loop',label:copy('loop: repeats','loop: повторяется','loop: қайталанады')}],
+ items:[{id:'library',label:copy('#include <Arduino.h>','#include <Arduino.h>','#include <Arduino.h>')},{id:'serial',label:copy('Serial.begin(115200);','Serial.begin(115200);','Serial.begin(115200);')},{id:'ready',label:copy('Print BOOT ONCE','Сообщение BOOT ONCE','BOOT ONCE хабары')},{id:'tick',label:copy('Print LOOP STEP','Сообщение LOOP STEP','LOOP STEP хабары')},{id:'wait',label:copy('Wait 500 ms','Ожидание 500 мс','500 мс күту')}],correct:{library:'includes',serial:'setup',ready:'setup',tick:'loop',wait:'loop'},
+};
+
+/** Read actual generator output instead of showing a manually authored imitation. */
+export function blocksCodeWalkthrough(){
+ const source=generate(blocksCodeArtifact.starter as Program,null),lines=source.split('\n');
+ const line=(fragment:string)=>{const index=lines.findIndex(value=>value.includes(fragment));if(index<0)throw new Error('L37_SOURCE_MAPPING_MISSING');return index;};
+ const indices={library:line('#include <Arduino.h>'),serial:line('Serial.begin(115200)'),ready:line('// block:l37-setup-message')+1,tick:line('// block:l37-loop-message')+1,wait:line('// block:l37-loop-wait')+1};
+ const setup=line('void setup()'),loop=line('void loop()');
+ return {source,entries:blocksCodeExercise.items.map(item=>{const index=indices[item.id as keyof typeof indices];return {id:item.id,label:item.label,line:index+1,code:lines[index]!.trim(),section:index<setup?'includes':index<loop?'setup':'loop'};})};
+}

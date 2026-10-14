@@ -1,0 +1,13 @@
+import {z} from 'zod';
+import {RobotStateSchema,WorldSchema} from '../simulator';
+import {InvestigationInputSchema,investigationMetrics,investigationWorlds} from './navigation-investigation';
+import {repeatablePrograms} from './repeatable-experiment';
+const canonical=(value:unknown):string=>JSON.stringify(value,(_k,v)=>v&&typeof v==='object'&&!Array.isArray(v)?Object.fromEntries(Object.entries(v).sort(([a],[b])=>a.localeCompare(b))):v);
+const metrics=z.object({goalSeen:z.boolean(),collisionSeen:z.boolean(),invalidDistanceSeen:z.boolean(),firstGoalMs:z.number().int().min(20).max(6000).nullable(),elapsedMs:z.number().int().min(20).max(6000),final:RobotStateSchema}).strict();
+const run=z.object({trace:z.array(RobotStateSchema).min(1).max(300),metrics}).strict();
+const trial=z.object({worldId:z.enum(['clear','wall','narrow']),repetition:z.number().int().min(0).max(4),seed:z.number().int().min(0).max(0xffffffff),world:WorldSchema,runs:z.object({near:run,early:run}).strict()}).strict();
+/** Verifies consistency and declared fixed scenarios; does not certify physical behavior. */
+export const InvestigationReportSchema=z.object({schemaVersion:z.literal(1),lessonId:z.literal('L48'),origin:z.literal('block-simulation'),inputs:InvestigationInputSchema,programs:z.object({near:z.unknown().refine(v=>canonical(v)===canonical(repeatablePrograms.near)),early:z.unknown().refine(v=>canonical(v)===canonical(repeatablePrograms.early))}).strict(),fixedStepMs:z.literal(20),units:z.object({position:z.literal('m'),heading:z.literal('rad'),time:z.literal('ms'),noise:z.literal('m')}).strict(),trials:z.array(trial).min(2).max(15),physicalVerification:z.literal('NOT RUN')}).strict().superRefine((report,ctx)=>{
+ const issue=(message:string)=>ctx.addIssue({code:'custom',message});if(report.trials.length!==report.inputs.worlds.length*report.inputs.repetitions)issue('TRIAL_COUNT_MISMATCH');
+ report.trials.forEach((t,index)=>{const worldId=report.inputs.worlds[Math.floor(index/report.inputs.repetitions)],repetition=index%report.inputs.repetitions,seed=(report.inputs.seed+repetition)>>>0;if(t.worldId!==worldId||t.repetition!==repetition||t.seed!==seed)issue('PAIRED_TRIAL_MISMATCH');const base=investigationWorlds[t.worldId],expected={...base,robot:{...base.robot,seed,noise:report.inputs.noiseMeters}};if(canonical(t.world)!==canonical(WorldSchema.parse(expected)))issue('WORLD_MISMATCH');for(const r of Object.values(t.runs)){if(r.trace.length!==report.inputs.steps)issue('TRACE_LENGTH_MISMATCH');if(r.trace.some((s,i)=>s.timeMs!==(i+1)*20))issue('TRACE_TIME_MISMATCH');if(canonical(r.metrics)!==canonical(investigationMetrics(r.trace)))issue('METRICS_MISMATCH');}});
+});

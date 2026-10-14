@@ -1,0 +1,79 @@
+{
+  "version": "0.7.0",
+  "status": "PARTIAL_RELEASE_VERIFIED",
+  "masterPrompt": "NOT COMPLETE",
+  "unit": {
+    "passed": 176,
+    "failed": 0
+  },
+  "coverage": {
+    "total": 1383,
+    "covered": 1305,
+    "skipped": 0,
+    "pct": 94.36
+  },
+  "sourceElectron": {
+    "startTime": "2026-10-10T17:05:00.658Z",
+    "duration": 370557.845,
+    "expected": 38,
+    "skipped": 0,
+    "unexpected": 0,
+    "flaky": 0,
+    "scope": "Source suite before the final pinned lesson-index positioning refinement"
+  },
+  "installedElectron": {
+    "startTime": "2026-10-10T17:13:22.642Z",
+    "duration": 338864.929,
+    "expected": 38,
+    "skipped": 0,
+    "unexpected": 0,
+    "flaky": 0
+  },
+  "installation": {
+    "separateStandardUser": "NOT RUN",
+    "executableExists": true,
+    "started": "2026-10-10T17:12:57.4933483Z",
+    "osBuild": "10.0.26200.0",
+    "cleanWindows10": "NOT RUN",
+    "target": "C:\\Users\\Kabessov\\Documents\\GitHub\\jective_robotics\\.verification\\Ж Studio verification 0.7.0",
+    "exitCode": 0,
+    "finished": "2026-10-10T17:13:11.8293489Z",
+    "operation": "isolated local per-user install"
+  },
+  "uninstallation": {
+    "started": "2026-10-10T17:19:50.5628808Z",
+    "exitCode": 0,
+    "cleanWindows10": "NOT RUN",
+    "separateStandardUser": "NOT RUN",
+    "target": "C:\\Users\\Kabessov\\Documents\\GitHub\\jective_robotics\\.verification\\Ж Studio verification 0.7.0",
+    "operation": "isolated local uninstall",
+    "executableRemains": false,
+    "finished": "2026-10-10T17:19:58.9813681Z"
+  },
+  "content": {
+    "authored": 17,
+    "required": 60,
+    "status": "NOT COMPLETE"
+  },
+  "installer": {
+    "name": "JECTIVE Robotics Studio Setup 0.7.0.exe",
+    "sizeBytes": 150900155,
+    "sha256": "45c43a99d396f4fc6c0f774bc5b3fce13d4e681ca30f52583385b7aad8e91f69",
+    "signature": "NotSigned"
+  },
+  "audio": {
+    "electronWebAudio": "RUNNING verified",
+    "muting": "PASS",
+    "restartPreference": "PASS",
+    "physicalSpeakerAudibility": "NOT ASSERTED"
+  },
+  "hardware": {
+    "upload": "NOT RUN",
+    "handshake": "NOT RUN",
+    "physical": "NOT RUN",
+    "cleanWindows10": "NOT RUN",
+    "cleanDisconnectedMachine": "NOT RUN",
+    "separateStandardUserAccount": "NOT RUN",
+    "realAIProvider": "NOT RUN; local fixture only"
+  }
+}

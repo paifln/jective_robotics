@@ -1,0 +1,55 @@
+import {FinalDemonstrationPanel} from './FinalDemonstrationPanel';
+import {DocumentationPanel} from './DocumentationPanel';
+import {PerformanceImprovementPanel} from './PerformanceImprovementPanel';
+import {ReliabilityReviewPanel} from './ReliabilityReviewPanel';
+import {IntegratedPrototypePanel} from './IntegratedPrototypePanel';
+import {CapstoneProposalPanel} from './CapstoneProposalPanel';
+import {ResponsibleAiPanel} from './ResponsibleAiPanel';
+import {SharingLessonPanel} from './SharingLessonPanel';
+import {SubstitutionLessonPanel} from './SubstitutionLessonPanel';
+import {CommunicationPanel} from './CommunicationPanel';
+import {BuildErrorsPanel,type OpenBuildError} from './BuildErrorsPanel';
+import {InvestigationPanel} from './InvestigationPanel';
+import {RequirementMatrixPanel} from './RequirementMatrixPanel';
+import {MultiFilePanel} from './MultiFilePanel';
+import {CollisionPanel} from './CollisionPanel';
+import {UncertaintyPanel} from './UncertaintyPanel';
+import {ChallengeTestPanel} from './ChallengeTestPanel';
+import {RepeatablePanel} from './RepeatablePanel';
+import {WorldCoordinatesPanel} from './WorldCoordinatesPanel';
+import {FunctionsInterfacePanel} from './FunctionsInterfacePanel';
+import {NonblockingTimePanel} from './NonblockingTimePanel';
+import {CollectionsPanel} from './CollectionsPanel';
+import {TypesScopePanel} from './TypesScopePanel';
+import {BlocksCodePanel} from './BlocksCodePanel';
+import React from 'react';
+import type {Locale} from './locale';
+import type {Project} from '../../../packages/contracts';
+import type {RoverInspection} from '../../../packages/content/rover-inspection';
+import {WorksheetPanel} from './WorksheetPanel';
+import {RoverInspectionPanel} from './RoverInspectionPanel';
+import {TimingComparison} from './TimingComparison';
+import {StateMachineDiagram} from './StateMachineDiagram';
+import {DistanceCalibrationPanel} from './DistanceCalibrationPanel';
+import {MotorSafetyPanel} from './MotorSafetyPanel';
+import {DifferentialPanel} from './DifferentialPanel';
+import {MotorRampPanel} from './MotorRampPanel';
+import {TimedMotionPanel} from './TimedMotionPanel';
+import {SquareRoutePanel} from './SquareRoutePanel';
+import {ObstacleStopPanel} from './ObstacleStopPanel';
+import {AvoidancePanel} from './AvoidancePanel';
+import {LineCalibrationPanel} from './LineCalibrationPanel';
+import {LineFollowingPanel} from './LineFollowingPanel';
+import {ProportionalLinePanel} from './ProportionalLinePanel';
+import {CourseChallengePanel} from './CourseChallengePanel';
+import {EncoderPanel} from './EncoderPanel';
+import {WheelSpeedPanel} from './WheelSpeedPanel';
+import {PidPanel} from './PidPanel';
+import {ServoPanel} from './ServoPanel';
+import {OrientationPanel} from './OrientationPanel';
+import {PrecisionPanel} from './PrecisionPanel';
+// Stable component identities preserve a laboratory's state across translation changes.
+const labs:Record<string,React.ComponentType<{locale:Locale}>>={L04:TimingComparison,L12:()=> <StateMachineDiagram/>,L17:()=> <DistanceCalibrationPanel/>,L20:MotorSafetyPanel,L21:DifferentialPanel,L22:MotorRampPanel,L23:TimedMotionPanel,L24:SquareRoutePanel,L25:ObstacleStopPanel,L26:AvoidancePanel,L27:LineCalibrationPanel,L28:LineFollowingPanel,L29:ProportionalLinePanel,L30:CourseChallengePanel,L31:EncoderPanel,L32:WheelSpeedPanel,L33:PidPanel,L34:ServoPanel,L35:OrientationPanel,L36:PrecisionPanel,L37:BlocksCodePanel,L38:TypesScopePanel,L39:FunctionsInterfacePanel,L40:NonblockingTimePanel,L41:CollectionsPanel,L42:MultiFilePanel,L43:WorldCoordinatesPanel,L44:RepeatablePanel,L45:CollisionPanel,L46:UncertaintyPanel,L47:ChallengeTestPanel,L48:InvestigationPanel,L49:RequirementMatrixPanel,L51:CommunicationPanel,L55:CapstoneProposalPanel,L56:IntegratedPrototypePanel,L57:ReliabilityReviewPanel,L58:PerformanceImprovementPanel,L59:DocumentationPanel,L60:FinalDemonstrationPanel};
+export interface LessonLabProps {id:string;locale:Locale;project:Project;worksheetChange:(values:Record<string,string>)=>void;roverChange:(report:RoverInspection)=>void;openBuildError?:OpenBuildError;openSubstitution?:()=>Promise<void>;openReview?:()=>void}
+export function LessonLab({id,locale,project,worksheetChange,roverChange,openBuildError,openSubstitution,openReview}:LessonLabProps){if(id==='L54'&&openBuildError)return <ResponsibleAiPanel locale={locale} open={openBuildError}/>;if(id==='L53'&&openReview)return <SharingLessonPanel locale={locale} open={openReview}/>;if(id==='L52'&&openSubstitution)return <SubstitutionLessonPanel locale={locale} open={openSubstitution}/>;if(id==='L50'&&openBuildError)return <BuildErrorsPanel locale={locale} open={openBuildError}/>;if(id==='L02')return <WorksheetPanel locale={locale} values={project.worksheets?.['L02-component-role-and-power-path']??{}} change={worksheetChange}/>;if(id==='L19')return <RoverInspectionPanel key={project.id} project={project} locale={locale} change={roverChange}/>;const Lab=labs[id];return Lab?<Lab locale={locale}/>:null;}
+

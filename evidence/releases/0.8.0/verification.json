@@ -1,0 +1,51 @@
+{
+  "version": "0.8.0",
+  "status": "PARTIAL_RELEASE_VERIFIED",
+  "masterPrompt": "NOT COMPLETE",
+  "unit": {
+    "passed": 203,
+    "failed": 0
+  },
+  "coverage": {
+    "total": 1579,
+    "covered": 1499,
+    "skipped": 0,
+    "pct": 94.93
+  },
+  "sourceElectron": {
+    "startTime": "2026-10-10T18:23:06.267Z",
+    "duration": 193851.263,
+    "expected": 45,
+    "skipped": 1,
+    "unexpected": 0,
+    "flaky": 0,
+    "scope": "Before final port-state, renderer resize and role-label refinements; real compiler skipped"
+  },
+  "installedElectron": {
+    "startTime": "2026-10-10T18:34:37.196Z",
+    "duration": 306921.33,
+    "expected": 47,
+    "skipped": 0,
+    "unexpected": 0,
+    "flaky": 0
+  },
+  "curriculum": {
+    "authored": 23,
+    "required": 60,
+    "translationReview": "NOT RUN"
+  },
+  "physicalComponentDetection": "NOT IMPLEMENTED; logical GPIO and opened serial port are distinct",
+  "physicalHardware": "NOT RUN",
+  "codeSHA256": {
+    "apps/desktop/renderer/ComponentsPanel.tsx": "0e9daf733f41c527cc601ab21bd764654ac7ddc08e1480d557f8df48daa291e3",
+    "apps/desktop/renderer/pixel-world.ts": "ffaeffaba4d36412bc06b6966a33a8c6d44a2c3094e4cb3e668c28211feae34a",
+    "apps/desktop/renderer/SimulatorPanel.tsx": "522d7d6e1de465e2be30276bca6266edb9ae42fa33002056b6e2ade6ba58e371",
+    "apps/desktop/renderer/app.tsx": "d68dfe77663c9d4249f018dbc7b7a9b6cb0c4c14fd7f20c419f753ea9b1e302f",
+    "apps/desktop/renderer/DevicePanel.tsx": "c116ac36aacd6e0876d0edf7bb86dd94f1acf904c844268cd36d7a0dc80bb4fd",
+    "apps/desktop/renderer/style.css": "218a772b581b93d9ac9368d6468b4bd45e8af5c37e0a3f1e9fe31b08ebbeb580",
+    "tests/e2e/pixel-game.spec.ts": "948542fe6b444a40f282e000f591f8ff9e1069ab9eec8d03cafe592b7e84f70e",
+    "tests/e2e/components-dock.spec.ts": "63d792e3e74b38b05d054e1780b65fec88e89cbcd8a169029143030067aaccdf",
+    "apps/desktop/renderer/WiringPanel.tsx": "42fd0ce7aecaaf09916212eb646455478a36c88253fc2740e37aa574603972fe",
+    "packages/profiles/index.ts": "891972c368507b1678aaef632f160f31fc1a72450f660247b7cc73e84ec22c2b"
+  }
+}

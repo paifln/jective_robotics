@@ -1,0 +1,107 @@
+{
+  "checkedAt": "2026-10-11T20:04:43.727Z",
+  "scope": "Actual source Electron CSS viewport observations, not manual Windows display-scaling acceptance; no compiler or physical upload invoked",
+  "comparisons": [
+    {
+      "width": 1366,
+      "height": 768,
+      "locale": "en",
+      "beforeVisibleCodePx": 386.625,
+      "afterVisibleCodePx": 430.078125,
+      "gainPx": 43.453125,
+      "beforeToolbarPx": 67,
+      "afterToolbarPx": 52.390625
+    },
+    {
+      "width": 1366,
+      "height": 768,
+      "locale": "ru",
+      "beforeVisibleCodePx": 386.625,
+      "afterVisibleCodePx": 430.078125,
+      "gainPx": 43.453125,
+      "beforeToolbarPx": 67,
+      "afterToolbarPx": 52.390625
+    },
+    {
+      "width": 1366,
+      "height": 768,
+      "locale": "kk",
+      "beforeVisibleCodePx": 386.625,
+      "afterVisibleCodePx": 430.078125,
+      "gainPx": 43.453125,
+      "beforeToolbarPx": 67,
+      "afterToolbarPx": 52.390625
+    },
+    {
+      "width": 1093,
+      "height": 614,
+      "locale": "en",
+      "beforeVisibleCodePx": 232.625,
+      "afterVisibleCodePx": 276.078125,
+      "gainPx": 43.453125,
+      "beforeToolbarPx": 67,
+      "afterToolbarPx": 52.390625
+    },
+    {
+      "width": 1093,
+      "height": 614,
+      "locale": "ru",
+      "beforeVisibleCodePx": 232.625,
+      "afterVisibleCodePx": 276.078125,
+      "gainPx": 43.453125,
+      "beforeToolbarPx": 67,
+      "afterToolbarPx": 52.390625
+    },
+    {
+      "width": 1093,
+      "height": 614,
+      "locale": "kk",
+      "beforeVisibleCodePx": 232.625,
+      "afterVisibleCodePx": 276.078125,
+      "gainPx": 43.453125,
+      "beforeToolbarPx": 67,
+      "afterToolbarPx": 52.390625
+    },
+    {
+      "width": 911,
+      "height": 512,
+      "locale": "en",
+      "beforeVisibleCodePx": 130.625,
+      "afterVisibleCodePx": 174.078125,
+      "gainPx": 43.453125,
+      "beforeToolbarPx": 67,
+      "afterToolbarPx": 52.390625
+    },
+    {
+      "width": 911,
+      "height": 512,
+      "locale": "ru",
+      "beforeVisibleCodePx": 130.625,
+      "afterVisibleCodePx": 174.078125,
+      "gainPx": 43.453125,
+      "beforeToolbarPx": 67,
+      "afterToolbarPx": 52.390625
+    },
+    {
+      "width": 911,
+      "height": 512,
+      "locale": "kk",
+      "beforeVisibleCodePx": 130.625,
+      "afterVisibleCodePx": 174.078125,
+      "gainPx": 43.453125,
+      "beforeToolbarPx": 67,
+      "afterToolbarPx": 52.390625
+    },
+    {
+      "width": 800,
+      "height": 700,
+      "locale": "en",
+      "beforeVisibleCodePx": 183.34375,
+      "afterVisibleCodePx": 300.078125,
+      "gainPx": 116.734375,
+      "beforeToolbarPx": 140.28125,
+      "afterToolbarPx": 52.390625
+    }
+  ],
+  "scenarios": 15
+}

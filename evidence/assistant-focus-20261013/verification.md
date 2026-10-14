@@ -1,0 +1,11 @@
+# Assistant focus/status ownership — 2026-10-13
+
+Regression test reproduced a real failure: an ordinary window focus refresh read valid assistant settings and cleared “Check the suggestion before use” to an empty status (`before-e2e.json`). The same shared state could also erase provider-recovery messages and overwrite pending-question feedback.
+
+AssistantPanel now keeps settings readiness messages separate from request/review status. A readiness refresh does not clear that request status. A settings failure disables future requests and shows a separate warning while retaining the previous answer/review guidance. Provider error codes are stored separately and translated at render time, so a language change translates the existing error without a repeated provider request. New review/request status clears that error code. Existing epoch guards/cancellation remain unchanged.
+
+Source build/typecheck/lint passed. Focused actual source Electron suite: **3 passed / 14.3 seconds** (`after-e2e.json`): settings validation/recovery, successful-answer reminder surviving synthetic focus, settings failure retaining answer/reminder while requests are disabled, restored readiness clearing only its warning, EN401/RU429/KK503 recovery surviving focus, and EN401 translating into Russian. The multi-file review/consent/cancellation and actual loopback-HTTP fixture workflows also remained passing. Focus was dispatched as a renderer event to exercise the production listener; this is not a physical alt-tab or human screen-reader experiment. Error/metadata fixtures remain explicitly test-only and no real OpenAI request/key was used.
+
+The request-response epoch and metadata refresh-ID guards are preserved; deliberately out-of-order metadata replies have not been directly tested here. Success/review free-text status localization beyond the existing catalog remains a separate broader locale review. The previous full 541-test domain run predates this renderer state split; no domain logic/dependency was changed in this step.
+
+The immutable UI-recovery package and published installer were not rebuilt/replaced. User preview PID 8928 was observed responding and left open. Physical ESP32/Jective, clean Windows 10, NSIS/full GUI/content/human language/accessibility/live-provider acceptance remain incomplete.

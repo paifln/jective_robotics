@@ -1,0 +1,10 @@
+import {it,expect} from 'vitest';
+import {mkdtemp,readFile,writeFile,rm} from 'node:fs/promises';
+import {tmpdir} from 'node:os';
+import {join} from 'node:path';
+import {randomUUID} from 'node:crypto';
+import {writeProject,readProject} from '../packages/persistence';
+import {ToolchainService} from '../packages/toolchain';
+import type {Project} from '../packages/contracts';
+it('atomic Unicode persistence and revision conflict preserve committed source',async()=>{const dir=await mkdtemp(join(tmpdir(),'jective-'));try{const path=join(dir,'Қазақша русский project.json');const p:Project={schemaVersion:1,id:randomUUID(),name:'Тест',profileId:'esp32-devkit-reference',mode:'code',source:'// Қ\r\n',workspace:{},revision:0};const saved=await writeProject(path,p,null);expect(await readProject(path)).toEqual(saved);await expect(writeProject(path,p,0)).rejects.toThrow('PROJECT_CONFLICT');expect((await readProject(path)).source).toBe(p.source);await writeFile(path,'{bad');await expect(readProject(path)).rejects.toThrow();}finally{await rm(dir,{recursive:true,force:true});}});
+it('missing CLI fails honestly and never invents artifacts',async()=>{const dir=await mkdtemp(join(tmpdir(),'jective-cli-'));try{const service=new ToolchainService(join(dir,'missing.exe'),dir);await expect(service.run(['version'])).rejects.toThrow('CLI_UNAVAILABLE');const config=await readFile(join(dir,'arduino-cli.yaml'),'utf8');expect(config).toContain('directories');}finally{await rm(dir,{recursive:true,force:true});}});

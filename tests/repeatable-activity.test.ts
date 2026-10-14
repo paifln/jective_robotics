@@ -1,0 +1,10 @@
+import {it,expect} from 'vitest';
+import {repeatableExercise} from '../packages/content/repeatable-activity';
+import {gradeActivity} from '../packages/content/learning-activities';
+import {nextLearningRecord} from '../packages/content/learning-records';
+import {mkdtemp,rm} from 'node:fs/promises';
+import {join,resolve,basename,sep} from 'node:path';
+import {tmpdir} from 'node:os';
+import {WorkspaceStore,inspectBackup,populateBackup} from '../packages/persistence/workspace';
+it('preserves checked comparison answers through validated backup and restore',async()=>{const root=await mkdtemp(join(tmpdir(),'jective-repeat-answers-')),store=new WorkspaceStore(join(root,'source.sqlite'));try{const saved=store.saveLearning({id:'L44',answers:{selection:['world','robot','seed','time']},check:true});await store.backup(join(root,'backup.sqlite'));const restored=new WorkspaceStore(join(root,'restored.sqlite'));try{populateBackup(restored,inspectBackup(join(root,'backup.sqlite')));expect(restored.learning('L44')).toEqual(saved);expect(restored.learning('L44')!.state).toBe('checked');}finally{restored.close();}}finally{store.close();if(!resolve(root).startsWith(resolve(tmpdir())+sep)||!basename(root).startsWith('jective-repeat-answers-'))throw new Error('Unexpected cleanup path');await rm(root,{recursive:true,force:true});}});
+it('checks fair-comparison choices and records adaptive attempts without forcing matching outcomes',()=>{expect(gradeActivity(repeatableExercise,{}).state).toBe('incomplete');const wrong={selection:['world','robot','seed','time','outcome']};expect(gradeActivity(repeatableExercise,wrong).state).toBe('needs-practice');const first=nextLearningRecord({id:'L44',answers:wrong,check:true},null),checked=nextLearningRecord({id:'L44',answers:{selection:['world','robot','seed','time']},check:true},first);expect(checked.attempts).toBe(2);expect(checked.state).toBe('checked');expect(gradeActivity(repeatableExercise,{selection:['world','robot','seed','time','threshold']}).state).toBe('needs-practice');});

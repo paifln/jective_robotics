@@ -1,0 +1,8 @@
+import {it,expect} from 'vitest';
+import {boardFeatures,boardPhoto,hardwareTourLessons} from '../packages/content/hardware-tour';
+import {readFile} from 'node:fs/promises';
+import {componentPhotos} from '../packages/content/component-photos';
+it('photographed board tour has local JPEG, documented provenance and accurate multilingual identification separate from carrier wiring',async()=>{
+ const photo=await readFile('assets/'+boardPhoto.src);expect([...photo.subarray(0,3)]).toEqual([255,216,255]);expect(photo.length).toBeLessThan(1024*1024);expect(boardPhoto.license).toBe('CC0 1.0');expect(hardwareTourLessons).toContain('L01');expect(new Set(boardFeatures.map(f=>f.id)).size).toBe(6);for(const f of boardFeatures){expect(f.x).toBeGreaterThan(0);expect(f.y).toBeLessThan(100);for(const locale of ['en','ru','kk'] as const){expect(f.title[locale].length).toBeGreaterThan(3);expect(f.explanation[locale].length).toBeGreaterThan(100);}}expect(boardFeatures.find(f=>f.id==='power')?.explanation.ru).toContain('5 В');
+});
+it('lesson component photographs exist offline with credits, supported dimensions and three language safety notes',async()=>{for(const photo of componentPhotos){const bytes=await readFile('assets/'+photo.src);expect([...bytes.subarray(0,3)]).toEqual([255,216,255]);expect(bytes.length).toBeLessThan(1024*1024);expect(photo.lessons.length).toBeGreaterThan(0);expect(photo.width).toBeGreaterThan(0);expect(photo.author.length).toBeGreaterThan(3);expect(photo.licenseUrl).toMatch(/^https:\/\//);for(const locale of ['en','ru','kk'] as const){expect(photo.explanation[locale].length).toBeGreaterThan(100);expect(photo.safety[locale].length).toBeGreaterThan(100);}}});

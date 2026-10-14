@@ -1,0 +1,3 @@
+# Dependency audit
+
+Actual npm registry audit run 2026-10-11. Exit 0; 523 dependency records and zero known vulnerabilities (including development dependencies). package-lock.json SHA256: df26c90bce04463980851ae522d6aa90340f9714cb62712f94ad611c4c57d971. New security:audit command uses npm audit --audit-level=high and is the first release:verify step. Network/audit service errors also exit nonzero rather than claiming a pass. Full release:verify not run here; content/hardware/installer gates remain independently pending. Audit result is advisory-database evidence, not proof of absence of all vulnerabilities. No installer rebuilt.

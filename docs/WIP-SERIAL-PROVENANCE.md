@@ -1,0 +1,9 @@
+# Serial log provenance
+
+Current source adds optional validated connection metadata to serial events: a unique connection ID, actual opened port and supported baud rate. DeviceService attaches the captured connection metadata to received/parser events, driver errors and disconnect events. Parser-only records remain compatible without connection metadata.
+
+The monitor's actual text-file export identifies its origin as serial-monitor receipt events, explains the desktop receipt/status clock and explicitly limits what text proves. It records the filter and paused-view state. Each line includes the original per-event connection metadata, or null when unknown; it never substitutes the current UI selection. Text is JSON-escaped so an embedded newline cannot forge a new origin heading. The latest hello is labelled historical rather than claiming that an old message verifies the current connection.
+
+Verification: strict TypeScript and ESLint passed; all 36 unit/integration tests passed. The new log test uses explicitly constructed fixtures to check connection provenance, missing metadata, paused view and newline escaping. Two Electron scenarios passed: the existing port-enumeration/classroom/world workflow and actual export/readback of the empty monitor's provenance header. No serial port was opened, no physical message was received and no upload or actuation was performed. DeviceService metadata attachment was inspected in source; live per-port delivery is NOT RUN. Reports are in `evidence/wip-serial-provenance`.
+
+An initial implementation incorrectly used a string-enum constructor for numeric baud values; typechecking and the new test exposed it. It was corrected to a union of numeric literals, followed by passing typechecking and all tests. These source changes are not packaged into the published 0.2.0 artifacts. The full specification remains unfinished.

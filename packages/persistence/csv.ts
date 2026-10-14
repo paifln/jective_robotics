@@ -1,0 +1,1 @@
+export function csvCell(value:string|number){if(typeof value==='number'&&!Number.isFinite(value))throw new Error('CSV_NUMBER_INVALID');const text=String(value);const safe=typeof value==='string'&&/^[=+\-@\t\r]/.test(text)?"'"+text:text;return '"'+safe.replace(/"/g,'""')+'"';}

@@ -1,0 +1,11 @@
+# L23 timed-motion groundwork
+
+The working tree repeats a fixed timed program: one second of equal forward commands, stop/ramp-down, one second of opposite commands and final stop/ramp-down. It measures the completed straight segment and final heading from actual RobotSimulation traces. Each trial completes at 2420 ms; the time-only program does not use sensor feedback to target a distance or angle.
+
+The default five trials vary the configured model maximum speed and track width using an explicitly declared, seeded ±10% parameter assumption. This is not measured motor noise or a fitted statistical distribution. Zero variation repeats identical conditions and gives zero result spread. Nonzero assumed variation produces differing paths and angles despite unchanged program timing. Exports preserve the base world, actual per-trial parameters, program, complete traces, endpoints and mean/min/max/range statistics in metres and radians.
+
+Guide G04 exposes a trilingual result-table panel with two to ten trials, a zero-to-20% assumed variation setting and JSON export. Invalid or blank settings clear the previous result and report an error. The Electron scenario compares zero and nonzero variation, reads actual downloaded results and checks rejected settings. Current proof is under evidence/timed-motion; no installed/full-suite/physical acceptance is claimed.
+
+L23 is now registered as an authored EN/KK/RU draft lesson with 818 learner-facing English words, three explained assessment questions, checked concept/numeric practice and editable starter/reference projects. The reference changes only the turn wait from 1000 to 1180 ms, reducing nominal quarter-turn error from a 1.3333 rad outcome to 1.5733 rad. Its lesson explicitly distinguishes this nominal timing improvement from a guarantee under varied conditions. The activity retains both repeated-result reports and a target-error table, with a four-point evidence rubric.
+
+Curriculum is now 23/60; 37 lessons and technical translation review remain. This model does not establish real wheel slip, supply variation, encoder measurements or physical accuracy. Published 0.7.0 artifacts remain unchanged. Current lesson proof is under evidence/L23; evidence/timed-motion preserves the earlier domain/panel snapshot.

@@ -1,0 +1,744 @@
+{
+  "source": "MASTER_PROMPT.txt",
+  "sections": [
+    {
+      "id": "S1",
+      "requirement": "Mission and nonnegotiable delivery rules",
+      "status": "PARTIAL",
+      "files": [
+        "README.md",
+        "docs/HANDOFF.md"
+      ],
+      "evidence": [
+        "evidence/verification-summary.json"
+      ],
+      "remaining": "Core workflows exist; full acceptance remains incomplete."
+    },
+    {
+      "id": "S2",
+      "requirement": "Product scope and working environment",
+      "status": "PARTIAL",
+      "files": [
+        "README.md",
+        "package-lock.json"
+      ],
+      "evidence": [],
+      "remaining": "See original section; all details remain binding."
+    },
+    {
+      "id": "S3",
+      "requirement": "Architecture and process boundaries",
+      "status": "PARTIAL",
+      "files": [
+        "apps/desktop/main.ts",
+        "apps/desktop/preload.ts",
+        "packages/contracts/index.ts",
+        "apps/desktop/renderer/useLessonAudio.ts",
+        "apps/desktop/renderer/visible-lesson.ts",
+        "apps/desktop/renderer/useProjectBrowser.ts",
+        "packages/contracts/project-browser.ts"
+      ],
+      "evidence": [
+        "evidence/verification-summary.json",
+        "evidence/reading-audio-module-20261013/verification.md",
+        "evidence/project-browser-refactor-20261014.md",
+        "evidence/all-project-browser-20261014/verification.md",
+        "evidence/project-browser-partial-error-20261014/verification.md"
+      ],
+      "remaining": "Typed service/IPC boundaries, exclusive workspace restoration and separated reading/audio lifecycle are implemented. Broader fault handling, maintainability and complete security acceptance remain."
+    },
+    {
+      "id": "S4",
+      "requirement": "Desktop experience and accessibility",
+      "status": "PARTIAL",
+      "files": [
+        "apps/desktop/renderer/app.tsx",
+        "apps/desktop/renderer/LessonPractice.tsx",
+        "apps/desktop/renderer/ThemeIcon.tsx",
+        "apps/desktop/renderer/interface-audio.ts",
+        "assets/fonts",
+        "apps/desktop/renderer/ReadingTools.tsx",
+        "apps/desktop/renderer/FoundationCourse.tsx",
+        "apps/desktop/renderer/PhotoViewer.tsx",
+        "apps/desktop/renderer/desktop-design.css"
+      ],
+      "evidence": [
+        "evidence/verification-summary.json",
+        "evidence/releases/0.7.0/verification.json",
+        "docs/DESIGN-0.7.0.md",
+        "evidence/localized-controls-20261013/verification.md",
+        "evidence/package-snapshots/current-source-ui-recovery-20261013/verification.md",
+        "evidence/assistant-focus-20261013/verification.md",
+        "evidence/assistant-request-preview-20261013/verification.md",
+        "evidence/gui-secondary-matrix-20261013/verification.md",
+        "evidence/package-snapshots/current-source-study-flow-20261013/verification.md",
+        "evidence/reading-keyboard-scale-20261013/verification.md",
+        "evidence/learning-navigation-20261013/verification.md",
+        "evidence/studio-save-journey-20261013/verification.md",
+        "evidence/photo-dialog-accessible-20261014/verification.md",
+        "evidence/utility-dialog-names-20261014/verification.md",
+        "evidence/studio-compact-output-20261014/verification.md",
+        "evidence/project-search-keyboard-20261014/verification.md"
+      ],
+      "remaining": "Compact reading icons, automatic visible-only animation, native minimized-window pause and foundation heading focus implemented. One reading workflow at actual native 200 percent zoom and localized keyboard navigation pass; complete screen-reader, keyboard, scaling, performance and human usability acceptance remain."
+    },
+    {
+      "id": "S5",
+      "requirement": "Modular board and component profiles",
+      "status": "PARTIAL",
+      "files": [
+        "packages/profiles",
+        "apps/desktop/renderer/ConnectionsPanel.tsx",
+        "apps/desktop/renderer/ProfileExchangePanel.tsx"
+      ],
+      "evidence": [
+        "evidence/wip-custom-project-profile",
+        "evidence/wip-profile-version-selection",
+        "evidence/wip-indicator-wiring"
+      ],
+      "remaining": "Versioned custom import/export, registry, project binding, comparison and explicit selection exist. Reviewed migration application, additional adapters and bus capabilities remain."
+    },
+    {
+      "id": "S6",
+      "requirement": "Projects and local persistence",
+      "status": "PARTIAL",
+      "files": [
+        "packages/persistence/workspace.ts",
+        "packages/persistence/archives.ts",
+        "apps/desktop/renderer/StudentProjects.tsx",
+        "apps/desktop/renderer/useWorkspaceAction.ts",
+        "tests/e2e/project-actions.spec.ts"
+      ],
+      "evidence": [
+        "evidence/verification-summary.json",
+        "evidence/project-actions-20261013/verification.md",
+        "evidence/package-snapshots/current-source-ui-recovery-20261013/learner-ui-recovery-journey-20261013-3d7530c7/verification.md",
+        "evidence/workspace-restore-lock-20261013/verification.md",
+        "evidence/project-content-conflict-20261013/verification.md"
+      ],
+      "remaining": "SQLite recovery/snapshots/portable archives and backup metadata implemented. Actual native restore tests verify exclusive operation lifetime, cancellation recovery, retained database backup and unchanged old exported file. Extended crash, disk-full, migration and conflict cases remain."
+    },
+    {
+      "id": "S7",
+      "requirement": "Blockly and Arduino C++ generation",
+      "status": "PARTIAL",
+      "files": [
+        "apps/desktop/renderer/blocks.ts",
+        "packages/codegen/index.ts"
+      ],
+      "evidence": [
+        "evidence/verification-summary.json"
+      ],
+      "remaining": "Blockly and shared IR include parameterized nonrecursive functions, bounded loops, sensor expressions and PWM. Profile-aware indicator PWM generation is verified for ESP32/C3. Motor/sensor hardware generation and full source-map acceptance remain. See docs/WIP-L15-PWM.md."
+    },
+    {
+      "id": "S8",
+      "requirement": "Monaco and text programming",
+      "status": "PARTIAL",
+      "files": [
+        "packages/codegen/index.ts",
+        "apps/desktop/renderer/CompilerJournal.tsx",
+        "packages/contracts/compiler-journal.ts",
+        "packages/toolchain/journal-reader.ts"
+      ],
+      "evidence": [
+        "evidence/verification-summary.json",
+        "evidence/journal-ui/verification.md"
+      ],
+      "remaining": "Deterministic supported C++ and diagnostic navigation; cooperative runtime integration remains. Complete compiler-journal preview/export implemented with bounded IPC; actual source compiler GUI preview/export passes with preserved initial selector failure and explicit dialog destination override. Continuous output and access after restart/integrity rejection remain incomplete."
+    },
+    {
+      "id": "S9",
+      "requirement": "Real Arduino CLI and offline toolchains",
+      "status": "PARTIAL",
+      "files": [
+        "packages/toolchain/index.ts",
+        "packages/toolchain/bundle.ts",
+        "scripts/offline-check.mjs",
+        "packages/toolchain/process-journal.ts"
+      ],
+      "evidence": [
+        "evidence/verification-summary.json",
+        "evidence/compiler-journal/verification.md",
+        "evidence/journal-ui/verification.md",
+        "evidence/package-snapshots/current-source-ui-recovery-20261013/learner-ui-recovery-journey-20261013-3d7530c7/verification.md"
+      ],
+      "remaining": "Actual good/bad compilation and copied offline bundle builds have evidence for earlier immutable snapshots, including packaged Unicode/space paths. This does not verify the current latest snapshot. Current compiled release matrix, clean disconnected deployment, upload, log streaming and cross-session/integrity-failure acceptance remain."
+    },
+    {
+      "id": "S10",
+      "requirement": "Serial devices and firmware protocol",
+      "status": "PARTIAL",
+      "files": [
+        "packages/devices/index.ts",
+        "apps/desktop/renderer/StudentBoard.tsx"
+      ],
+      "evidence": [
+        "evidence/verification-summary.json"
+      ],
+      "remaining": "Real ports/serial/uploader and source telemetry plot/CSV exist; host movement protocol, broader plotting acceptance and physical tests remain. See docs/WIP-TELEMETRY-PLOT.md."
+    },
+    {
+      "id": "S11",
+      "requirement": "Safe motor firmware and runtime",
+      "status": "PARTIAL",
+      "files": [
+        "firmware/jective-runtime/SafetyController.h",
+        "firmware/jective-runtime/JectiveRuntime.h",
+        "firmware/jective-runtime/CheckedMove.h",
+        "tests/firmware/runtime_interface_test.cpp",
+        "scripts/runtime-interface-check.mjs"
+      ],
+      "evidence": [
+        "evidence/verification-summary.json",
+        "evidence/runtime-interface/verification.json"
+      ],
+      "remaining": "Real Runtime/API checks now use enabled native assertions; earlier assert-disabled host claims are superseded by docs/ASSERTION-CORRECTION.md. Full hardware generator/host protocol integration, peripheral lifecycle, RTOS stop latency and physical tests remain."
+    },
+    {
+      "id": "S12",
+      "requirement": "Offline 2D simulator",
+      "status": "PARTIAL",
+      "files": [
+        "packages/simulator/index.ts",
+        "apps/desktop/renderer/robot.worker.ts",
+        "apps/desktop/renderer/SimulatorPanel.tsx"
+      ],
+      "evidence": [
+        "evidence/verification-summary.json"
+      ],
+      "remaining": "Twelve offline worlds are available. Wider model, deterministic trace, runaway latency and baseline performance acceptance remain; see evidence/studio-workspace."
+    },
+    {
+      "id": "S13",
+      "requirement": "Robot assembly guides and example projects",
+      "status": "PARTIAL",
+      "files": [
+        "packages/content/guides.ts"
+      ],
+      "evidence": [
+        "evidence/verification-summary.json"
+      ],
+      "remaining": "Eight authored trilingual guides; unsupported drivers and physical tests prevent full compatibility."
+    },
+    {
+      "id": "S14",
+      "requirement": "Curriculum contract for sixty substantive lessons",
+      "status": "PARTIAL",
+      "files": [
+        "packages/content/lessons.ts",
+        "packages/content/lesson-indicator.ts",
+        "scripts/content-check.mjs",
+        "packages/content/knowledge-check.ts",
+        "tests/knowledge-check.test.ts",
+        "packages/content/lesson-blocks-code.ts",
+        "apps/desktop/renderer/BlocksCodePanel.tsx",
+        "packages/content/lesson-types-scope.ts",
+        "packages/content/code-lessons.ts",
+        "apps/desktop/renderer/TypesScopePanel.tsx",
+        "packages/content/lesson-functions-interface.ts",
+        "apps/desktop/renderer/FunctionsInterfacePanel.tsx",
+        "packages/content/lesson-nonblocking-time.ts",
+        "packages/content/lesson-collections.ts",
+        "packages/content/curriculum-links.ts",
+        "packages/content/lesson-recommendation.ts",
+        "apps/desktop/renderer/LessonRecommendation.tsx",
+        "packages/contracts/knowledge-check.ts",
+        "packages/content/assess-knowledge.ts",
+        "packages/content/learning-records.ts",
+        "apps/desktop/renderer/LearningLoad.tsx",
+        "tests/learning-state-integrity.test.ts"
+      ],
+      "evidence": [
+        "evidence/verification-summary.json",
+        "evidence/L20/verification.json",
+        "evidence/L20/content.json",
+        "evidence/L21/verification.json",
+        "evidence/L21/content.json",
+        "evidence/L22/verification.json",
+        "evidence/L22/content.json",
+        "evidence/L23/verification.json",
+        "evidence/L23/content.json",
+        "evidence/releases/0.8.0/verification.json",
+        "evidence/releases/0.8.0/content.json",
+        "evidence/blocks-code-lesson/content.json",
+        "evidence/blocks-code-lesson/compiler.json",
+        "evidence/blocks-code-lesson/source-e2e.json",
+        "evidence/types-scope/content.json",
+        "evidence/types-scope/compiler.json",
+        "evidence/types-scope/source-e2e.json",
+        "evidence/functions-interface/content.json",
+        "evidence/functions-interface/compiler.json",
+        "evidence/functions-interface/source-e2e.json",
+        "evidence/nonblocking-time/source-ui.json",
+        "evidence/nonblocking-time/compiler.json",
+        "evidence/collections-telemetry/source-e2e-0.8.8.json",
+        "evidence/collections-telemetry/compiler.json",
+        "evidence/curriculum-links/verification.md",
+        "evidence/lesson-recommendation/verification.md",
+        "evidence/knowledge-authority/verification.md",
+        "evidence/localized-controls-20261013/verification.md",
+        "evidence/managed-assistant-design-20261013/verification.md",
+        "evidence/learning-navigation-20261013/verification.md",
+        "evidence/requirements-refresh-20261013/content.json",
+        "evidence/learning-state-integrity-20261014/verification.md",
+        "evidence/learning-state-recovery-message-20261014/verification.md",
+        "evidence/learning-state-coverage-20261014/verification.md"
+      ],
+      "remaining": "Current source contains all 60 authored EN/RU/KK lesson drafts and eight introductory lessons. Independent technical/language review, complete current starter/solution real-compiler matrix, physical coverage and the full packaged/offline learner journey remain unverified. Draft presence and automated exercises do not constitute certified curriculum. Non-draft stored activity states are now recomputed from answers, with backup rejection and disabled-form recovery checks; these do not replace independent review or physical assessment."
+    },
+    {
+      "id": "S15",
+      "requirement": "Offline documentation and content quality",
+      "status": "PARTIAL",
+      "files": [
+        "packages/content/manual.ts",
+        "apps/desktop/renderer/ContentPanel.tsx",
+        "packages/content/compiler-help.ts",
+        "packages/content/student-help.ts",
+        "packages/content/library-search.ts"
+      ],
+      "evidence": [
+        "evidence/verification-summary.json",
+        "evidence/compiler-help/verification.md",
+        "evidence/library-fulltext/verification.md"
+      ],
+      "remaining": "Local manual/search; full curriculum/link/language quality audit remains."
+    },
+    {
+      "id": "S16",
+      "requirement": "Contextual and configurable AI assistant",
+      "status": "PARTIAL",
+      "files": [
+        "packages/assistant/index.ts",
+        "apps/desktop/renderer/AssistantPanel.tsx",
+        "apps/desktop/renderer/assistant-error-text.ts",
+        "tests/assistant-error-text.test.ts",
+        "packages/assistant/chat-completion.ts",
+        "tests/assistant-chat-completion.test.ts",
+        "services/assistant/server.mjs",
+        "services/assistant/secret-store.mjs",
+        "services/assistant/quota-store.mjs"
+      ],
+      "evidence": [
+        "evidence/verification-summary.json",
+        "evidence/learning-assistant-20261013/verification.md",
+        "evidence/assistant-error-recovery-20261013/verification.md",
+        "evidence/assistant-focus-20261013/verification.md",
+        "evidence/assistant-protocol-20261013/verification.md",
+        "evidence/assistant-request-preview-20261013/verification.md",
+        "evidence/assistant-cancellation-20261013/verification.md",
+        "evidence/package-snapshots/current-source-reading-access-20261013/verification.md"
+      ],
+      "remaining": "Managed server assistant prepared with encrypted server provider key, external master, expiring hashed learner tokens and durable quotas. Packaged client stores only encrypted learner token and denies student configuration. Local fixture requests, chat and early cancellation verified; remote JECTIVE deployment, TLS, live provider/model credentials and operational acceptance NOT RUN."
+    },
+    {
+      "id": "S17",
+      "requirement": "Teachers and offline classrooms",
+      "status": "PARTIAL",
+      "files": [
+        "packages/persistence/workspace.ts",
+        "apps/desktop/renderer/ReviewPanel.tsx"
+      ],
+      "evidence": [
+        "evidence/verification-summary.json"
+      ],
+      "remaining": "Five-learner/two-assignment round trip; full class management/due dates/review and release acceptance remain."
+    },
+    {
+      "id": "S18",
+      "requirement": "English Kazakh and Russian localization",
+      "status": "PARTIAL",
+      "files": [
+        "apps/desktop/renderer/locale.tsx",
+        "packages/content/index.ts"
+      ],
+      "evidence": [
+        "evidence/verification-summary.json",
+        "evidence/localized-controls-20261013/verification.md",
+        "evidence/assistant-error-recovery-20261013/verification.md",
+        "evidence/workspace-messages-20261013/verification.md",
+        "evidence/workspace-messages-20261013/studio-localization.json"
+      ],
+      "remaining": "Authored EN/RU/KK content and localized navigation/reading controls present. Workspace recovery messages translated; specific studio/keyboard checks PASS. Complete prose, dialog, error and block localization audit and independent technical language review remain."
+    },
+    {
+      "id": "S19",
+      "requirement": "Security privacy and trust boundaries",
+      "status": "PARTIAL",
+      "files": [
+        "docs/THREAT_MODEL.md",
+        "packages/persistence/archives.ts"
+      ],
+      "evidence": [
+        "evidence/verification-summary.json",
+        "evidence/package-snapshots/current-source-ui-recovery-20261013/verification.md",
+        "evidence/assistant-error-recovery-20261013/verification.md",
+        "evidence/assistant-protocol-20261013/verification.md",
+        "evidence/assistant-request-preview-20261013/verification.md",
+        "evidence/package-snapshots/current-source-study-flow-20261013/verification.md",
+        "evidence/package-snapshots/current-source-reading-access-20261013/verification.md"
+      ],
+      "remaining": "Sender/CSP/archive boundaries, packaged credential restrictions and production Electron fuses/tamper rejection verified in scoped snapshots. Managed gateway prepared, not remotely deployed. Complete adversarial, privacy, deployment and operational security acceptance remains."
+    },
+    {
+      "id": "S20",
+      "requirement": "Tests and reproducible evidence",
+      "status": "PARTIAL",
+      "files": [
+        "tests",
+        "evidence"
+      ],
+      "evidence": [
+        "evidence/releases/0.5.0/unit.json",
+        "evidence/releases/0.5.0/coverage-summary.json",
+        "evidence/runs",
+        "evidence/releases/0.7.0/verification.json",
+        "evidence/learning-assistant-20261013/verification.md",
+        "evidence/localized-controls-20261013/verification.md",
+        "evidence/gui-matrix-20261013/verification.md",
+        "evidence/package-snapshots/current-source-ui-recovery-20261013/verification.md",
+        "evidence/package-snapshots/current-source-ui-recovery-20261013/learner-ui-recovery-journey-20261013-3d7530c7/verification.md",
+        "evidence/assistant-error-recovery-20261013/verification.md",
+        "evidence/assistant-focus-20261013/verification.md",
+        "evidence/assistant-protocol-20261013/verification.md",
+        "evidence/assistant-request-preview-20261013/verification.md",
+        "evidence/gui-secondary-matrix-20261013/verification.md",
+        "evidence/package-snapshots/current-source-study-flow-20261013/verification.md",
+        "evidence/assistant-cancellation-20261013/unit.json",
+        "evidence/learning-navigation-20261013/e2e.json",
+        "evidence/package-snapshots/current-source-reading-access-20261013/verification.md",
+        "evidence/requirements-refresh-20261013/unit.json",
+        "evidence/current-coverage-20261013/verification.md",
+        "evidence/project-content-conflict-20261013/verification.md"
+      ],
+      "remaining": "Fresh full domain regression: 550 passed, zero failed. V8 package TypeScript coverage: 96.32 percent branches; unchanged 80-percent per-file gate PASS. Current targeted source Electron and scoped production checks have separate reports; historic failures retained. Complete safety-transition audit, server coverage, all current compiler examples, installed-user flows and physical acceptance remain."
+    },
+    {
+      "id": "S21",
+      "requirement": "Measurable acceptance criteria",
+      "status": "PARTIAL",
+      "files": [
+        "package.json",
+        "docs/DEPLOYMENT.md"
+      ],
+      "evidence": [
+        "evidence/verification-summary.json"
+      ],
+      "remaining": "Installer and offline bundle produced; clean OS, signing and distribution gates remain."
+    },
+    {
+      "id": "S22",
+      "requirement": "Windows packaging and school deployment",
+      "status": "NOT MET",
+      "files": [
+        "docs/requirements.json"
+      ],
+      "evidence": [
+        "evidence/verification-summary.json",
+        "evidence/package-snapshots/current-source-ui-recovery-20261013/verification.md",
+        "evidence/package-snapshots/current-source-study-flow-20261013/verification.md"
+      ],
+      "remaining": "All AC01-AC15 remain binding; no full release acceptance claimed."
+    },
+    {
+      "id": "S23",
+      "requirement": "Phased implementation and completion gates",
+      "status": "PARTIAL",
+      "files": [
+        "docs/HANDOFF.md"
+      ],
+      "evidence": [
+        "evidence/verification-summary.json"
+      ],
+      "remaining": "Multiple workflows verified; later curriculum/hardware/release phases incomplete."
+    },
+    {
+      "id": "S24",
+      "requirement": "Working method and final handoff",
+      "status": "PARTIAL",
+      "files": [
+        "README.md",
+        "docs/HANDOFF.md",
+        "evidence"
+      ],
+      "evidence": [
+        "evidence/verification-summary.json"
+      ],
+      "remaining": "Source/artifacts/evidence retained with honest remaining requirements."
+    }
+  ],
+  "criteria": [
+    {
+      "id": "AC01",
+      "requirement": "Installation. A generated NSIS EXE installs, launches, upgrades, repairs or reinstalls as documented, and uninstalls on clean Windows 10 and Windows 11 x64 test environments. Standard-user installation works in its supported mode. No development server, Node installation, or repository checkout is required to launch the installed app.",
+      "status": "PARTIAL / NOT MET",
+      "files": [
+        "package.json"
+      ],
+      "evidence": [
+        "evidence/verification-summary.json",
+        "evidence/package-snapshots/current-source-20261012/verification.md",
+        "evidence/package-snapshots/current-source-20261012/summary.json",
+        "evidence/package-snapshots/current-source-20261012/package-verification.json"
+      ],
+      "remaining": "Current-source unpacked Windows11build26200 package startup, duplicate-instance behavior and integrity protection verified independently of old publicinstaller. Clean NSIS installation/upgrade/repair/uninstall on Windows10 andWindows11, standard-user deployment lifecycle remain NOT RUN. Snapshot stillversion0.8.18, identified by separate binary/archive hashes, not a published installer."
+    },
+    {
+      "id": "AC02",
+      "requirement": "Offline readiness. With network adapters disabled, the installed app opens lessons, all guide assets, documentation search, block and text editors, local projects, classroom packages, and every bundled simulator world. With the offline toolchain bundle imported, a known-good reference sketch compiles without contacting the internet.",
+      "status": "PARTIAL / NOT MET",
+      "files": [
+        "tests/e2e/studio.spec.ts"
+      ],
+      "evidence": [
+        "evidence/verification-summary.json"
+      ],
+      "remaining": "Full acceptance not yet run."
+    },
+    {
+      "id": "AC03",
+      "requirement": "Honest compilation. A valid sketch produces a real binary and build manifest; an intentionally invalid sketch fails with actual compiler diagnostics; a subsequent upload cannot reuse a stale artifact. The same checks pass from the packaged application under a path containing spaces and Cyrillic characters.",
+      "status": "PARTIAL / NOT MET",
+      "files": [
+        "packages/toolchain/index.ts",
+        "evidence/compiler",
+        "packages/toolchain/environment.ts",
+        "apps/desktop/infrastructure/environment-thread.ts",
+        "apps/desktop/environment.worker.ts",
+        "tests/toolchain-build-lifecycle.test.ts",
+        "tests/e2e/multifile-editor.spec.ts",
+        "tests/toolchain-process.test.ts"
+      ],
+      "evidence": [
+        "evidence/verification-summary.json",
+        "evidence/editor-startup/native-electron-baseline.json",
+        "evidence/editor-startup/native-electron-original-fs.json",
+        "evidence/editor-startup/io-comparison.json",
+        "evidence/editor-startup/full-domain-unit.json",
+        "evidence/editor-startup/full-gui-environment-changed.json",
+        "evidence/editor-startup/environment-failure-manifest-domain.json",
+        "evidence/editor-startup/full-multifile-gui-pass.json",
+        "evidence/editor-startup/full-gui-actual-builds.json",
+        "evidence/package-snapshots/current-source-20261012/verification.md",
+        "evidence/package-snapshots/current-source-20261012/summary.json",
+        "evidence/package-snapshots/current-source-20261012/package-verification.json",
+        "evidence/package-snapshots/current-source-20261012/worker-asar.json",
+        "evidence/compiler-unicode/verification.md",
+        "evidence/compiler-unicode/after-unit.json",
+        "evidence/compiler-unicode/electron-process.json",
+        "evidence/package-snapshots/current-source-unicode-20261012/verification.md",
+        "evidence/package-snapshots/current-source-unicode-20261012/summary.json",
+        "evidence/package-snapshots/current-source-learning-search-20261012/learner-packaged-journey-20261013-4bd6d4f0/verification.md",
+        "evidence/package-snapshots/current-source-ui-recovery-20261013/learner-ui-recovery-journey-20261013-3d7530c7/verification.md"
+      ],
+      "remaining": "Full source Electron multifile GUI passed on rerun: actual invalid compiler diagnostic navigation, repaired valid exit0, four compiled sources and six artifact hashes verified against expected edited fixture and original SDK digest. Prior BUILD_ENVIRONMENT_CHANGED postcompile failure preserved; intermittent cause unresolved, one passing rerun is not absence proof. Failed-integrity manifests retain both snapshots and never publish upload candidates. Native242-246s latency finding persists. Current packaged Cyrillic/space-path acceptance and physical upload remain unverified. Current packaged invalid/fixed compiler and committed recovery pass under ordinary Unicode app/profile/SDK paths; stale-upload/device and full installed acceptance remain unverified."
+    },
+    {
+      "id": "AC04",
+      "requirement": "Hardware upload. On one identified supported physical reference board, the selected build is flashed using the real uploader and runtime identity is verified independently when the firmware supports it. Wrong selection, busy port, reset-related COM changes, and disconnection produce honest states. Without this test, hardware readiness remains blocked.",
+      "status": "PARTIAL / NOT MET",
+      "files": [],
+      "evidence": [
+        "evidence/verification-summary.json"
+      ],
+      "remaining": "Physical hardware NOT RUN; no identified board or motor configurations available."
+    },
+    {
+      "id": "AC05",
+      "requirement": "Profiles. At least two distinct board profiles and two interchangeable component-driver configurations exist with schema tests. A declarative new profile can be added without editor code changes when it uses existing drivers. Pin conflicts and unsupported capabilities prevent unsafe generation or upload, and unknown JECTIVE wiring stays visibly provisional.",
+      "status": "PARTIAL / NOT MET",
+      "files": [
+        "packages/profiles/index.ts"
+      ],
+      "evidence": [
+        "evidence/verification-summary.json"
+      ],
+      "remaining": "Full acceptance not yet run."
+    },
+    {
+      "id": "AC06",
+      "requirement": "Editors. Every shipping block has generation tests; workspace save and reload preserve semantics; generated examples compile; source diagnostics navigate to the right location; and Blocks-to-Code conversion preserves the original workspace without claiming arbitrary reverse conversion.",
+      "status": "PARTIAL / NOT MET",
+      "files": [
+        "tests/e2e/studio.spec.ts"
+      ],
+      "evidence": [
+        "evidence/verification-summary.json"
+      ],
+      "remaining": "Full acceptance not yet run."
+    },
+    {
+      "id": "AC07",
+      "requirement": "Simulator. All six required worlds load offline. The same program, world, and seed produce matching canonical traces across ten repeats on the same tested build. Pause and reset behave consistently; a runaway program can be stopped within 250 ms on the baseline machine. Unsupported C++ is rejected with a useful explanation.",
+      "status": "PARTIAL / NOT MET",
+      "files": [
+        "tests/simulator.test.ts"
+      ],
+      "evidence": [
+        "evidence/verification-summary.json"
+      ],
+      "remaining": "Full acceptance not yet run."
+    },
+    {
+      "id": "AC08",
+      "requirement": "Motor safety. Firmware startup is disarmed, invalid commands are rejected, speed and reversal limits are enforced, and tethered motion authority expires within the configured maximum 500 ms target. Physical measurements verify the stop behavior on each claimed motor configuration. A software-only test does not satisfy physical acceptance.",
+      "status": "PARTIAL / NOT MET",
+      "files": [],
+      "evidence": [
+        "evidence/verification-summary.json"
+      ],
+      "remaining": "Physical hardware NOT RUN; no identified board or motor configurations available."
+    },
+    {
+      "id": "AC09",
+      "requirement": "Content. Exactly sixty required lesson IDs have complete learner and teacher structures, three or more assessment questions each, compatible artifacts, and full EN, KK, and RU content. At least eight complete assembly guides and a searchable offline manual ship with zero broken internal links and zero missing required assets. Content checks compile applicable examples.",
+      "status": "PARTIAL",
+      "files": [
+        "packages/content/lesson-blocks-code.ts",
+        "apps/desktop/renderer/BlocksCodePanel.tsx",
+        "packages/content/lesson-types-scope.ts",
+        "packages/content/code-lessons.ts",
+        "apps/desktop/renderer/TypesScopePanel.tsx",
+        "packages/content/lesson-functions-interface.ts",
+        "apps/desktop/renderer/FunctionsInterfacePanel.tsx",
+        "packages/content/lesson-nonblocking-time.ts",
+        "packages/content/lesson-collections.ts"
+      ],
+      "evidence": [
+        "evidence/verification-summary.json",
+        "evidence/blocks-code-lesson/content.json",
+        "evidence/blocks-code-lesson/compiler.json",
+        "evidence/blocks-code-lesson/source-e2e.json",
+        "evidence/types-scope/content.json",
+        "evidence/types-scope/compiler.json",
+        "evidence/types-scope/source-e2e.json",
+        "evidence/functions-interface/content.json",
+        "evidence/functions-interface/compiler.json",
+        "evidence/functions-interface/source-e2e.json",
+        "evidence/nonblocking-time/source-ui.json",
+        "evidence/nonblocking-time/compiler.json",
+        "evidence/collections-telemetry/source-e2e-0.8.8.json",
+        "evidence/collections-telemetry/compiler.json"
+      ],
+      "remaining": "Published 0.8.11 contains L01-L44 draft EN/RU/KK lessons plus eight introductory activities. L43 includes coordinate/world practice and L44 includes actual repeatable worker experiments, checked activities and validated report export. L45-L60 (16 lessons), independent technical language review and remaining acceptance remain. Model/simulation/compiler/physical evidence stay separate; the full packaged learner workflow is not verified."
+    },
+    {
+      "id": "AC10",
+      "requirement": "Classroom. Five learner workspaces complete two assignments through export, submission import, rubric grading, feedback, and CSV or print export while disconnected. Duplicate and conflicting submissions are handled explicitly. Reports contain real stored evidence and no invented activity.",
+      "status": "PARTIAL / NOT MET",
+      "files": [],
+      "evidence": [
+        "evidence/verification-summary.json"
+      ],
+      "remaining": "The newer explicit user instruction supersedes the student-facing local-classroom requirement: students study independently. Classroom UI is removed; legacy storage remains for existing data. This does not claim the original classroom acceptance has passed."
+    },
+    {
+      "id": "AC11",
+      "requirement": "Persistence. Forced termination during autosave and a migration failure recover without silently losing the last committed project. Backup and restore preserve projects, progress, and classroom records. Import rejects traversal and oversized archives; exports omit credentials and toolchain caches by default.",
+      "status": "PARTIAL / NOT MET",
+      "files": [
+        "tests/integration.test.ts"
+      ],
+      "evidence": [
+        "evidence/verification-summary.json"
+      ],
+      "remaining": "Full acceptance not yet run."
+    },
+    {
+      "id": "AC12",
+      "requirement": "AI. Disabled and offline states are truthful. One configured real provider or local endpoint passes an integration test when credentials or service availability permit. Context preview, cancellation, redaction, and reviewed code application work. If a real provider test is unavailable, mark it NOT RUN and retain functional offline documentation search.",
+      "status": "PARTIAL / NOT MET",
+      "files": [],
+      "evidence": [
+        "evidence/verification-summary.json"
+      ],
+      "remaining": "Full acceptance not yet run."
+    },
+    {
+      "id": "AC13",
+      "requirement": "Localization and accessibility. Required catalogs have zero missing keys. A manual smoke test completes the main learner journey in all three languages, including Kazakh characters. Keyboard-only navigation reaches essential actions, focus is visible, and 100, 125, and 150 percent scaling do not obscure primary controls.",
+      "status": "PARTIAL / NOT MET",
+      "files": [
+        "apps/desktop/renderer/app.tsx",
+        "apps/desktop/renderer/ReadingTools.tsx",
+        "apps/desktop/renderer/reading-preferences.ts",
+        "apps/desktop/renderer/reading-motion.ts",
+        "apps/desktop/renderer/PhotoViewer.tsx",
+        "tests/e2e/reading-design.spec.ts",
+        "apps/desktop/renderer/CodeFileTabs.tsx",
+        "apps/desktop/renderer/studio-workspace.css",
+        "tests/e2e/studio-density.spec.ts"
+      ],
+      "evidence": [
+        "evidence/verification-summary.json",
+        "evidence/reading-design/verification.md",
+        "evidence/studio-density/verification.md",
+        "evidence/studio-density/after-ui.json",
+        "evidence/studio-density/comparison.json"
+      ],
+      "remaining": "Persistent text size/spacing/reduced motion, EN/RU offline audio, 480/800 px overflow and photo Escape verified. Kazakh audio unavailable; human language/pronunciation review not run. Full three-language manual learner journey, keyboard-only journey and actual 100/125/150 percent scaling acceptance remain unverified."
+    },
+    {
+      "id": "AC14",
+      "requirement": "Performance. Measure on a declared baseline of Windows x64, four logical CPU cores, 8 GB RAM, and SSD storage. Target median cold launch at or below 8 seconds across five runs, a 500-block edit response p95 below 150 ms, and simulator display at or above 30 frames per second for bundled worlds. Idle working set should stay below 750 MB and show no sustained growth above 50 MB after warm-up during a 30-minute idle run. Report actual measurements and hardware; disclose misses instead of silently changing thresholds. Compiler duration is reported separately because it depends on the toolchain and cache.",
+      "status": "PARTIAL / NOT MET",
+      "files": [
+        "scripts/startup-measure.mjs"
+      ],
+      "evidence": [
+        "evidence/verification-summary.json",
+        "evidence/installed-tools/verification.md",
+        "evidence/startup-measure/verification.md",
+        "evidence/startup-measure/source-launch.json",
+        "evidence/startup-measure/editor-deferral-comparison.json",
+        "evidence/startup-measure/before-editor-deferral.json"
+      ],
+      "remaining": "Actual source fresh-process/workspace launch median2563.92ms across5 after deferred Monaco initialization, on Ryzen5600H/12logical cores/15.35GiB RAM/Windows11SSD host; OS cache not cleared. Mean summed initial working sets739.24MiB; shared pages may duplicate and this is not idle/private memory. Required4logical-core/8GB baseline, installed cold-cache launch,500-blockp95,worldFPS,30minute idle/growth remain unverified. Compiler native cycle242-246s reported separately."
+    },
+    {
+      "id": "AC15",
+      "requirement": "Quality and security. Lint, type checks, required tests, content checks, and packaged smoke tests pass with recorded logs. Known critical exploitable release-path vulnerabilities or failed safety transitions block release. Test reports distinguish pass, fail, skipped, and not run. An installer file alone is not evidence that these gates passed.",
+      "status": "PARTIAL / NOT MET",
+      "files": [
+        "evidence/audit.json",
+        "evidence/runs",
+        "scripts/audio-catalog.mjs",
+        "scripts/lesson-audio-check.mjs",
+        "tests/audio-catalog.node.mjs",
+        "apps/desktop/infrastructure/media.ts",
+        "tests/media-response.test.ts",
+        "scripts/requirements-check.mjs",
+        "apps/desktop/renderer/operation-error-text.ts",
+        "tests/operation-error-text.test.ts",
+        "scripts/security-package-check.mjs",
+        "tests/toolchain-process.test.ts"
+      ],
+      "evidence": [
+        "evidence/verification-summary.json",
+        "evidence/dependency-audit/verification.md",
+        "evidence/dependency-audit/npm-audit.json",
+        "evidence/reading-design/verification.md",
+        "evidence/installed-tools/verification.md",
+        "evidence/editor-startup/full-domain-unit.json",
+        "evidence/editor-startup/full-domain-coverage-summary.json",
+        "evidence/editor-startup/npm-audit-current.json",
+        "evidence/editor-startup/environment-failure-manifest-domain.json",
+        "evidence/editor-startup/integrity-recovery-full-domain-unit.json",
+        "evidence/editor-startup/integrity-recovery-full-domain-coverage.json",
+        "evidence/editor-startup/integrity-recovery-localization-ui.json",
+        "evidence/editor-startup/requirements-structure.json",
+        "evidence/package-snapshots/current-source-20261012/verification.md",
+        "evidence/package-snapshots/current-source-20261012/summary.json",
+        "evidence/package-snapshots/current-source-20261012/package-verification.json",
+        "evidence/compiler-unicode/verification.md",
+        "evidence/compiler-unicode/after-unit.json",
+        "evidence/compiler-unicode/electron-process.json",
+        "evidence/package-snapshots/current-source-unicode-20261012/verification.md",
+        "evidence/package-snapshots/current-source-unicode-20261012/summary.json"
+      ],
+      "remaining": "Source static/build/domain/selectedGUI checks pass; current-source unpacked packagedstartup/all273asset equality/fuses/ASARtamperrejection+restoration pass on Windows11build26200. Packaged worker/serial module checks use external matching Electron diagnostic host, not full installed learner acceptance. Dependency audit zero known advisories. Full release gate, human content review, complete packaged/offline/compilerGUI, cleaninstaller lifecycle, Windows10,physicalhardware/liveprovider not complete; intermittent SDKfingerprint failure unresolved. Publishedinstaller unchanged."
+    }
+  ],
+  "updated": "2026-10-11T20:18:27.797Z"
+}

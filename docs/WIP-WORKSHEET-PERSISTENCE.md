@@ -1,0 +1,9 @@
+# Project-backed worksheet answers
+
+The L02 worksheet previously kept answers only in its mounted page state. Current source stores them in the current project's optional `worksheets` field. Switching between Studio and the learning library retains answers. Editing marks the project unsaved and uses the existing local autosave. Project files, portable archives, snapshots and backups carry the validated project field through their existing serialization paths.
+
+The shared worksheet definition supplies both content/UI fields and validation. Only the known L02 worksheet ID and its 54 role/field combinations are accepted; each answer is limited to 2000 characters. Empty or absent specifications remain missing evidence. The independent worksheet JSON export remains available. The UI explains that answers belong to the current project and that saving/exporting the project is required for transfer.
+
+TypeScript and ESLint passed; all 42 unit/integration tests passed. The new persistence test verifies Unicode answers through portable archive decoding, SQLite autosave and validated backup reconstruction, and rejects unknown/oversized answers. The Electron scenario exports actual worksheet JSON, switches away/back and verifies the answer, waits for real SQLite recovery data, closes Electron, relaunches it, accepts recovery and checks the restored form value. Reports are in `evidence/wip-worksheet-persistence`.
+
+Older projects without the optional field remain supported. The published 0.2.0 reader has a strict older schema and will reject a newer project containing this field; use the updated source application for worksheet-bearing projects. This is an additive source-format change, not a claim of backwards readability in the old installer. Published release artifacts are unchanged. The earlier WIP-L02 page-state limitation is superseded by this change; other requirements remain unfinished.

@@ -1,0 +1,20 @@
+import {build} from 'esbuild';
+import {mkdir,writeFile} from 'node:fs/promises';
+import {resolve} from 'node:path';
+await mkdir('test-results',{recursive:true});
+await build({entryPoints:['packages/toolchain/index.ts'],outfile:'test-results/toolchain.cjs',platform:'node',format:'cjs',bundle:true});
+const {ToolchainService}=await import('../test-results/toolchain.cjs');
+await build({entryPoints:['packages/codegen/index.ts'],outfile:'test-results/codegen.cjs',platform:'node',format:'cjs',bundle:true});
+const {generate}=await import('../test-results/codegen.cjs');
+const service=new ToolchainService(resolve('.toolchain/bin/arduino-cli.exe'),resolve('.toolchain/workspace'));
+const base={schemaVersion:1,id:crypto.randomUUID(),name:'Actual compiler check',profileId:'esp32-devkit-reference',mode:'code',workspace:{},revision:0};
+const source=generate({setup:[{kind:'print',text:'"JECTIVE"\nҚазақша Русский'}],loop:[{kind:'led',on:true},{kind:'wait',ms:500},{kind:'led',on:false},{kind:'wait',ms:500}]},2);
+await mkdir('examples/indicator',{recursive:true});await writeFile('examples/indicator/indicator.ino',source);
+const good=await service.compile({...base,source});
+const bad=await service.compile({...base,source:'#include <Arduino.h>\nvoid setup(){this_is_a_deliberate_compile_error;}\nvoid loop(){}\n'});
+let staleRejected=false;try{await service.upload({...base,source},good.operationId,'COM1');}catch(e){staleRejected=String(e).includes('BUILD_STALE');}
+const structuredSource=generate({setup:[{kind:'set',name:'count',value:{kind:'number',value:1}},{kind:'print',text:'Unicode 🤖\x1b'}],loop:[{kind:'if',condition:{kind:'binary',op:'<',left:{kind:'variable',name:'count'},right:{kind:'number',value:4}},then:[{kind:'repeat',count:2,body:[{kind:'led',on:true},{kind:'wait',ms:100},{kind:'led',on:false},{kind:'wait',ms:100}]}],otherwise:[{kind:'print',text:'done'}]},{kind:'set',name:'count',value:{kind:'binary',op:'+',left:{kind:'variable',name:'count'},right:{kind:'number',value:1}}}]},2);
+const structured=await service.compile({...base,id:crypto.randomUUID(),source:structuredSource});
+await writeFile('test-results/compiler.json',JSON.stringify({good,bad,structured,staleRejected,note:'COM1 is an explicit test argument; BUILD_STALE rejects before any uploader process or port operation'},null,2));
+if(good.state!=='succeeded'||bad.state!=='failed'||bad.artifacts.length||!staleRejected||structured.state!=='succeeded')throw new Error('Actual compiler gate failed; inspect test-results/compiler.json');
+console.log('Actual valid compile PASS; invalid compile rejected PASS; no stale artifacts PASS');

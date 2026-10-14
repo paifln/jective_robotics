@@ -1,0 +1,11 @@
+# L43 authoring in progress
+
+Current source: L43 is now registered, with starter/reference block artifacts, a lesson-owned world, trilingual introductory text/tasks and knowledge checks. The interactive panel is reachable through the course. 382 tests, 96.31% branches and five final Electron scenarios pass, including checked attempts, real world export and actual block simulation. Light/dark 800px SVG views were inspected. Source curriculum is 43/60; public 0.8.9 remains 42/60. See [current receipt](../evidence/world-coordinate-lesson/verification.json). Remaining work includes packaging, L44–L60, independent language review and full master acceptance. The paragraphs below retain earlier authoring scope.
+
+The source draft in lesson-world-coordinates.ts explains the simulator's actual top-left coordinate frame, metres, degrees in the designer and radians in exports, rectangle dimensions, circular goal geometry, body clearance, straight-motion predictions, acceleration, separate simulation observations and labelled world export/reopening. EN/RU/KK content includes worked examples, a guided activity, independent challenge, three questions, troubleshooting and evidence requirements. Translation remains draft-review-required.
+
+L43 is not registered in the curriculum. Source and published lesson counts remain 42/60. Checked pose/unit matching now uses the existing activity grader and preserves attempts through validated SQLite backup/restore. Correct movement answers are checked against actual fixed-step kinematics. The full domain suite has 381 passing tests across 125 files, 96.31% branches; typecheck, lint and build pass. See [activity evidence](../evidence/world-coordinate-activity/verification.json).
+
+An interactive lesson panel is now authored and mapped in LessonLab: a coordinate SVG, the persisted checked activity and the existing visual world designer with clearly separate lesson-draft application. Typecheck, lint and build pass after this panel change. It is not reachable through the course until L43 registration; no runtime or visual verification of this new panel is claimed yet.
+
+Starter/reference artifact loading, curriculum registration and end-to-end lesson verification remain. This authoring increment is not packaged. The earlier draft receipt is historical and records theory-only scope.

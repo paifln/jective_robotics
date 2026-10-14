@@ -1,0 +1,6 @@
+﻿import {it,expect} from 'vitest';
+import {randomUUID} from 'node:crypto';
+import {WorkspaceStore} from '../packages/persistence/workspace';
+import type {Project} from '../packages/contracts';
+it('records completed file snapshots without replacing a newer draft or a different recovery project',()=>{const store=new WorkspaceStore(':memory:');try{const earlier:Project={schemaVersion:1,id:randomUUID(),name:'Earlier',profileId:'esp32-devkit-reference',mode:'code',source:'void setup() {}\nvoid loop() {}',workspace:{},revision:1};const current={...earlier,id:randomUUID(),name:'Current',revision:7};store.autosave(current);store.completedSave(earlier,false);expect(store.state().recovery).toEqual(current);expect(store.project(earlier.id)).toEqual(earlier);const newer={...earlier,source:earlier.source+'\n// newer unsaved work'};store.autosave(newer);store.completedSave(earlier,true,false);expect(store.state().recovery).toEqual(newer);expect(store.project(earlier.id)).toEqual(newer);expect(store.snapshots(earlier.id).every(snapshot=>store.restoreSnapshot(snapshot.id)?.source===earlier.source)).toBe(true);store.completedSave({...newer,revision:2});expect(store.state().recovery).toEqual({...newer,revision:2});}finally{store.close();}});
+

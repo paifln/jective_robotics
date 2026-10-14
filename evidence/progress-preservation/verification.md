@@ -1,0 +1,5 @@
+# Preserve checked progress against self-report downgrades
+
+A single atomic reportProgress UPSERT preserves existing knowledge-check-passed, simulation-complete and teacher-reviewed labels when a learner submits started or self-reported-complete. Generic progress IPC uses this method. The existing trusted raw progress method remains available for exact backup restoration/explicit internal replacement; no schema migration or historical data deletion is introduced. This is label-preservation logic, not certification of the origin of every legacy label or a complete parallel-evidence history.
+
+Five SQLite workspace tests pass, including actual protected labels and raw replacement. Full535tests/181files pass,96.35% package branch coverage/per-file thresholds pass. Source Electron8.0s checks a real quiz pass, subsequent self-report preserves itsDBmark, recommendation and restart persistence; existing forged-state/incorrect-answer rejection remains covered. Build/typecheck/lint pass. No compiler, package, installer or physical verification repeated for this persistence change.

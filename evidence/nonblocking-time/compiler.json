@@ -1,0 +1,214 @@
+{
+  "checkedAt": "2026-10-11T09:51:24.955Z",
+  "scope": "Actual C++ state core and both sketches executed with serial/clock substitutes; rollover, stop priority/latch and 10-ms polling. Actual ESP32 compile only.",
+  "assertionsEnabled": true,
+  "sourceHashes": {
+    "packages/content/nonblocking-time.ts": "3d5faec66cf499679fafbbfc7898814cf8bc6fc2945cd57ca3393a78d9b172cd",
+    "scripts/nonblocking-time-check.mjs": "c6f322beb1ff1d874cd77f285e91ba83f14dd2de4e22bca49452ea1c81e8ab8d",
+    "tests/firmware/assertions-required.h": "75778e699f6c793ec44e25dd1440f750f88ac396cb3620e9f908e3fa46613aac"
+  },
+  "hostCompile": {
+    "code": 0,
+    "log": ""
+  },
+  "hostExecution": {
+    "code": 0,
+    "log": "0,0,0,first\r\n0,300,300,second\r\n0,350,350,stopped\r\n1,0,4294967040,first\r\n1,300,44,second\r\n1,350,94,stopped\r\n2,0,4294967040,first\r\n2,300,44,stopped\r\n3,0,0,stopped\r\n4,0,0,first\r\n4,300,300,second\r\n4,360,360,stopped\r\n5,0,4294967280,first\r\n5,250,234,second\r\n5,1000,984,first\r\n5,1250,1234,second\r\n"
+  },
+  "inputs": [
+    {
+      "firstMs": 300,
+      "secondMs": 700,
+      "startClock": 0,
+      "stopAt": 350
+    },
+    {
+      "firstMs": 300,
+      "secondMs": 700,
+      "startClock": 4294967040,
+      "stopAt": 350
+    },
+    {
+      "firstMs": 300,
+      "secondMs": 700,
+      "startClock": 4294967040,
+      "stopAt": 300
+    },
+    {
+      "firstMs": 300,
+      "secondMs": 700,
+      "startClock": 0,
+      "stopAt": 0
+    },
+    {
+      "firstMs": 300,
+      "secondMs": 700,
+      "startClock": 0,
+      "stopAt": 353
+    },
+    {
+      "firstMs": 250,
+      "secondMs": 750,
+      "startClock": 4294967280,
+      "stopAt": null
+    }
+  ],
+  "native": [
+    [
+      {
+        "elapsedMs": 0,
+        "clock": 0,
+        "phase": "first"
+      },
+      {
+        "elapsedMs": 300,
+        "clock": 300,
+        "phase": "second"
+      },
+      {
+        "elapsedMs": 350,
+        "clock": 350,
+        "phase": "stopped"
+      }
+    ],
+    [
+      {
+        "elapsedMs": 0,
+        "clock": 4294967040,
+        "phase": "first"
+      },
+      {
+        "elapsedMs": 300,
+        "clock": 44,
+        "phase": "second"
+      },
+      {
+        "elapsedMs": 350,
+        "clock": 94,
+        "phase": "stopped"
+      }
+    ],
+    [
+      {
+        "elapsedMs": 0,
+        "clock": 4294967040,
+        "phase": "first"
+      },
+      {
+        "elapsedMs": 300,
+        "clock": 44,
+        "phase": "stopped"
+      }
+    ],
+    [
+      {
+        "elapsedMs": 0,
+        "clock": 0,
+        "phase": "stopped"
+      }
+    ],
+    [
+      {
+        "elapsedMs": 0,
+        "clock": 0,
+        "phase": "first"
+      },
+      {
+        "elapsedMs": 300,
+        "clock": 300,
+        "phase": "second"
+      },
+      {
+        "elapsedMs": 360,
+        "clock": 360,
+        "phase": "stopped"
+      }
+    ],
+    [
+      {
+        "elapsedMs": 0,
+        "clock": 4294967280,
+        "phase": "first"
+      },
+      {
+        "elapsedMs": 250,
+        "clock": 234,
+        "phase": "second"
+      },
+      {
+        "elapsedMs": 1000,
+        "clock": 984,
+        "phase": "first"
+      },
+      {
+        "elapsedMs": 1250,
+        "clock": 1234,
+        "phase": "second"
+      }
+    ]
+  ],
+  "sketchHosts": [
+    {
+      "variant": "starter",
+      "compiled": {
+        "code": 0,
+        "log": ""
+      },
+      "execution": {
+        "code": 0,
+        "log": "0,FIRST\r\n300,SECOND\r\n1000,STOPPED\r\n"
+      }
+    },
+    {
+      "variant": "reference",
+      "compiled": {
+        "code": 0,
+        "log": ""
+      },
+      "execution": {
+        "code": 0,
+        "log": "0,FIRST\r\n300,SECOND\r\n350,STOPPED\r\n"
+      }
+    }
+  ],
+  "firmware": [
+    {
+      "variant": "starter",
+      "result": {
+        "operationId": "8cb0377f-7ef7-477f-aaf0-9633eee07af2",
+        "state": "succeeded",
+        "sourceHash": "91b4f50bbda489d8e0c01af1c40ed520cf684eb22c5b63d6344f24ba3a626cab",
+        "artifacts": [
+          "boot_app0.bin",
+          "sketch.ino.bin",
+          "sketch.ino.bootloader.bin",
+          "sketch.ino.elf",
+          "sketch.ino.merged.bin",
+          "sketch.ino.partitions.bin"
+        ],
+        "exitCode": 0,
+        "log": "Sketch uses 269020 bytes (20%) of program storage space. Maximum is 1310720 bytes.\nGlobal variables use 22116 bytes (6%) of dynamic memory, leaving 305564 bytes for local variables. Maximum is 327680 bytes.\n"
+      }
+    },
+    {
+      "variant": "reference",
+      "result": {
+        "operationId": "3b8c6752-ac82-4def-a119-a4691721ca51",
+        "state": "succeeded",
+        "sourceHash": "2e9fe9b10fc6b753738eb66333658427daa7cd86cfade54d47e624935a201944",
+        "artifacts": [
+          "boot_app0.bin",
+          "sketch.ino.bin",
+          "sketch.ino.bootloader.bin",
+          "sketch.ino.elf",
+          "sketch.ino.merged.bin",
+          "sketch.ino.partitions.bin"
+        ],
+        "exitCode": 0,
+        "log": "Sketch uses 269132 bytes (20%) of program storage space. Maximum is 1310720 bytes.\nGlobal variables use 22148 bytes (6%) of dynamic memory, leaving 305532 bytes for local variables. Maximum is 327680 bytes.\n"
+      }
+    }
+  ],
+  "uploadVerification": "NOT RUN",
+  "physicalVerification": "NOT RUN"
+}
