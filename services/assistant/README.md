@@ -2,6 +2,8 @@
 
 The OpenAI key belongs on the JECTIVE server. It is never distributed in a student EXE, project, or renderer. This gateway uses a fixed OpenAI endpoint and a server-selected model. Each learner receives a separate expiring, revocable credential, not the provider key.
 
+New provisioning issues learner tokens with a `jt_` prefix and 32 random bytes; registry files retain only hashes. Desktop production mode accepts these and compatible legacy tokens of 43 characters, rejects provider prefixes and invalid lengths before writing, and never promotes an old provider credential into managed access. This guards against provisioning mistakes; it does not hide a learner token from the owner of their own device.
+
 Requires Node.js 24. No additional dependencies. Run verification with:
 
 ```sh
@@ -18,7 +20,7 @@ npm run architecture:test
 5. The service binds to **127.0.0.1:8787** only. Place it behind an HTTPS reverse proxy on your JECTIVE server. Limit request bodies to 200 KB, apply IP/connection rate limits, and do not expose the loopback HTTP service publicly. Firewall all other inbound access. Proxy `/chat/completions` to the gateway. No browser CORS access is enabled.
 6. On each desktop, set `JECTIVE_ASSISTANT_SERVER=https://YOUR-ASSISTANT-HOST` and `JECTIVE_ASSISTANT_TOKEN` to that learner's token for the first launch. The main process stores the token using Electron safeStorage in `assistant.json`, and removes the token from its process environment. Subsequent launches use the encrypted file. An endpoint without credentials does not activate online assistance. The token must not be the OpenAI key. Packaged renderer IPC cannot change assistant credentials.
 
-Packaged student builds also refuse legacy direct-provider configurations. They do not erase a previous administrator's encrypted key automatically. Provision student machines with fresh profiles and no provider credentials; remove legacy provider files from student devices through your administrator deployment procedure. Encrypting a shared provider key on a student-owned computer does not make it secret from that computer's owner.
+All desktop builds also refuse legacy direct-provider configurations. They do not erase a previous administrator's encrypted key automatically. Provision student machines with fresh profiles and no provider credentials; remove legacy provider files from student devices through your administrator deployment procedure. Encrypting a shared provider key on a student-owned computer does not make it secret from that computer's owner.
 
 ## Limits and outstanding deployment verification
 

@@ -1,3 +1,6 @@
+import {parkVerificationWindow} from './helpers/window';
+import {openSimulationTools} from './helpers/simulation';
+import {prepareProgrammingWorkspace,startLessonProject} from './helpers/learning';
 import {test,expect,_electron as electron} from '@playwright/test';
 import {mkdtemp,readFile,rm} from 'node:fs/promises';
 import {tmpdir} from 'node:os';
@@ -7,7 +10,7 @@ test('L25 starter exposes missing data and reference stops through recovery in t
  const env:Record<string,string>=Object.fromEntries(Object.entries(process.env).filter((entry):entry is [string,string]=>entry[1]!==undefined));delete env.ELECTRON_RUN_AS_NODE;env.JECTIVE_WORKSPACE_ROOT=root;
  const app=await electron.launch({executablePath:process.env.JECTIVE_EXECUTABLE,args:process.env.JECTIVE_EXECUTABLE?[]:['.'],env});
  try{
-  const page=await app.firstWindow();page.on('dialog',dialog=>dialog.accept());await expect(page.getByRole('button',{name:'Learn',exact:true})).toBeVisible();await expect(page.locator('#launch-screen')).toHaveCount(0);
+  const page=await app.firstWindow();await parkVerificationWindow(app);await prepareProgrammingWorkspace(page,true,true);page.on('dialog',dialog=>dialog.accept());await expect(page.getByRole('button',{name:'Learn',exact:true})).toBeVisible();await expect(page.locator('#launch-screen')).toHaveCount(0);
   for(const reference of [false,true]){
    await page.getByRole('button',{name:'Learn',exact:true}).click();await page.getByRole('button',{name:/^L25 ·/}).click();
    await expect(page.getByRole('heading',{name:'Obstacle stop',level:3,exact:true})).toBeVisible();
@@ -28,13 +31,13 @@ test('L25 starter exposes missing data and reference stops through recovery in t
     await panel.getByLabel('Stop threshold (m)',{exact:true}).fill('');await expect(panel.getByRole('button',{name:'Export stopping experiment JSON',exact:true})).toHaveCount(0);
     await panel.getByRole('button',{name:'Run stopping experiment',exact:true}).click();await expect(panel.getByRole('alert')).toBeVisible();
    }
-   await page.getByRole('button',{name:reference?'Load reference solution':'Load starter',exact:true}).click();await expect(page.getByLabel('Project name')).toHaveValue('L25 learner project');
-   await page.getByRole('button',{name:'Simulation',exact:true}).click();await expect(page.getByLabel('World',{exact:true})).toHaveValue('L25-missing-data');
-   await page.getByRole('button',{name:'Run',exact:true}).click();await expect(page.locator('.feature pre')).toContainText(reference?'"status": "completed"':'"status": "error"',{timeout:10000});
-   const state=JSON.parse((await page.locator('.feature pre').textContent())!);
+   await startLessonProject(page,reference?true:false);await expect(page.getByLabel('Project name')).toHaveValue('L25 · My experiment');
+   await page.getByRole('button',{name:'Simulator',exact:true}).click();await expect(page.getByLabel('World',{exact:true})).toHaveValue('L25-missing-data');
+   await page.getByRole('button',{name:'Run',exact:true}).click();await expect(page.locator('.simulator-workspace pre')).toContainText(reference?'"status": "completed"':'"status": "error"',{timeout:10000});
+   const state=JSON.parse((await page.locator('.simulator-workspace pre').textContent())!);
    const path=join(root,reference?'reference.json':'starter.json');
    await app.evaluate(({session},path)=>{session.defaultSession.once('will-download',(_event,item)=>item.setSavePath(path));},path);
-   await page.getByRole('button',{name:'Export scenario and state',exact:true}).click();
+   await openSimulationTools(page);await page.getByRole('button',{name:'Export scenario and state',exact:true}).click();
    await expect.poll(async()=>{try{return JSON.parse(await readFile(path,'utf8')).trace.at(-1).status;}catch{return '';}}).toBe(reference?'completed':'error');
    const exported=JSON.parse(await readFile(path,'utf8')),final=exported.trace.at(-1);expect(final.left).toBe(0);expect(final.right).toBe(0);
    if(reference){expect(state.variables.stopped).toBe(1);expect(state.distance).toBe(1);expect(state.timeMs).toBeGreaterThan(400);expect(state.pose.x).toBeCloseTo(1.524,10);}

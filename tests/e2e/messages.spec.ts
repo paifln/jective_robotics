@@ -1,3 +1,6 @@
+import {parkVerificationWindow} from './helpers/window';
+import {runIndicatorExperiment} from './helpers/simulation';
+import {prepareProgrammingWorkspace,startLessonProject} from './helpers/learning';
 import {test,expect,_electron as electron} from '@playwright/test';
 import {mkdtemp,rm,readFile} from 'node:fs/promises';
 import {tmpdir} from 'node:os';
@@ -7,13 +10,13 @@ test('L05 message evidence exports real timestamps and simulation origin',async(
  const env:Record<string,string>=Object.fromEntries(Object.entries(process.env).filter((entry):entry is [string,string]=>entry[1]!==undefined));delete env.ELECTRON_RUN_AS_NODE;env.JECTIVE_WORKSPACE_ROOT=root;
  const app=await electron.launch({executablePath:process.env.JECTIVE_EXECUTABLE,args:process.env.JECTIVE_EXECUTABLE?[]:['.'],env});
  try{
-  const page=await app.firstWindow();page.on('dialog',dialog=>dialog.accept());
+  const page=await app.firstWindow();await parkVerificationWindow(app);await prepareProgrammingWorkspace(page,true,true);page.on('dialog',dialog=>dialog.accept());
   await expect(page.locator('.monaco-editor').first()).toHaveAttribute('data-source',new RegExp('digitalWrite'.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')));
   await page.getByRole('button',{name:'Learn',exact:true}).click();
   await page.getByRole('button',{name:/^L05 ·/}).click();
-  await page.getByRole('button',{name:'Load reference solution',exact:true}).click();
-  await expect(page.getByLabel('Project name')).toHaveValue('L05 learner project');
-  await page.getByRole('button',{name:'Simulate indicator trace',exact:true}).click();
+  await startLessonProject(page,true);
+  await expect(page.getByLabel('Project name')).toHaveValue('L05 · My experiment');
+  await runIndicatorExperiment(page);
   await expect(page.locator('.output')).toContainText('1250 ms | print: PHASE_B');
   const destination=join(root,'messages.json');
   await app.evaluate(({session},path)=>{session.defaultSession.once('will-download',(_event,item)=>item.setSavePath(path));},destination);

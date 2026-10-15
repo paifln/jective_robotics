@@ -14,7 +14,7 @@ export const assistantConnectionFailure={
  kk:'Көмекші қосылымын тексеру мүмкін болмады. Төмендегі желісіз анықтаманы аш немесе мұғалімнен қосылымды тексеруді сұра.'
 };
 export const assistantNotEnabled={
- en:'Your administrator has not enabled online help yet. Use the offline reference below.',
+ en:'Online help is not connected yet. The offline reference is available below.',
  ru:'Онлайн-помощник пока не подключён. Справка без интернета доступна ниже.',
  kk:'Онлайн көмекші әлі қосылмаған. Төменде желісіз анықтама бар.'
 };

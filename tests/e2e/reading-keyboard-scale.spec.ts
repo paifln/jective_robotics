@@ -14,7 +14,7 @@ test('reading settings support keyboard focus, escape, dismissal and native 200 
   await app.evaluate(({BrowserWindow})=>BrowserWindow.getAllWindows().forEach(win=>win.webContents.setZoomFactor(2)));
   expect(await app.evaluate(({BrowserWindow})=>BrowserWindow.getAllWindows()[0]!.webContents.getZoomFactor())).toBe(2);
   const button=page.getByRole('button',{name:'Reading settings',exact:true}),size=page.getByLabel('Text size',{exact:true});
-  await button.focus();await page.keyboard.press('Enter');await expect(size).toBeFocused();await expect(size).toHaveCSS('outline-width','2px');await expect(size).toHaveCSS('outline-color','rgb(33, 29, 255)');
+  await button.focus();await page.keyboard.press('Enter');await expect(size).toBeFocused();await expect(size).toHaveCSS('outline-width','2px');await expect(size).toHaveCSS('outline-style','solid');
   const popover=page.locator('.reading-popover');await expect(popover).toHaveAttribute('id',await button.getAttribute('aria-controls')??'');
   await size.selectOption('24');await page.keyboard.press('Tab');const spacing=page.getByRole('checkbox',{name:'More line spacing',exact:true});await expect(spacing).toBeFocused();await page.keyboard.press('Space');await expect(spacing).toBeChecked();
   await popover.scrollIntoViewIfNeeded();const bounds=await popover.boundingBox();expect(bounds).not.toBeNull();const viewport=await page.evaluate(()=>({width:innerWidth,height:innerHeight}));expect(bounds!.x).toBeGreaterThanOrEqual(0);expect(bounds!.x+bounds!.width).toBeLessThanOrEqual(viewport.width+1);expect(bounds!.y+bounds!.height).toBeLessThanOrEqual(viewport.height+1);

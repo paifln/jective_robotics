@@ -1,15 +1,23 @@
-# Development build 0.2.0 — 2026-10-10
+# Изменения проекта
 
-This build expands the original indicator/compiler slice into usable project, simulation, device and classroom workflows. It is **not the complete master-prompt product or a hardware-ready release**.
+## Текущие исходники — 15 октября 2026, ещё не релиз
 
-Implemented: 13 Blockly block types and shared typed IR, variables/logic/repeats, independent Monaco Code mode, actual compiler diagnostics and artifact freshness, ESP32 and ESP32-C3 reference profiles, unassigned JECTIVE, pin validation and two reviewed motor adapter configurations, real port enumeration and bounded serial monitoring, explicit real CLI upload of a matching successful build, six interactive worker-based worlds, configurable geometry/seeded distance noise, SQLite recovery and named snapshots, safe project/classroom archives, offline assignment/submission/grading/CSV workflows, workspace backup validation, optional encrypted-key AI with context preview and reviewed Monaco diffs, two trilingual lessons, eight guides and searchable manual.
+Версия пакета остаётся 0.8.18. Исходники и отдельные проверочные сборки обновляются после этой версии; существующий установщик в каталоге release не следует считать автоматически обновлённым.
 
-Verified: 25 domain/integration tests, TypeScript/lint, five installed-EXE scenarios including actual valid/invalid compilation, C++ host safety logic, runtime compilation for both board families, ten-repeat deterministic trajectories, five learner/two assignment exchanges and a copied hash-verified offline toolchain compile. NSIS installed locally in a per-user Cyrillic/spaces path on Windows 11 build 26200. See lifecycle evidence for exact uninstall/reinstall outcomes. npm audit reports zero known findings.
+- Собственная панель окна Windows, сворачиваемая навигация, цветные значки, компактный плавающий помощник и уведомления о реальном сохранении и проверке кода.
+- Мотивация на синей заставке с белым логотипом. 59 разных записей на трёх языках: 9 коротких цитат с источниками и 50 фраз JECTIVE. Приветствие по времени суток из уроков убрано.
+- Удобнее чтение уроков и кода: небольшие кнопки озвучивания и параметров текста, отдельное увеличение шрифта Monaco; иллюстрации автоматически останавливаются вне видимой области.
+- Сохранение и восстановление работ, подтверждение перед импортом поверх несохранённых изменений, понятные сообщения об ошибках портов и обновление списка профилей без выхода из студии.
+- Серверный помощник с индивидуальными токенами учеников. Общий ключ провайдера остаётся на сервере; настройки ключа и модели недоступны ученикам.
+- Обновлены сценарии проверки интерфейса под текущую навигацию. Удалённые административные элементы не возвращались ради старых тестов.
 
-Outstanding: 58 substantive lessons; teacher language review; fully localized blocks/dialogs/errors and explanatory UI; cooperative hardware generator/runtime integration; approved sensor/servo/buzzer/encoder drivers and host movement/session integration; profile import/migration; broader fault coverage, diagnostic navigation acceptance, accessibility/scaling/performance and measured branch coverage; clean Windows 10/11 standard-user/disconnected acceptance; signing and final license/distribution review.
+580 доменных тестов прошли; первый полный UI-прогон завершился с ошибками, второй завершён с результатом 147 прошли, 7 не прошли, 2 пропущены. Результаты отдельных исправленных сценариев не заменяют полный прогон. Точные области проверок и ограничения: [проверки](VERIFICATION.md), [мотивация и источники](LAUNCH_MOTIVATION.md).
 
-Hardware observations are NOT RUN. No board was identified. COM3/COM4 were Bluetooth ports. No automatic port opening, upload or motor arming occurred. Experimental safety code is not a physical safety certificate. Unknown pin maps remain blocking and arbitrary edited C++ is not simulated.
+Ни создание EXE, ни компиляция справочного проекта не подтверждают готовность к продажам. Физический набор ещё разрабатывается; Windows 10, полный цикл установки, независимая экспертиза уроков и публичный сервер требуют отдельной проверки.
 
-The unsigned installer uses the default Electron icon. Arduino CLI is bundled, the 1.25 GB offline ESP32 package archive is separate. Toolchain import requires approximately 6.88 GB plus build and previous-copy space. The GUI has improved EN/RU/KK controls, but some prose and blocks are still English. Content audit intentionally fails rather than counting missing lessons as complete.
+## История
 
-Native rebuild required unavailable Visual Studio. Packaging intentionally retains serialport's Windows x64 Node-API prebuild and verifies its actual loading in installed Electron. Failed packaging/test attempts are retained as failures.
+- [Исходная запись 0.8.18](RELEASE-0.8.18.md) — состояние на момент её подготовки.
+- [Архив исходной записи 0.2.0](RELEASE-0.2.0.md).
+
+Остальные записи RELEASE-*.md описывают свои версии и не являются инструкцией по текущей конфигурации помощника. Для неё используйте [руководство сервера](../services/assistant/DEPLOYMENT_RU.md).

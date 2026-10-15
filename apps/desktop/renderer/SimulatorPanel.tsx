@@ -1,3 +1,4 @@
+import {useAppVisibility} from './useAppVisibility';
 import {SceneControls} from './SceneControls';
 import {WorldDesigner} from './WorldDesigner';
 import {WorldFiles} from './WorldFiles';
@@ -12,13 +13,14 @@ import React,{useEffect,useRef,useState} from 'react';
 import {worlds,WorldSchema,RobotStateSchema,type World,type RobotState} from '../../../packages/simulator';
 import type {Program} from '../../../packages/codegen';
 export function SimulatorPanel({getProgram,highlight,initialWorld,worldChange,projectName}:{projectName?:string;worldChange?:(world:World)=>void;initialWorld?:World;getProgram:()=>Program|FunctionProgram;highlight:(id:string|null)=>void}){
+ const foreground=useAppVisibility();
  const {t,locale}=useLocale();const w=(en:string,ru:string,kk:string)=>words(locale,en,ru,kk);
  const [world,setWorld]=useState<World>(structuredClone(initialWorld??worlds[0]!));const [state,setState]=useState<RobotState|null>(null);const [running,setRunning]=useState(false);const [error,setError]=useState('');const engine=useRef<Worker|null>(null);const history=useRef<RobotState[]>([]);const executedProgram=useRef<Program|FunctionProgram|null>(null);const operation=useRef('');const pending=useRef(false);const canvas=useRef<HTMLCanvasElement>(null);
  const changeWorld=(next:World)=>{const valid=WorldSchema.parse(next);setRunning(false);engine.current?.terminate();engine.current=null;operation.current=crypto.randomUUID();pending.current=false;history.current=[];executedProgram.current=null;setState(null);setError('');highlight(null);setWorld(valid);worldChange?.(valid);};
  const reset=()=>{engine.current?.terminate();engine.current=null;setRunning(false);pending.current=false;history.current=[];executedProgram.current=null;try{const id=crypto.randomUUID();operation.current=id;const worker=new Worker(new URL('./robot.worker.js',location.href),{type:'module'});engine.current=worker;worker.onmessage=(event:MessageEvent<{operationId:string;state?:RobotState;error?:string}>)=>{if(event.data.operationId!==operation.current)return;pending.current=false;if(event.data.error){setError(event.data.error);setRunning(false);return;}const response=RobotStateSchema.safeParse(event.data.state);if(!response.success){setError('SIM_RESPONSE_INVALID');setRunning(false);return;}const s=response.data;history.current.push(s);if(history.current.length>6001)history.current.shift();setState(s);highlight(s.activeBlock);if(s.status==='error'||s.status==='completed'||s.status==='cancelled')setRunning(false);};worker.onerror=e=>{setError(e.message);setRunning(false);pending.current=false;};pending.current=true;const program=structuredClone(getProgram());executedProgram.current=program;worker.postMessage({type:'init',operationId:id,program,world});setError('');highlight(null);return true;}catch(e){setError(String(e));setRunning(false);engine.current?.terminate();engine.current=null;pending.current=false;return false;}};
  const step=()=>{if(!engine.current){reset();return;}if(!pending.current){pending.current=true;engine.current.postMessage({type:'step',operationId:operation.current,ticks:1});}};
  useEffect(()=>()=>engine.current?.terminate(),[]);
- useEffect(()=>{if(!running)return;const timer=setInterval(step,20);return()=>clearInterval(timer);},[running,world]);
+ useEffect(()=>{if(!running||!foreground)return;const timer=setInterval(step,20);return()=>clearInterval(timer);},[running,world,foreground]);
  useEffect(()=>{const c=canvas.current;if(c)drawPixelWorld(c,world,state);},[world,state]);
  const collision=history.current.some(sample=>sample.collision);
  const download=()=>{const blob=new Blob([JSON.stringify({schemaVersion:1,origin:'simulation',world,program:executedProgram.current??getProgram(),trace:history.current},null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='jective-simulation.json';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);};

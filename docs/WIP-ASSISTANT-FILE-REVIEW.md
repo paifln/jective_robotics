@@ -1,4 +1,6 @@
-# File-specific assistant review — unpackaged source
+# File-specific assistant review — historical source increment
+
+Historical receipt: this file describes its original increment, not the current release state. Current desktop builds use the managed gateway only; provider credentials/model are server-side, and Help does not expose key configuration. See [current verification](VERIFICATION.md) and [server deployment](../services/assistant/DEPLOYMENT_RU.md).
 
 The student chat now chooses an existing program file when the project has helper files. Sharing remains unchecked initially. A request includes only the selected file, with its filename, within 35,000 characters; other source files, project metadata and credentials are excluded. Students still see no provider/model configuration. The owner's encrypted-key configuration remains under Help.
 

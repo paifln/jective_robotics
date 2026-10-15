@@ -16,5 +16,8 @@ test('transitive native import is refused, even when hidden behind a shared modu
   await assert.rejects(verifyBrowserBoundary([join(root,'entry.js')]),/ARCHITECTURE_NATIVE_IMPORT/);
   await writeFile(join(root,'shared.js'),"import {safeStorage} from 'electron'; export const read=()=>safeStorage.isEncryptionAvailable();");
   await assert.rejects(verifyBrowserBoundary([join(root,'entry.js')],{allowPreload:true}),/ARCHITECTURE_NATIVE_IMPORT/);
+  await writeFile(join(root,'entry.js'),"export const read=process.env.NODE_ENV==='production'?require('./shared.js'):null;");
+  await verifyBrowserBoundary([join(root,'entry.js')]);
+  await assert.rejects(verifyBrowserBoundary([join(root,'entry.js')],{production:true}),/ARCHITECTURE_NATIVE_IMPORT/);
  }finally{await rm(root,{recursive:true,force:true});}
 });

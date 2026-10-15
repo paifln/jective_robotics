@@ -8,8 +8,8 @@ const native=new Set([...builtinModules,...builtinModules.map(name=>'node:'+name
 const preload=resolve('apps/desktop/preload.ts');
 
 /** Inspect the actual transitive bundled dependency graph, including worker entry points. */
-export async function verifyBrowserBoundary(entryPoints,{allowPreload=false}={}){
- const result=await build({entryPoints,bundle:true,write:false,outdir:'.verification/architecture-unused',platform:'browser',format:'esm',loader:{'.ttf':'file'},define:{__JECTIVE_VERSION__:'"architecture-check"'},logLevel:'silent',metafile:true,plugins:[{
+export async function verifyBrowserBoundary(entryPoints,{allowPreload=false,production=false}={}){
+ const result=await build({entryPoints,bundle:true,write:false,outdir:'.verification/architecture-unused',platform:'browser',format:'esm',loader:{'.ttf':'file'},define:{__JECTIVE_VERSION__:'"architecture-check"','process.env.NODE_ENV':JSON.stringify(production?'production':'development')},logLevel:'silent',metafile:true,plugins:[{
   name:'jective-trust-boundary',setup(builder){
    builder.onResolve({filter:/.*/},args=>{
     if(native.has(args.path)||args.path.startsWith('node:')){
@@ -30,11 +30,13 @@ export async function verifyBrowserBoundary(entryPoints,{allowPreload=false}={})
 export async function checkArchitecture(){
  const renderer='apps/desktop/renderer';
  const workers=(await readdir(renderer)).filter(file=>file.endsWith('.worker.ts')).map(file=>resolve(renderer,file));
- const rendererInputs=await verifyBrowserBoundary([resolve(renderer,'app.tsx'),...workers]);
+ const entries=[resolve(renderer,'app.tsx'),resolve(renderer,'launch-entry.ts'),...workers];
+ const rendererInputs=await verifyBrowserBoundary(entries);
+ const productionRendererInputs=await verifyBrowserBoundary(entries,{production:true});
  const preloadInputs=await verifyBrowserBoundary([preload],{allowPreload:true});
  const contracts=(await readdir('packages/contracts')).filter(file=>file.endsWith('.ts')).map(file=>resolve('packages/contracts',file));
  const contractInputs=await verifyBrowserBoundary(contracts);
- return {status:'PASS',rendererInputs,workers:workers.length,preloadInputs,contractInputs,scope:relative(process.cwd(),renderer)};
+ return {status:'PASS',rendererInputs,productionRendererInputs,workers:workers.length,preloadInputs,contractInputs,scope:relative(process.cwd(),renderer)};
 }
 
 if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href)console.log(JSON.stringify(await checkArchitecture()));

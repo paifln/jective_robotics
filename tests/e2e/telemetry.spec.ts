@@ -1,3 +1,5 @@
+import {parkVerificationWindow} from './helpers/window';
+import {prepareProgrammingWorkspace} from './helpers/learning';
 import {test,expect,_electron as electron} from '@playwright/test';
 import {mkdtemp,rm,readFile} from 'node:fs/promises';
 import {tmpdir} from 'node:os';
@@ -6,7 +8,7 @@ test('explicit injected protocol test fixtures render a telemetry plot and expor
  const root=await mkdtemp(join(tmpdir(),'jective-telemetry-fixture-'));const env:Record<string,string>=Object.fromEntries(Object.entries(process.env).filter((entry):entry is [string,string]=>entry[1]!==undefined));delete env.ELECTRON_RUN_AS_NODE;env.JECTIVE_WORKSPACE_ROOT=root;
  const app=await electron.launch({executablePath:process.env.JECTIVE_EXECUTABLE,args:process.env.JECTIVE_EXECUTABLE?[]:['.'],env});
  try{
-  const page=await app.firstWindow();await expect(page.locator('.monaco-editor').first()).toHaveAttribute('data-source',new RegExp('digitalWrite'.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')));await page.getByRole('button',{name:'Device',exact:true}).click();
+  const page=await app.firstWindow();await parkVerificationWindow(app);await prepareProgrammingWorkspace(page,true,false);await expect(page.locator('.monaco-editor').first()).toHaveAttribute('data-source',new RegExp('digitalWrite'.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')));await page.locator('main>nav').getByRole('button',{name:'My board',exact:true}).click();await page.locator('.serial-tools>summary').click();await page.locator('.board-monitor').getByText('Sensor data',{exact:true}).click();
   await expect(page.getByText('No valid telemetry samples received.',{exact:true})).toBeVisible();
   await app.evaluate(({BrowserWindow})=>{for(let seq=0;seq<3;seq++)BrowserWindow.getAllWindows()[0]!.webContents.send('serial:event',{timestamp:new Date(1000+seq*100).toISOString(),kind:'protocol',text:JSON.stringify({v:1,type:'telemetry',seq,values:{distance:seq*.25}}),connection:{id:'00000000-0000-4000-8000-000000000001',port:'EXPLICIT_TEST_FIXTURE_NO_PHYSICAL_BOARD',baud:115200}});});
   await expect(page.getByRole('img',{name:'Serial telemetry plot',exact:true})).toBeVisible();await expect(page.getByLabel('Telemetry series')).toContainText('EXPLICIT_TEST_FIXTURE');await page.getByLabel('Unit annotation (user supplied)').fill('m');

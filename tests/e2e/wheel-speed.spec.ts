@@ -1,3 +1,6 @@
+import {parkVerificationWindow} from './helpers/window';
+import {openSimulationTools} from './helpers/simulation';
+import {prepareProgrammingWorkspace,startLessonProject} from './helpers/learning';
 import {test,expect,_electron as electron} from '@playwright/test';
 import {mkdtemp,readFile,rm} from 'node:fs/promises';
 import {tmpdir} from 'node:os';
@@ -6,7 +9,7 @@ test('L32 preserves quantized feedback, gaps and fault latches in UI exports and
  const root=await mkdtemp(join(tmpdir(),'jective-wheel-speed-')),env:Record<string,string>=Object.fromEntries(Object.entries(process.env).filter((entry):entry is [string,string]=>entry[1]!==undefined));delete env.ELECTRON_RUN_AS_NODE;env.JECTIVE_WORKSPACE_ROOT=root;
  const app=await electron.launch({executablePath:process.env.JECTIVE_EXECUTABLE,args:process.env.JECTIVE_EXECUTABLE?[]:['.'],env});
  try{
-  const page=await app.firstWindow();page.on('dialog',dialog=>dialog.accept());await expect(page.getByRole('button',{name:'Learn',exact:true})).toBeVisible();await expect(page.locator('#launch-screen')).toHaveCount(0);
+  const page=await app.firstWindow();await parkVerificationWindow(app);await prepareProgrammingWorkspace(page,false,false);page.on('dialog',dialog=>dialog.accept());await expect(page.getByRole('button',{name:'Learn',exact:true})).toBeVisible();await expect(page.locator('#launch-screen')).toHaveCount(0);
   await page.getByRole('button',{name:'Learn',exact:true}).click();await page.getByRole('button',{name:/^L32 ·/}).click();await expect(page.getByRole('heading',{name:'Closed-loop wheel speed',level:3,exact:true})).toBeVisible();
   const panel=page.locator('.wheel-speed-panel');
   for(const caseId of ['load-change','feedback-loss','manual-stop']){
@@ -22,7 +25,7 @@ test('L32 preserves quantized feedback, gaps and fault latches in UI exports and
   await page.setViewportSize({width:800,height:900});await page.getByLabel('Language',{exact:true}).selectOption('ru');await panel.getByRole('button',{name:'Сравнить управление скоростью',exact:true}).click();await expect(panel.getByRole('status')).toContainText('Оба опыта');await panel.locator('table').evaluate(element=>element.scrollIntoView({block:'center'}));await panel.locator('table').screenshot({path:'test-results/wheel-speed-ru-table.png'});
   await page.getByLabel('Язык',{exact:true}).selectOption('kk');await panel.getByLabel('Жылдамдық сценарийі',{exact:true}).selectOption('feedback-loss');await panel.getByRole('button',{name:'Жылдамдық басқаруын салыстыру',exact:true}).click();await panel.getByLabel('Модельдің сәттік шындығын көрсету (нүкте)',{exact:true}).check();await expect(panel.locator('svg polyline')).toHaveCount(6);await panel.locator('svg').evaluate(element=>element.scrollIntoView({block:'center'}));await panel.locator('svg').screenshot({path:'test-results/wheel-speed-kk-gaps.png'});await page.getByLabel('Тіл',{exact:true}).selectOption('en');await page.setViewportSize({width:1280,height:900});
   for(const reference of [false,true]){
-   await page.getByRole('button',{name:'Learn',exact:true}).click();await page.getByRole('button',{name:/^L32 ·/}).click();await page.getByRole('button',{name:reference?'Load reference solution':'Load starter',exact:true}).click();await page.getByRole('button',{name:'Simulation',exact:true}).click();await page.getByRole('button',{name:'Run',exact:true}).click();await expect(page.locator('.feature pre')).toContainText('"status": "completed"');
+   await page.getByRole('button',{name:'Learn',exact:true}).click();await page.getByRole('button',{name:/^L32 ·/}).click();await startLessonProject(page,reference?true:false);await page.getByRole('button',{name:'Simulator',exact:true}).click();await openSimulationTools(page);await page.getByRole('button',{name:'Run',exact:true}).click();await expect(page.locator('.simulator-workspace pre')).toContainText('"status": "completed"');
    const path=join(root,reference?'reference.json':'starter.json');await app.evaluate(({session},path)=>{session.defaultSession.once('will-download',(_event,item)=>item.setSavePath(path));},path);await page.getByRole('button',{name:'Export scenario and state',exact:true}).click();await expect.poll(async()=>{try{return JSON.parse(await readFile(path,'utf8')).trace.at(-1).status;}catch{return '';}}).toBe('completed');const final=JSON.parse(await readFile(path,'utf8')).trace.at(-1);expect(final.variables.command_percent).toBeCloseTo(reference?46:30,10);expect(final.log.some((line:string)=>line.includes('NOT BOARD FEEDBACK'))).toBe(true);
   }
  }finally{await app.evaluate(({app})=>app.exit(0));if(app.process().exitCode===null&&app.process().signalCode===null)await new Promise<void>(resolve=>app.process().once('exit',()=>resolve()));await rm(root,{recursive:true,force:true,maxRetries:30,retryDelay:100});}

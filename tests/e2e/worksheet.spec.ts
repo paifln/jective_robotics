@@ -1,3 +1,5 @@
+import {prepareProgrammingWorkspace} from './helpers/learning';
+import {parkVerificationWindow} from './helpers/window';
 import {test,expect,_electron as electron} from '@playwright/test';
 import {mkdtemp,rm,readFile} from 'node:fs/promises';
 import {tmpdir} from 'node:os';
@@ -7,10 +9,10 @@ test('component worksheet exports actual entered evidence without inventing spec
  const env:Record<string,string>=Object.fromEntries(Object.entries(process.env).filter((entry):entry is [string,string]=>entry[1]!==undefined));delete env.ELECTRON_RUN_AS_NODE;env.JECTIVE_WORKSPACE_ROOT=root;
  let app=await electron.launch({executablePath:process.env.JECTIVE_EXECUTABLE,args:process.env.JECTIVE_EXECUTABLE?[]:['.'],env});
  try{
-  const page=await app.firstWindow();await expect(page.locator('.monaco-editor').first()).toHaveAttribute('data-source',new RegExp('digitalWrite'.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')));
+  const page=await app.firstWindow();await parkVerificationWindow(app);await prepareProgrammingWorkspace(page,true,false);await expect(page.locator('.monaco-editor').first()).toHaveAttribute('data-source',new RegExp('digitalWrite'.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')));
   await page.getByRole('button',{name:'Learn',exact:true}).click();
   await page.getByRole('button',{name:/^L02 ·/}).click();
-  await expect(page.getByRole('button',{name:'Load starter',exact:true})).toHaveCount(0);
+  await expect(page.getByRole('button',{name:'Start the task in Studio',exact:true})).toHaveCount(0);
   await page.locator('summary').filter({hasText:/^Controller$/}).click();
   await page.getByLabel('Controller — Actual visible marking',{exact:true}).fill('Unknown revision; photographed with power off');
   await page.getByLabel('Controller — Unresolved questions',{exact:true}).fill('Need manufacturer schematic before connecting motor power');
@@ -27,7 +29,7 @@ test('component worksheet exports actual entered evidence without inventing spec
   await page.getByRole('button',{name:'Studio',exact:true}).click();await page.getByRole('button',{name:'Learn',exact:true}).click();await page.getByRole('button',{name:/^L02 ·/}).click();await page.locator('summary').filter({hasText:/^Controller$/}).click();
   await expect(page.getByLabel('Controller — Unresolved questions',{exact:true})).toHaveValue('Need manufacturer schematic before connecting motor power');
   await expect.poll(async()=>{const state=await page.evaluate(()=>window.jective.workspace());return state.ok?state.value.recovery?.worksheets?.['L02-component-role-and-power-path']?.['controller.marking']:null;}).toBe('Unknown revision; photographed with power off');
-  await app.evaluate(({app})=>app.exit(0));app=await electron.launch({executablePath:process.env.JECTIVE_EXECUTABLE,args:process.env.JECTIVE_EXECUTABLE?[]:['.'],env});const recoveredPage=await app.firstWindow();recoveredPage.on('dialog',dialog=>dialog.accept());
+  await app.evaluate(({app})=>app.exit(0));app=await electron.launch({executablePath:process.env.JECTIVE_EXECUTABLE,args:process.env.JECTIVE_EXECUTABLE?[]:['.'],env});const recoveredPage=await app.firstWindow();recoveredPage.on('dialog',dialog=>dialog.accept());await parkVerificationWindow(app);await prepareProgrammingWorkspace(recoveredPage,true,false);
   await expect(recoveredPage.locator('.monaco-editor').first()).toHaveAttribute('data-source',/digitalWrite/);await recoveredPage.getByRole('button',{name:'Learn',exact:true}).click();await recoveredPage.getByRole('button',{name:/^L02 ·/}).click();await recoveredPage.locator('summary').filter({hasText:/^Controller$/}).click();
   await expect(recoveredPage.getByLabel('Controller — Actual visible marking',{exact:true})).toHaveValue('Unknown revision; photographed with power off');
  }finally{await app.evaluate(({app})=>app.exit(0));await rm(root,{recursive:true,force:true,maxRetries:30,retryDelay:100});}

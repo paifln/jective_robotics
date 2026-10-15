@@ -29,6 +29,9 @@ export type WorkspaceState=z.infer<typeof WorkspaceStateSchema>;
 export const AssistantSettingsSchema=z.object({enabled:z.boolean(),endpoint:z.string().max(500),model:z.string().max(100),keyConfigured:z.boolean()}).strict();
 export type AssistantSettings=z.infer<typeof AssistantSettingsSchema>;
 export interface DesktopAPI {
+ windowState():Promise<Result<import('./window').WindowState>>;
+ windowAction(action:import('./window').WindowAction):Promise<Result<import('./window').WindowState>>;
+ onWindowState(listener:(state:import('./window').WindowState)=>void):()=>void;
  activity():Promise<Result<Record<string,number>>>;
  learningLoad(id:string):Promise<Result<import('../content/learning-records').LearningRecord|null>>;
  learningSave(value:{id:string;answers:import('../content/learning-activities').LearnerAnswers;check:boolean}):Promise<Result<import('../content/learning-records').LearningRecord>>;

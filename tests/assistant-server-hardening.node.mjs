@@ -9,10 +9,16 @@ import {credentialRegistry} from '../services/assistant/policy.mjs';
 import {readPrivateFile} from '../services/assistant/private-file.mjs';
 import {serverConfig,startAssistant} from '../services/assistant/runtime.mjs';
 import {sealProviderKey,openProviderKey} from '../services/assistant/secret-store.mjs';
+import {generateLearnerCredential} from '../services/assistant/credentials.mjs';
 
 const token='q'.repeat(43),credential={id:'test-learner',hash:tokenHash(token),expiresAt:'2099-01-01T00:00:00Z'};
 const send=(port,body)=>fetch(`http://127.0.0.1:${port}/chat/completions`,{method:'POST',headers:{Authorization:'Bearer '+token,'Content-Type':'application/json'},body:JSON.stringify(body)});
 const stop=async server=>{server.closeAllConnections();await new Promise(resolve=>server.close(resolve));};
+
+test('issued learner credentials are distinct prefixed secrets with only a hash in the registry',()=>{
+ const now=Date.parse('2026-10-15T10:00:00Z'),first=generateLearnerCredential('opaque-learner',now),second=generateLearnerCredential('opaque-learner',now);
+ assert.match(first.token,/^jt_[A-Za-z0-9_-]{43}$/);assert.notEqual(first.token,second.token);assert.equal(first.registryEntry.hash,tokenHash(first.token));assert.equal(Date.parse(first.registryEntry.expiresAt)-now,30*86400000);assert.ok(!JSON.stringify(first.registryEntry).includes(first.token));assert.throws(()=>generateLearnerCredential('../invalid'));assert.throws(()=>generateLearnerCredential('valid',NaN));
+});
 
 test('unfinished body hits absolute deadline, closes connection, releases concurrency and retains quota',{timeout:5000},async()=>{
  let calls=0;const logs=[];

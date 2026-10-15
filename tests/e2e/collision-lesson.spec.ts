@@ -1,3 +1,4 @@
+import {expectDarkControl} from './theme-contrast';
 import {test,expect,_electron as electron} from '@playwright/test';
 import {mkdtemp,rm,readFile,mkdir} from 'node:fs/promises';
 import {join,resolve,basename,sep} from 'node:path';
@@ -13,6 +14,6 @@ test('registered L45 exposes theory, real scenarios, checked answers and complet
   await app.evaluate(({session},path)=>session.defaultSession.once('will-download',(_e,item)=>item.setSavePath(path)),output);await panel.getByRole('button',{name:'Export complete traces'}).click();await expect.poll(async()=>{try{return CollisionReportSchema.parse(JSON.parse(await readFile(output,'utf8'))).cases.wall.starter.trace.length;}catch{return 0;}}).toBe(300);
   for(const [i,value] of ['unchecked','clearance','validity','geometry'].entries())await panel.locator('.learning-option select').nth(i).selectOption(value);await panel.getByRole('button',{name:'Check',exact:true}).click();await expect.poll(async()=>{const r=await page.evaluate(()=>window.jective.learningLoad('L45'));return r.ok?r.value?.state:null;}).toBe('checked');
   await page.setViewportSize({width:800,height:700});await panel.locator('table').evaluate(el=>el.scrollIntoView({block:'center'}));expect(await panel.evaluate(node=>node.scrollWidth<=node.clientWidth)).toBe(true);await mkdir('test-results/collision-lesson',{recursive:true});await page.screenshot({path:'test-results/collision-lesson/light.png'});
-  await page.getByRole('button',{name:'Color theme',exact:true}).click();await expect(page.getByLabel('Language',{exact:true})).toHaveCSS('background-color','rgb(34, 48, 71)');await page.screenshot({path:'test-results/collision-lesson/dark.png'});
+  await page.getByRole('button',{name:'Color theme',exact:true}).click();await expectDarkControl(page.getByLabel('Language',{exact:true}));await page.screenshot({path:'test-results/collision-lesson/dark.png'});
  }finally{await app.evaluate(({app})=>app.exit(0));if(app.process().exitCode===null&&app.process().signalCode===null)await new Promise<void>(r=>app.process().once('exit',()=>r()));if(!resolve(root).startsWith(resolve(tmpdir())+sep)||!basename(root).startsWith('jective-collision-lesson-'))throw new Error('Unexpected cleanup path');await rm(root,{recursive:true,force:true,maxRetries:20,retryDelay:100});}
 });

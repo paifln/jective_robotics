@@ -1,4 +1,5 @@
 import {gatewayHttpError} from './gateway-error';
+import {isLearnerCredential} from '../contracts/learner-credential';
 import {chatCompletionRequest,chatCompletionAnswer,ChatHistorySchema} from './chat-completion';
 import {safeStorage} from 'electron';
 import {readFile,writeFile,rename} from 'node:fs/promises';
@@ -15,7 +16,9 @@ export class AssistantService {
  async configure(value:unknown){
   // Validate and copy before queueing; caller mutation cannot change a pending write.
   const p=z.object({enabled:z.boolean(),endpoint:z.string(),model:z.string().min(1).max(100),apiKey:z.string().max(4000).optional()}).strict().parse(value);
-  const pending=this.configurationQueue.then(async()=>{const old=await this.config();const endpoint=validateEndpoint(p.endpoint);if(p.apiKey&&!safeStorage.isEncryptionAvailable())throw new Error('AI_SECURE_STORAGE_UNAVAILABLE');const encryptedKey=p.apiKey===undefined?(endpoint===old.endpoint?old.encryptedKey:''):p.apiKey?safeStorage.encryptString(p.apiKey).toString('base64'):'';const target=this.path+'.tmp';await writeFile(target,JSON.stringify({enabled:p.enabled,endpoint,model:p.model,encryptedKey}),{mode:0o600});await rename(target,this.path);return true;});
+  if(this.managedOnly&&p.model!=='jective-managed')throw new Error('AI_MANAGED_CONFIGURATION_REQUIRED');
+  if(this.managedOnly&&p.apiKey!==undefined&&p.apiKey!==''&&!isLearnerCredential(p.apiKey))throw new Error('AI_INVALID_LEARNER_TOKEN');
+  const pending=this.configurationQueue.then(async()=>{const old=await this.config();const endpoint=validateEndpoint(p.endpoint);if(p.apiKey&&!safeStorage.isEncryptionAvailable())throw new Error('AI_SECURE_STORAGE_UNAVAILABLE');const encryptedKey=p.apiKey===undefined?(endpoint===old.endpoint&&(!this.managedOnly||old.model==='jective-managed')?old.encryptedKey:''):p.apiKey?safeStorage.encryptString(p.apiKey).toString('base64'):'';const target=this.path+'.tmp';await writeFile(target,JSON.stringify({enabled:p.enabled,endpoint,model:p.model,encryptedKey}),{mode:0o600});await rename(target,this.path);return true;});
   // A failed write is returned to its caller without poisoning later updates.
   this.configurationQueue=pending.then(()=>{},()=>{});return pending;
  }
@@ -32,6 +35,7 @@ export class AssistantService {
    const endpoint=validateEndpoint(c.endpoint);
    if(c.encryptedKey&&!safeStorage.isEncryptionAvailable())throw new Error('AI_SECURE_STORAGE_UNAVAILABLE');
    const key=c.encryptedKey?safeStorage.decryptString(Buffer.from(c.encryptedKey,'base64')):'';
+   if(this.managedOnly&&!isLearnerCredential(key))throw new Error('AI_INVALID_LEARNER_TOKEN');
    const response=await fetch(endpoint+'/chat/completions',{method:'POST',redirect:'error',signal:controller.signal,headers:{'Content-Type':'application/json',...(key?{Authorization:'Bearer '+key}:{})},body:JSON.stringify(c.model==='jective-managed'?p:chatCompletionRequest(endpoint,c.model,p.question,p.context,p.history))});
    controller.signal.throwIfAborted();
    if(!response.ok)throw new Error(c.model==='jective-managed'?gatewayHttpError(response.status):'AI_PROVIDER_HTTP_'+response.status);

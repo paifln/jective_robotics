@@ -17,3 +17,8 @@ export async function expectReadableControl(control:Locator){
   return (Math.max(light,dark)+0.05)/(Math.min(light,dark)+0.05);
  })).toBeGreaterThanOrEqual(4.5);
 }
+
+export async function expectDarkControl(control:Locator){
+ await expect(control.page().locator('body')).toHaveAttribute('data-theme','dark');
+ await expectReadableControl(control);
+}

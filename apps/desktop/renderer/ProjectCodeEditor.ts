@@ -4,9 +4,14 @@ import {sortedSourceFiles} from '../../../packages/contracts/source-files';
 type ModelState={model:monaco.editor.ITextModel;view:monaco.editor.ICodeEditorViewState|null};
 /** One bounded set of models per project; switching files preserves undo and view. */
 export class ProjectCodeEditor {
- private projectId='';private active='sketch.ino';private syncing=false;private models=new Map<string,ModelState>();private subscription:monaco.IDisposable;
+ private projectId='';private active='sketch.ino';private syncing=false;private models=new Map<string,ModelState>();private subscription:monaco.IDisposable;private zoomSubscription:monaco.IDisposable;
  constructor(private editor:monaco.editor.IStandaloneCodeEditor,private changed:(projectId:string,file:string,text:string)=>void){
   const initial=editor.getModel();editor.setModel(null);initial?.dispose();this.subscription=editor.onDidChangeModelContent(()=>{if(!this.syncing)this.changed(this.projectId,this.active,editor.getValue());});
+  this.zoomSubscription=editor.onKeyDown(event=>{
+   if(!(event.ctrlKey||event.metaKey)||event.altKey||event.browserEvent.isComposing)return;
+   const action=event.keyCode===monaco.KeyCode.Equal?'editor.action.fontZoomIn':event.keyCode===monaco.KeyCode.Minus?'editor.action.fontZoomOut':event.keyCode===monaco.KeyCode.Digit0?'editor.action.fontZoomReset':null;
+   if(!action)return;event.preventDefault();event.stopPropagation();void editor.getAction(action)?.run();
+  });
  }
  private activate(file:string){
   const next=this.models.get(file);if(!next)return;
@@ -26,5 +31,5 @@ export class ProjectCodeEditor {
   }finally{this.syncing=false;}
  }
  navigate(file:string,line:number,column:number){this.syncing=true;try{this.activate(file);this.editor.layout();this.editor.setPosition({lineNumber:line,column});this.editor.revealLineInCenter(line);this.editor.focus();}finally{this.syncing=false;}}
- dispose(){this.subscription.dispose();this.editor.setModel(null);for(const state of this.models.values())state.model.dispose();this.models.clear();}
+ dispose(){this.zoomSubscription.dispose();this.subscription.dispose();this.editor.setModel(null);for(const state of this.models.values())state.model.dispose();this.models.clear();}
 }

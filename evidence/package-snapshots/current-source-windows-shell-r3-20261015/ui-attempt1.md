@@ -1,0 +1,3 @@
+# Production UI attempt 1 — FAIL
+
+The fixture requested a renderer reload after initial startup while Blockly had unsaved state. Its unconditional CDP dialog.accept listener raced the native beforeunload decision and rejected with "Target page, context or browser has been closed". Node exited before the finally-written JSON report. No PASS result exists for this attempt. The packaged assets were not changed. The next fixture observes the original launch directly and does not reload an unsaved project; beforeunload is not auto-accepted through CDP. Source launch rotation is checked in its separate Electron scenario.

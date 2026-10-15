@@ -3,7 +3,10 @@ import {readFile,lstat} from 'node:fs/promises';
 import {resolve,relative,sep} from 'node:path';
 
 const git=(args,options={})=>execFileSync('git',args,{maxBuffer:20*1024*1024,...options}).toString();
-const files=[...new Set(git(['ls-files','--cached','--others','--exclude-standard','-z']).split('\0').filter(Boolean))];
+// Match a future git add -A without modifying the owner's index. References to
+// removed files must still fail below; removed files themselves are not candidates.
+const deleted=new Set(git(['ls-files','--deleted','-z']).split('\0').filter(Boolean));
+const files=[...new Set(git(['ls-files','--cached','--others','--exclude-standard','-z']).split('\0').filter(path=>path&&!deleted.has(path)))];
 const available=new Set(files),issues=[];
 const patterns=[['provider-key',/\bsk-(?:proj-|svcacct-)?[A-Za-z0-9_-]{32,}/],['github-token',/\b(?:gh[pousr]_[A-Za-z0-9]{30,}|github_pat_[A-Za-z0-9_]{40,})/],['private-key',/-----BEGIN (?:RSA |EC |OPENSSH )?PRIVATE KEY-----/],['aws-access-key',/\b(?:AKIA|ASIA)[A-Z0-9]{16}\b/]];
 let bytes=0;

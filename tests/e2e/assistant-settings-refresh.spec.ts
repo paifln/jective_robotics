@@ -1,3 +1,4 @@
+import {openAssistant} from './helpers/assistant';
 import {test,expect,_electron as electron} from '@playwright/test';
 import {mkdtemp,rm} from 'node:fs/promises';
 import {tmpdir} from 'node:os';
@@ -16,7 +17,7 @@ test('online assistant disables requests after settings validation fails and rec
    ipcMain.removeHandler('assistant:ask');ipcMain.handle('assistant:ask',()=>{state.hintRequests++;return {ok:true,value:'TEST ONLY ANSWER'};});
   });
   await page.locator('main>header>label>select').selectOption('en');
-  await page.locator('main>nav').getByRole('button',{name:'Ask for help',exact:true}).click();await expect(page.locator('.learner-chat')).toBeVisible();
+  await openAssistant(page);await expect(page.locator('.learner-chat')).toBeVisible();
   const chat=page.locator('.learner-chat'),request=chat.getByRole('button',{name:'Request hint',exact:true});await chat.getByLabel('Question',{exact:true}).fill('Test question, no live provider');
   await expect(request).toBeEnabled();
   await app.evaluate(()=>{(globalThis as typeof globalThis&{settingsInvalid:boolean}).settingsInvalid=true;});

@@ -1,3 +1,4 @@
+import {openAssistant} from './helpers/assistant';
 import {test,expect,_electron as electron} from '@playwright/test';
 import {createServer} from 'node:http';
 import {mkdtemp,rm} from 'node:fs/promises';
@@ -14,7 +15,7 @@ test('long replies scroll inside the dialogue, preserve reading position and kee
  const app=await electron.launch({args:['.'],env});
  try{
   await app.evaluate(({BrowserWindow})=>BrowserWindow.getAllWindows().forEach(win=>{win.setFocusable(false);win.setPosition(-12000,-12000);win.webContents.setBackgroundThrottling(false);win.on('show',()=>win.setPosition(-12000,-12000));win.showInactive();}));
-  const page=await app.firstWindow();const errors:string[]=[];page.on('pageerror',error=>errors.push(error.message));await expect(page.locator('#launch-screen')).toHaveCount(0);await page.locator('header>label>select').selectOption('en');await page.locator('main>nav').getByRole('button',{name:'Ask for help',exact:true}).click();
+  const page=await app.firstWindow();const errors:string[]=[];page.on('pageerror',error=>errors.push(error.message));await expect(page.locator('#launch-screen')).toHaveCount(0);await page.locator('header>label>select').selectOption('en');await openAssistant(page);
   const chat=page.locator('.learner-chat'),question=chat.getByLabel('Question',{exact:true}),log=chat.getByRole('log');
   await question.fill('Explain this local fixture');await question.press('Control+Enter');await expect(chat.locator('.assistant-answer')).toContainText('REPLY 1');expect(requests).toBe(1);
   for(const [width,height] of [[1200,800],[800,700]] as const){

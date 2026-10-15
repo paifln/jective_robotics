@@ -1,3 +1,6 @@
+import {parkVerificationWindow} from './helpers/window';
+import {openSimulationTools} from './helpers/simulation';
+import {prepareProgrammingWorkspace,startLessonProject} from './helpers/learning';
 import {test,expect,_electron as electron} from '@playwright/test';
 import {mkdtemp,readFile,rm} from 'node:fs/promises';
 import {tmpdir} from 'node:os';
@@ -6,7 +9,7 @@ test('L27 reference preserves both actual probe samples in exported worker trace
  const root=await mkdtemp(join(tmpdir(),'jective-line-calibration-')),env:Record<string,string>=Object.fromEntries(Object.entries(process.env).filter((entry):entry is [string,string]=>entry[1]!==undefined));delete env.ELECTRON_RUN_AS_NODE;env.JECTIVE_WORKSPACE_ROOT=root;
  const app=await electron.launch({executablePath:process.env.JECTIVE_EXECUTABLE,args:process.env.JECTIVE_EXECUTABLE?[]:['.'],env});
  try{
-  const page=await app.firstWindow();page.on('dialog',dialog=>dialog.accept());await expect(page.getByRole('button',{name:'Learn',exact:true})).toBeVisible();await expect(page.locator('#launch-screen')).toHaveCount(0);
+  const page=await app.firstWindow();await parkVerificationWindow(app);await prepareProgrammingWorkspace(page,false,false);page.on('dialog',dialog=>dialog.accept());await expect(page.getByRole('button',{name:'Learn',exact:true})).toBeVisible();await expect(page.locator('#launch-screen')).toHaveCount(0);
   for(const reference of [false,true]){
    await page.getByRole('button',{name:'Learn',exact:true}).click();await page.getByRole('button',{name:/^L27 ·/}).click();await expect(page.getByRole('heading',{name:'Line sensor calibration',level:3,exact:true})).toBeVisible();
    if(!reference){
@@ -27,8 +30,8 @@ test('L27 reference preserves both actual probe samples in exported worker trace
     await panel.getByLabel('Line threshold',{exact:true}).fill('');await expect(panel.getByRole('button',{name:'Export calibration JSON',exact:true})).toHaveCount(0);
     await panel.getByRole('button',{name:'Check calibration choice',exact:true}).click();await expect(panel.getByRole('alert')).toBeVisible();
    }
-   await page.getByRole('button',{name:reference?'Load reference solution':'Load starter',exact:true}).click();await page.getByRole('button',{name:'Simulation',exact:true}).click();await expect(page.getByLabel('World',{exact:true})).toHaveValue('L27-cross-line');
-   await page.getByRole('button',{name:'Run',exact:true}).click();await expect(page.locator('.feature pre')).toContainText('"status": "completed"');
+   await startLessonProject(page,reference?true:false);await page.getByRole('button',{name:'Simulator',exact:true}).click();await openSimulationTools(page);await expect(page.getByLabel('World',{exact:true})).toHaveValue('L27-cross-line');
+   await page.getByRole('button',{name:'Run',exact:true}).click();await expect(page.locator('.simulator-workspace pre')).toContainText('"status": "completed"');
    const path=join(root,reference?'reference.json':'starter.json');await app.evaluate(({session},path)=>{session.defaultSession.once('will-download',(_event,item)=>item.setSavePath(path));},path);
    await page.getByRole('button',{name:'Export scenario and state',exact:true}).click();await expect.poll(async()=>{try{return JSON.parse(await readFile(path,'utf8')).trace.at(-1).status;}catch{return '';}}).toBe('completed');
    const report=JSON.parse(await readFile(path,'utf8')),trace=report.trace;

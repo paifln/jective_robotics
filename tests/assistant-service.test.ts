@@ -15,7 +15,7 @@ it('request deadline aborts transport without retry and releases the next reques
   signal.addEventListener('abort',()=>reject(new Error('EXPLICIT_ABORT_FIXTURE')),{once:true});started();
  })).mockResolvedValue(Response.json({choices:[{message:{content:'AFTER TIMEOUT FIXTURE'},finish_reason:'stop'}]}));
  try{
-  await service.configure({enabled:true,endpoint:'https://assistant.example',model:'jective-managed',apiKey:'TEST_LEARNER_TOKEN'});
+  await service.configure({enabled:true,endpoint:'https://assistant.example',model:'jective-managed',apiKey:'jt_'+ 't'.repeat(43)});
   vi.useFakeTimers();const pending=service.ask({question:'deadline fixture',context:''}).catch(error=>error as Error);await ready;
   await vi.advanceTimersByTimeAsync(44999);expect(transport.mock.calls[0]![1]!.signal!.aborted).toBe(false);
   await vi.advanceTimersByTimeAsync(1);const timedOut=await pending;if(!(timedOut instanceof Error))throw new Error('EXPECTED_TIMEOUT_ERROR');expect(timedOut.message).toBe('AI_INTERRUPTED_OR_TIMEOUT');expect(transport).toHaveBeenCalledTimes(1);expect(service.cancel()).toBe(false);
@@ -26,7 +26,7 @@ it('cancellation and busy reservation apply before asynchronous configuration lo
  const root=await mkdtemp(join(tmpdir(),'jective-assistant-early-cancel-')),service=new AssistantService(join(root,'assistant.json'),true);
  const transport=vi.spyOn(globalThis,'fetch').mockResolvedValue(Response.json({choices:[{message:{content:'EXPLICIT FIXTURE'},finish_reason:'stop'}]}));
  try{
-  await service.configure({enabled:true,endpoint:'https://assistant.example',model:'jective-managed',apiKey:'TEST_LEARNER_TOKEN'});
+  await service.configure({enabled:true,endpoint:'https://assistant.example',model:'jective-managed',apiKey:'jt_'+ 't'.repeat(43)});
   const pending=service.ask({question:'cancel before config resolves',context:''});
   const result=expect(pending).rejects.toThrow('AI_INTERRUPTED_OR_TIMEOUT');
   expect(service.cancel()).toBe(true);await expect(service.ask({question:'concurrent',context:''})).rejects.toThrow('AI_BUSY');await result;
@@ -43,7 +43,7 @@ it('student production mode refuses a legacy local provider key and uses only ma
   await admin.configure({enabled:true,endpoint:'https://api.openai.com/v1',model:'legacy-model',apiKey:'TEST_PROVIDER_SECRET'});
   expect(await student.settings()).toEqual({enabled:false,endpoint:'',model:'',keyConfigured:false});
   await expect(student.ask({question:'q',context:''})).rejects.toThrow('AI_DISABLED');expect(fetchFixture).not.toHaveBeenCalled();
-  await admin.configure({enabled:true,endpoint:'https://assistant.example',model:'jective-managed',apiKey:'TEST_LEARNER_TOKEN'});
+  await admin.configure({enabled:true,endpoint:'https://assistant.example',model:'jective-managed',apiKey:'jt_'+ 't'.repeat(43)});
   expect(await student.ask({question:'q',context:'',history:[{role:'user',content:'earlier question'}]})).toBe('TEST GATEWAY ANSWER');
   expect(JSON.parse(String(fetchFixture.mock.calls[0]![1]?.body))).toEqual({question:'q',context:'',history:[{role:'user',content:'earlier question'}]});
  }finally{fetchFixture.mockRestore();await rm(root,{recursive:true,force:true});}

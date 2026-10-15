@@ -12,6 +12,8 @@ const settings=text(
  'Мұғалімнен көмекші қосылымын тексеруді сұра. Желісіз анықтама қолжетімді.'
 );
 const messages:Record<string,Copy>={
+ AI_INVALID_LEARNER_TOKEN:settings,
+ AI_MANAGED_CONFIGURATION_REQUIRED:settings,
  AI_ACCESS_UNAVAILABLE:text('Your assistant access has expired or is unavailable. Ask your teacher to restore it. The offline reference still works.','Доступ к помощнику истёк или недоступен. Попроси учителя восстановить его. Справка без интернета продолжает работать.','Көмекшіге қолжетімділік мерзімі аяқталған немесе қолжетімсіз. Мұғалімнен қалпына келтіруді сұра. Желісіз анықтама жұмыс істейді.'),
  AI_SERVICE_UNAVAILABLE:text('The assistant service is unavailable. Try later or ask your teacher to check the connection.','Сервис помощника недоступен. Попробуй позже или попроси учителя проверить подключение.','Көмекші қызметі қолжетімсіз. Кейінірек көр немесе мұғалімнен қосылымды тексеруді сұра.'),
  AI_QUESTION_TOO_LARGE:text('The question and conversation are too long to send. Start a new conversation or share a smaller section of code.','Вопрос и история слишком длинные для отправки. Начни новый диалог или отправь меньший фрагмент кода.','Сұрақ пен әңгіме жіберу үшін тым ұзын. Жаңа әңгіме баста немесе кодтың шағын бөлігін жібер.'),

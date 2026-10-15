@@ -12,7 +12,7 @@ it('binds navigation to the current build and rejects external same-name files',
  expect(compilerDiagnostics(own.toUpperCase().replaceAll('/','\\')+':2:3: error: issue',project,id)[0]?.file).toBe('behavior.cpp');
 });
 it('preserves navigation for four recorded actual compiler failures with matching operation IDs',()=>{
- const receipt=JSON.parse(readFileSync('evidence/build-errors/compiler.json','utf8')) as {complete:boolean;results:{bad:{log:string;operationId:string}}[]};
+ const receipt=JSON.parse(readFileSync(new URL('./fixtures/recorded-compiler-cases.json',import.meta.url),'utf8')) as {complete:boolean;results:{bad:{log:string;operationId:string}}[]};
  expect(receipt.complete).toBe(true);expect(receipt.results).toHaveLength(4);
  for(const {bad} of receipt.results){expect(compilerDiagnostics(bad.log,project,bad.operationId).some(d=>d.kind==='error'||d.kind==='fatal error')).toBe(true);expect(compilerDiagnostics(bad.log,project,'00000000-0000-0000-0000-000000000000')).toEqual([]);}
 });

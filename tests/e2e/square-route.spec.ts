@@ -1,3 +1,5 @@
+import {parkVerificationWindow} from './helpers/window';
+import {prepareProgrammingWorkspace,startLessonProject} from './helpers/learning';
 import {test,expect,_electron as electron} from '@playwright/test';
 import {mkdtemp,readFile,rm} from 'node:fs/promises';
 import {tmpdir} from 'node:os';
@@ -8,7 +10,7 @@ test('square calibration exports actual repeated traces and requires a learner r
  delete env.ELECTRON_RUN_AS_NODE;env.JECTIVE_WORKSPACE_ROOT=root;
  const app=await electron.launch({executablePath:process.env.JECTIVE_EXECUTABLE,args:process.env.JECTIVE_EXECUTABLE?[]:['.'],env});
  try{
-  const page=await app.firstWindow();await expect(page.getByRole('button',{name:'Learn',exact:true})).toBeVisible();await expect(page.locator('#launch-screen')).toHaveCount(0);
+  const page=await app.firstWindow();await parkVerificationWindow(app);await prepareProgrammingWorkspace(page,true,true);await expect(page.getByRole('button',{name:'Learn',exact:true})).toBeVisible();await expect(page.locator('#launch-screen')).toHaveCount(0);
   page.on('dialog',dialog=>dialog.accept());
   await page.getByRole('button',{name:'Learn',exact:true}).click();await page.getByRole('button',{name:/^L24 ·/}).click();
   const panel=page.locator('.square-route-panel');await panel.locator('summary').click();
@@ -26,13 +28,13 @@ test('square calibration exports actual repeated traces and requires a learner r
   await panel.getByLabel('Revised turn (ms)',{exact:true}).fill('');await expect(panel.locator('tbody tr')).toHaveCount(0);
   await panel.getByRole('button',{name:'Compare square routes',exact:true}).click();await expect(panel.getByRole('alert')).toBeVisible();await expect(panel.getByRole('button',{name:'Export square comparison JSON',exact:true})).toHaveCount(0);
   for(const reference of [false,true]){
-   await page.getByRole('button',{name:reference?'Load reference solution':'Load starter',exact:true}).click();
-   await expect(page.getByLabel('Project name')).toHaveValue('L24 learner project');
-   await page.getByRole('button',{name:'Simulation',exact:true}).click();
+   await startLessonProject(page,reference?true:false);
+   await expect(page.getByLabel('Project name')).toHaveValue('L24 · My experiment');
+   await page.getByRole('button',{name:'Simulator',exact:true}).click();
    await expect(page.getByLabel('World',{exact:true})).toHaveValue('L24-square-calibration');
    await page.getByRole('button',{name:'Run',exact:true}).click();
-   await expect(page.locator('.feature pre')).toContainText('"status": "completed"',{timeout:20000});
-   const state=JSON.parse((await page.locator('.feature pre').textContent())!);
+   await expect(page.locator('.simulator-workspace pre')).toContainText('"status": "completed"',{timeout:20000});
+   const state=JSON.parse((await page.locator('.simulator-workspace pre').textContent())!);
    const expected=reference?report.revision:report.baseline;
    expect(state.pose.x).toBeCloseTo(expected.rows[0].trace.at(-1).pose.x,10);
    expect(state.pose.y).toBeCloseTo(expected.rows[0].trace.at(-1).pose.y,10);

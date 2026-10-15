@@ -1,0 +1,238 @@
+{
+  "complete": true,
+  "recordedAt": "2026-10-11T13:40:17.573Z",
+  "scope": "Actual Arduino CLI 1.5.1 and pinned ESP32 core; four faults and corrected recompilations; no upload or physical execution",
+  "results": [
+    {
+      "id": "symbol",
+      "starter": {
+        "schemaVersion": 1,
+        "id": "92099705-d4cf-439f-b1a8-88807ed9fac8",
+        "name": "L50 compiler symbol",
+        "mode": "code",
+        "workspace": {},
+        "revision": 0,
+        "profileId": "esp32-devkit-reference",
+        "source": "void setup() {\n  Serial.begin(115200);\n  reportStatus();\n}\nvoid loop() {}\n"
+      },
+      "corrected": {
+        "schemaVersion": 1,
+        "id": "92099705-d4cf-439f-b1a8-88807ed9fac8",
+        "name": "L50 compiler symbol",
+        "mode": "code",
+        "workspace": {},
+        "revision": 0,
+        "profileId": "esp32-devkit-reference",
+        "source": "void reportStatus() { Serial.println(\"READY\"); }\nvoid setup() {\n  Serial.begin(115200);\n  reportStatus();\n}\nvoid loop() {}\n"
+      },
+      "bad": {
+        "operationId": "8a40a556-b4da-4cfd-bbe7-ac2caeb976fc",
+        "state": "failed",
+        "sourceHash": "057616cefe13f43c77a5704be2b9e81abe083618daa682fa96965ba14488b9b0",
+        "artifacts": [],
+        "exitCode": 1,
+        "log": "C:\\Users\\Kabessov\\Documents\\GitHub\\jective_robotics\\.toolchain\\workspace\\builds\\8a40a556-b4da-4cfd-bbe7-ac2caeb976fc\\sketch\\sketch.ino: In function 'void setup()':\nC:\\Users\\Kabessov\\Documents\\GitHub\\jective_robotics\\.toolchain\\workspace\\builds\\8a40a556-b4da-4cfd-bbe7-ac2caeb976fc\\sketch\\sketch.ino:3:3: error: 'reportStatus' was not declared in this scope\n    3 |   reportStatus();\n      |   ^~~~~~~~~~~~\n\nUsed platform Version Path\nesp32:esp32   3.3.12  C:\\Users\\Kabessov\\Documents\\GitHub\\jective_robotics\\.toolchain\\workspace\\data\\packages\\esp32\\hardware\\esp32\\3.3.12\nError during build: exit status 1\n"
+      },
+      "good": {
+        "operationId": "d52d4c04-915d-466c-bae6-4ce327507dad",
+        "state": "succeeded",
+        "sourceHash": "b65cb135a08683f7c293ba65d45ec79e118b1b907973f3448f15a9a04e508575",
+        "artifacts": [
+          "boot_app0.bin",
+          "sketch.ino.bin",
+          "sketch.ino.bootloader.bin",
+          "sketch.ino.elf",
+          "sketch.ino.merged.bin",
+          "sketch.ino.partitions.bin"
+        ],
+        "exitCode": 0,
+        "log": "Sketch uses 268876 bytes (20%) of program storage space. Maximum is 1310720 bytes.\nGlobal variables use 22116 bytes (6%) of dynamic memory, leaving 305564 bytes for local variables. Maximum is 327680 bytes.\n"
+      },
+      "diagnostics": [
+        {
+          "file": "sketch.ino",
+          "line": 3,
+          "column": 3,
+          "kind": "error",
+          "message": "'reportStatus' was not declared in this scope"
+        }
+      ],
+      "physicalVerification": "NOT RUN"
+    },
+    {
+      "id": "type",
+      "starter": {
+        "schemaVersion": 1,
+        "id": "fc7cea43-93fc-4149-8b94-735024ecc030",
+        "name": "L50 compiler type",
+        "mode": "code",
+        "workspace": {},
+        "revision": 0,
+        "profileId": "esp32-devkit-reference",
+        "source": "struct Reading { float metres; };\nvoid setup() {\n  Reading reading{1.0f};\n  int count = reading;\n  Serial.println(count);\n}\nvoid loop() {}\n"
+      },
+      "corrected": {
+        "schemaVersion": 1,
+        "id": "fc7cea43-93fc-4149-8b94-735024ecc030",
+        "name": "L50 compiler type",
+        "mode": "code",
+        "workspace": {},
+        "revision": 0,
+        "profileId": "esp32-devkit-reference",
+        "source": "struct Reading { float metres; };\nvoid setup() {\n  Reading reading{1.0f};\n  float metres = reading.metres;\n  Serial.println(metres);\n}\nvoid loop() {}\n"
+      },
+      "bad": {
+        "operationId": "f5b42fce-b54a-4013-9f99-0a83a221e78d",
+        "state": "failed",
+        "sourceHash": "ffb1d6cb9c656b1cd23af4416466c1c0b956ef6a6a9d1b6970e09df934ccf9a6",
+        "artifacts": [],
+        "exitCode": 1,
+        "log": "C:\\Users\\Kabessov\\Documents\\GitHub\\jective_robotics\\.toolchain\\workspace\\builds\\f5b42fce-b54a-4013-9f99-0a83a221e78d\\sketch\\sketch.ino: In function 'void setup()':\nC:\\Users\\Kabessov\\Documents\\GitHub\\jective_robotics\\.toolchain\\workspace\\builds\\f5b42fce-b54a-4013-9f99-0a83a221e78d\\sketch\\sketch.ino:4:15: error: cannot convert 'Reading' to 'int' in initialization\n    4 |   int count = reading;\n      |               ^~~~~~~\n      |               |\n      |               Reading\n\nUsed platform Version Path\nesp32:esp32   3.3.12  C:\\Users\\Kabessov\\Documents\\GitHub\\jective_robotics\\.toolchain\\workspace\\data\\packages\\esp32\\hardware\\esp32\\3.3.12\nError during build: exit status 1\n"
+      },
+      "good": {
+        "operationId": "03530ebf-7285-4925-972c-5dbf20c575e2",
+        "state": "succeeded",
+        "sourceHash": "38d1519d806f0f6fb2a6ef84e560d030982aef15189ae74fa115ffbc3977962b",
+        "artifacts": [
+          "boot_app0.bin",
+          "sketch.ino.bin",
+          "sketch.ino.bootloader.bin",
+          "sketch.ino.elf",
+          "sketch.ino.merged.bin",
+          "sketch.ino.partitions.bin"
+        ],
+        "exitCode": 0,
+        "log": "Sketch uses 255764 bytes (19%) of program storage space. Maximum is 1310720 bytes.\nGlobal variables use 22100 bytes (6%) of dynamic memory, leaving 305580 bytes for local variables. Maximum is 327680 bytes.\n"
+      },
+      "diagnostics": [
+        {
+          "file": "sketch.ino",
+          "line": 4,
+          "column": 15,
+          "kind": "error",
+          "message": "cannot convert 'Reading' to 'int' in initialization"
+        }
+      ],
+      "physicalVerification": "NOT RUN"
+    },
+    {
+      "id": "library",
+      "starter": {
+        "schemaVersion": 1,
+        "id": "ee6eb6ff-1205-4b49-9c24-46216a24d906",
+        "name": "L50 compiler library",
+        "mode": "code",
+        "workspace": {},
+        "revision": 0,
+        "profileId": "esp32-devkit-reference",
+        "source": "#include <Wrie.h>\nvoid setup() {}\nvoid loop() {}\n"
+      },
+      "corrected": {
+        "schemaVersion": 1,
+        "id": "ee6eb6ff-1205-4b49-9c24-46216a24d906",
+        "name": "L50 compiler library",
+        "mode": "code",
+        "workspace": {},
+        "revision": 0,
+        "profileId": "esp32-devkit-reference",
+        "source": "#include <Wire.h>\nvoid setup() {}\nvoid loop() {}\n"
+      },
+      "bad": {
+        "operationId": "dcdd1d69-a9e8-4445-ae27-1a3271290081",
+        "state": "failed",
+        "sourceHash": "71f4dbd213e3263773b211ee1d6534847d24acbe748bfedb84034377357dcb59",
+        "artifacts": [],
+        "exitCode": 1,
+        "log": "C:\\Users\\Kabessov\\Documents\\GitHub\\jective_robotics\\.toolchain\\workspace\\builds\\dcdd1d69-a9e8-4445-ae27-1a3271290081\\sketch\\sketch.ino:1:10: fatal error: Wrie.h: No such file or directory\n    1 | #include <Wrie.h>\n      |          ^~~~~~~~\ncompilation terminated.\r\n\nUsed platform Version Path\nesp32:esp32   3.3.12  C:\\Users\\Kabessov\\Documents\\GitHub\\jective_robotics\\.toolchain\\workspace\\data\\packages\\esp32\\hardware\\esp32\\3.3.12\nError during build: exit status 1\n"
+      },
+      "good": {
+        "operationId": "48e82aa7-ab38-49bd-9c2d-a8e7aa3da55b",
+        "state": "succeeded",
+        "sourceHash": "dec6b8b76050cce4ceed8f6ab36ebecb8f72e753e5bba739f77ffdd2cff8c089",
+        "artifacts": [
+          "boot_app0.bin",
+          "sketch.ino.bin",
+          "sketch.ino.bootloader.bin",
+          "sketch.ino.elf",
+          "sketch.ino.merged.bin",
+          "sketch.ino.partitions.bin"
+        ],
+        "exitCode": 0,
+        "log": "Sketch uses 283312 bytes (21%) of program storage space. Maximum is 1310720 bytes.\nGlobal variables use 23492 bytes (7%) of dynamic memory, leaving 304188 bytes for local variables. Maximum is 327680 bytes.\n"
+      },
+      "diagnostics": [
+        {
+          "file": "sketch.ino",
+          "line": 1,
+          "column": 10,
+          "kind": "fatal error",
+          "message": "Wrie.h: No such file or directory"
+        }
+      ],
+      "physicalVerification": "NOT RUN"
+    },
+    {
+      "id": "board",
+      "starter": {
+        "schemaVersion": 1,
+        "id": "170898a8-11ac-4b24-b743-ca3873103fe4",
+        "name": "L50 compiler board",
+        "mode": "code",
+        "workspace": {},
+        "revision": 0,
+        "profileId": "esp32c3-reference",
+        "source": "#if !defined(CONFIG_IDF_TARGET_ESP32)\n#error \"This lesson requires the generic ESP32 profile, not ESP32-C3.\"\n#endif\nvoid setup() {}\nvoid loop() {}\n"
+      },
+      "corrected": {
+        "schemaVersion": 1,
+        "id": "170898a8-11ac-4b24-b743-ca3873103fe4",
+        "name": "L50 compiler board",
+        "mode": "code",
+        "workspace": {},
+        "revision": 0,
+        "profileId": "esp32-devkit-reference",
+        "source": "#if !defined(CONFIG_IDF_TARGET_ESP32)\n#error \"This lesson requires the generic ESP32 profile, not ESP32-C3.\"\n#endif\nvoid setup() {}\nvoid loop() {}\n"
+      },
+      "bad": {
+        "operationId": "9b9242de-a6ea-4196-a0e5-7fd10751c130",
+        "state": "failed",
+        "sourceHash": "051cb16619a3ccb5802392a243231abb3f55eb86225e3f7b545874daecd0de23",
+        "artifacts": [],
+        "exitCode": 1,
+        "log": "C:\\Users\\Kabessov\\Documents\\GitHub\\jective_robotics\\.toolchain\\workspace\\builds\\9b9242de-a6ea-4196-a0e5-7fd10751c130\\sketch\\sketch.ino:2:2: error: #error \"This lesson requires the generic ESP32 profile, not ESP32-C3.\"\n    2 | #error \"This lesson requires the generic ESP32 profile, not ESP32-C3.\"\n      |  ^~~~~\n\nUsed platform Version Path\nesp32:esp32   3.3.12  C:\\Users\\Kabessov\\Documents\\GitHub\\jective_robotics\\.toolchain\\workspace\\data\\packages\\esp32\\hardware\\esp32\\3.3.12\nError during build: exit status 1\n"
+      },
+      "good": {
+        "operationId": "af1e3115-ebc6-4f95-9795-58249917d463",
+        "state": "succeeded",
+        "sourceHash": "3f762f60b5a38af398815a1c65c6be8466967edbe2732dd5bd4cf18a191b8b38",
+        "artifacts": [
+          "boot_app0.bin",
+          "sketch.ino.bin",
+          "sketch.ino.bootloader.bin",
+          "sketch.ino.elf",
+          "sketch.ino.merged.bin",
+          "sketch.ino.partitions.bin"
+        ],
+        "exitCode": 0,
+        "log": "Sketch uses 254852 bytes (19%) of program storage space. Maximum is 1310720 bytes.\nGlobal variables use 22100 bytes (6%) of dynamic memory, leaving 305580 bytes for local variables. Maximum is 327680 bytes.\n"
+      },
+      "diagnostics": [
+        {
+          "file": "sketch.ino",
+          "line": 2,
+          "column": 2,
+          "kind": "error",
+          "message": "#error \"This lesson requires the generic ESP32 profile, not ESP32-C3.\""
+        }
+      ],
+      "physicalVerification": "NOT RUN"
+    }
+  ],
+  "sourceHashes": {
+    "packages/content/build-error-cases.ts": "ad9fc0c78c1d52cac350359baaee001708621fd900acebce6d22b2782b761b4d",
+    "packages/toolchain/index.ts": "53474ad6ca7f48fbda181d25430e3db60bcee2a802e7eef5a5cbc8a97fad79e1",
+    "packages/toolchain/diagnostics.ts": "d010a2bc886177053157b8bc1ab75798d1c052e363cda5a80da7fd5c1ff91927",
+    "scripts/build-errors-check.mjs": "04037d850065320b8e521113c02c08e17d6fd4fa97b7998bfa0df46a980d2ceb"
+  },
+  "physicalVerification": "NOT RUN"
+}

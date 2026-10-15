@@ -1,3 +1,7 @@
+import {rendererRecovery} from './infrastructure/renderer-recovery';
+import {restoreWindowPlacement} from '../../packages/contracts/window-placement';
+import {readWindowPlacement,trackWindowPlacement} from './infrastructure/window-placement';
+import {controlWindow,windowState} from './infrastructure/window-controls';
 import {ProjectListRequestSchema} from '../../packages/contracts/project-browser';
 import {assessKnowledge} from '../../packages/content/assess-knowledge';
 import {snapshotEnvironmentInThread} from './infrastructure/environment-thread';
@@ -8,7 +12,7 @@ import {ReviewArchiveSchema} from '../../packages/contracts/review';
 import {verifyReviewArchive,verifyReviewAssignment} from '../../packages/review';
 import {importReviewAssignment,importReviewWork,importReviewFeedback} from '../../packages/persistence/review';
 import {reviewReport} from '../../packages/review/report';
-import {app,BrowserWindow,ipcMain,dialog,protocol,net,session,nativeImage,shell} from 'electron';
+import {app,BrowserWindow,ipcMain,dialog,protocol,net,session,nativeImage,shell,screen} from 'electron';
 import {createCodeCopy} from '../../packages/codegen/conversion';
 import {nativeText} from '../../packages/localization/native';
 import {join,resolve} from 'node:path';
@@ -34,7 +38,8 @@ let win:BrowserWindow;let service:ToolchainService;let store:WorkspaceStore;let 
 let activeOperations=0;let restoringWorkspace=false;
 let currentFingerprint:string|null=null;
 let documentEpoch=0;function clearCurrentDocument(){documentEpoch++;currentPath=null;revision=null;currentFingerprint=null;}
-function brandedMessage(options:Electron.MessageBoxOptions){const locale=store?.state().locale??'ru';return {...options,message:nativeText(options.message,locale),buttons:options.buttons?.map(label=>nativeText(label,locale)),title:options.title?'JECTIVE — '+nativeText(options.title,locale):'JECTIVE Robotics Studio',icon:nativeImage.createFromPath(join(__dirname,'renderer','jective-icon.png')).resize({width:64,height:64})};}
+function currentLocale(){try{return store?.state().locale??'ru';}catch{return 'ru' as const;}}
+function brandedMessage(options:Electron.MessageBoxOptions){const locale=currentLocale();return {...options,message:nativeText(options.message,locale),buttons:options.buttons?.map(label=>nativeText(label,locale)),title:options.title?'JECTIVE — '+nativeText(options.title,locale):'JECTIVE Robotics Studio',icon:nativeImage.createFromPath(join(__dirname,'renderer','jective-icon.png')).resize({width:64,height:64})};}
 function resolveProject(value:unknown){const p=ProjectSchema.parse(value);const {profile,hash}=verifyProjectProfile(p);return {...p,profileVersion:profile.version,profileHash:hash};}
 async function chooseExport(extension:string,name:string,bytes:Uint8Array|string){const selected=await dialog.showSaveDialog(win,{defaultPath:name+'.'+extension,filters:[{name:extension,extensions:[extension]}]});if(selected.canceled||!selected.filePath)return false;await writeFile(selected.filePath,bytes);return true;}
 async function chooseArchive(){const selected=await dialog.showOpenDialog(win,{filters:[{name:'JECTIVE portable file',extensions:['jective']}],properties:['openFile']});if(selected.canceled||!selected.filePaths[0])return null;const path=selected.filePaths[0];if((await stat(path)).size>8*1024*1024)throw new Error('ARCHIVE_TOO_LARGE');return decodeArchive(await readFile(path));}
@@ -56,7 +61,7 @@ if(!primaryInstance)app.quit();
 else app.on('second-instance',()=>{if(win&&!win.isDestroyed()){if(win.isMinimized())win.restore();win.show();win.focus();}});
 if(primaryInstance)app.whenReady().then(async()=>{
   await mkdir(app.getPath('userData'),{recursive:true});operationLog=new OperationLog(join(app.getPath('userData'),'logs','operations.jsonl'));operationLog.record('application','STARTED');store=new WorkspaceStore(join(app.getPath('userData'),'workspace.sqlite'));
-  const assistant=new AssistantService(join(app.getPath('userData'),'assistant.json'),app.isPackaged);
+  const assistant=new AssistantService(join(app.getPath('userData'),'assistant.json'),true);
   // Provision only a revocable learner credential, never the provider key.
   if(process.env.JECTIVE_ASSISTANT_SERVER&&process.env.JECTIVE_ASSISTANT_TOKEN){
     try{await assistant.configure({enabled:true,endpoint:process.env.JECTIVE_ASSISTANT_SERVER,model:'jective-managed',apiKey:process.env.JECTIVE_ASSISTANT_TOKEN});}
@@ -71,19 +76,35 @@ if(primaryInstance)app.whenReady().then(async()=>{
   handler('profiles:review',async value=>{const selection=z.object({id:z.string().max(80),version:z.string().max(80),hash:z.string().regex(/^[a-f0-9]{64}$/)}).strict();const r=z.object({previous:selection,next:selection,componentId:z.string().max(80),wiring:z.record(z.string().max(80),z.number().int().min(0).max(48).nullable())}).strict().parse(value);return reviewProfileMigration(await profileRegistry.resolve(r.previous.id,r.previous.version,r.previous.hash),await profileRegistry.resolve(r.next.id,r.next.version,r.next.hash),r.componentId,r.wiring);});
   handler('profiles:import',async value=>profileRegistry.import(z.string().max(128*1024).parse(value)));
   handler('profiles:export',async value=>{const selection=z.object({id:z.string().max(80),version:z.string().max(80),hash:z.string().regex(/^[a-f0-9]{64}$/)}).strict().parse(value);return encodeProfile(await profileRegistry.resolve(selection.id,selection.version,selection.hash));});
-  handler('assistant:settings',async()=>assistant.settings());handler('assistant:configure',async value=>{if(app.isPackaged)throw new Error('AI_ADMIN_CONFIGURATION_REQUIRED');return assistant.configure(value);});handler('assistant:ask',async value=>assistant.ask(value));handler('assistant:cancel',async()=>assistant.cancel());app.on('before-quit',()=>assistant.cancel());
+  handler('assistant:settings',async()=>assistant.settings());handler('assistant:configure',async()=>{throw new Error('AI_ADMIN_CONFIGURATION_REQUIRED');});handler('assistant:ask',async value=>assistant.ask(value));handler('assistant:cancel',async()=>assistant.cancel());app.on('before-quit',()=>assistant.cancel());
   const root=join(__dirname,'renderer');
   protocol.handle('jective',async request=>{const target=studioAsset(root,request.url,request.method);if(!target)return new Response('Denied',{status:403});try{const actual=await realpath(target);if(!containedPath(root,actual))return new Response('Denied',{status:403});if(isStudioMedia(actual))return await studioMediaResponse(actual,request.headers.get('range'));return await net.fetch(pathToFileURL(actual).toString());}catch{return new Response('Not found',{status:404});}});
   session.defaultSession.setPermissionRequestHandler((_wc,_permission,callback)=>callback(false));
   session.defaultSession.setPermissionCheckHandler(()=>false);
   session.defaultSession.setDevicePermissionHandler(()=>false);
   service=new ToolchainService(app.isPackaged?join(process.resourcesPath,'tools','arduino-cli.exe'):join(app.getAppPath(),'.toolchain','bin','arduino-cli.exe'),process.env.JECTIVE_TOOLCHAIN_ROOT??join(app.getPath('userData'),'toolchain'),snapshotEnvironmentInThread,event=>{if(win&&!win.isDestroyed()&&!win.webContents.isDestroyed())win.webContents.send('build:stage',event);});
-  win=new BrowserWindow({width:1366,height:768,minWidth:760,minHeight:580,show:false,backgroundColor:'#211dff',icon:join(__dirname,'renderer','jective-icon.png'),webPreferences:{preload:join(__dirname,'preload.cjs'),nodeIntegration:false,contextIsolation:true,sandbox:true,webviewTag:false,devTools:!app.isPackaged}});
+  const placementPath=join(app.getPath('userData'),'window-placement.json');
+  const primaryDisplay=screen.getPrimaryDisplay();
+  const placement=restoreWindowPlacement(await readWindowPlacement(placementPath),[primaryDisplay.workArea,...screen.getAllDisplays().filter(display=>display.id!==primaryDisplay.id).map(display=>display.workArea)]);
+  win=new BrowserWindow({...placement.bounds,minWidth:placement.minWidth,minHeight:placement.minHeight,frame:false,autoHideMenuBar:true,show:false,backgroundColor:'#211dff',icon:join(__dirname,'renderer','jective-icon.png'),webPreferences:{preload:join(__dirname,'preload.cjs'),nodeIntegration:false,contextIsolation:true,sandbox:true,webviewTag:false,devTools:!app.isPackaged}});
+  win.setMenu(null);
+  trackWindowPlacement(win,placementPath,()=>operationLog.record('window','PLACEMENT_SAVE_FAILED'));
+  handler('window:state',async()=>windowState(win));
+  handler('window:action',async value=>controlWindow(win,value));
+  const publishWindowState=()=>{if(!win.isDestroyed()&&!win.webContents.isDestroyed())win.webContents.send('window:stateChanged',windowState(win));};
+  win.on('maximize',publishWindowState);win.on('unmaximize',publishWindowState);
+  win.on('enter-full-screen',publishWindowState);win.on('leave-full-screen',publishWindowState);
+  win.webContents.on('did-finish-load',publishWindowState);
   const publishWindowVisibility=()=>{if(!win.isDestroyed()&&!win.webContents.isDestroyed())win.webContents.send('window:visibility',win.isVisible()&&!win.isMinimized());};
   win.on('show',publishWindowVisibility);win.on('hide',publishWindowVisibility);win.on('minimize',publishWindowVisibility);win.on('restore',publishWindowVisibility);
   win.webContents.on('did-finish-load',publishWindowVisibility);
   win.webContents.setWindowOpenHandler(()=>({action:'deny'}));win.webContents.on('will-navigate',e=>e.preventDefault());win.webContents.on('will-frame-navigate',e=>e.preventDefault());win.webContents.on('will-attach-webview',e=>e.preventDefault());
-  win.webContents.on('render-process-gone',()=>operationLog.record('renderer','PROCESS_GONE'));
+  const recoverRenderer=rendererRecovery(win,async()=>{
+   const choice=await dialog.showMessageBox(win,brandedMessage({type:'warning',buttons:['Restart interface','Close'],defaultId:0,cancelId:1,title:'Interface interrupted',message:'The interface stopped. Restart it to try recovery from the last local autosave. More recent changes may need to be entered again.'}));
+   return choice.response===0?'retry':'close';
+  },code=>operationLog.record('renderer',code));
+  win.webContents.on('render-process-gone',()=>{void recoverRenderer('PROCESS_GONE');});
+  win.webContents.once('did-finish-load',()=>win.webContents.on('did-fail-load',(_event,errorCode,_description,_url,isMainFrame)=>{if(isMainFrame&&errorCode!==-3)void recoverRenderer('LOAD_FAILED');}));
   win.webContents.on('will-prevent-unload',event=>{const choice=dialog.showMessageBoxSync(win,brandedMessage({type:'question',buttons:['Keep editing','Discard unsaved changes and close'],defaultId:0,cancelId:0,title:'Unsaved project',message:'The project has unsaved changes.'}));if(choice===1)event.preventDefault();});
   handler('toolchain:status',async()=>{const r=await service.run(['version']);if(r.code!==0)throw new Error('CLI_UNAVAILABLE: '+r.log);return r.log;});
   handler('toolchain:import',async()=>{if(buildBusy)throw new Error('TOOLCHAIN_BUSY');const selected=await dialog.showOpenDialog(win,{title:'Choose an extracted JECTIVE offline toolchain bundle',properties:['openDirectory']});if(selected.canceled||!selected.filePaths[0])return false;buildBusy=true;try{await importBundle(selected.filePaths[0],service.root);await service.config();return true;}finally{buildBusy=false;}});
@@ -123,8 +144,13 @@ if(primaryInstance)app.whenReady().then(async()=>{
   handler('classroom:export',async value=>{const p=z.object({kind:z.enum(['assignment','submission','report']),value:z.unknown()}).strict().parse(value);if(p.kind==='report'){const data=store.classroom();const rows=[['learner','assignment','submission','version','score','evidence','feedback'].map(csvCell).join(',')];for(const s of data.submissions){const grade=data.grades.find(g=>g.submissionId===s.id);rows.push([s.learnerId,s.assignmentId,s.id,s.version,grade?Object.values(grade.scores).reduce((a,b)=>a+b,0):'',s.evidence.map(e=>e.kind).join(';'),grade?.feedback??''].map(csvCell).join(','));}return chooseExport('csv','classroom-report','\uFEFF'+rows.join('\r\n'));}const parsed=p.kind==='assignment'?AssignmentSchema.parse(p.value):SubmissionSchema.parse(p.value);const exported=await chooseExport('jective',p.kind+'-'+parsed.id,encodeArchive(p.kind,parsed));if(exported&&p.kind==='submission')store.submission(SubmissionSchema.parse(parsed));return exported;});
   handler('workspace:backup',async()=>{const s=await dialog.showSaveDialog(win,{defaultPath:'jective-workspace.sqlite',filters:[{name:'SQLite backup',extensions:['sqlite']}]});if(s.canceled||!s.filePath)return false;await store.backup(s.filePath);return true;});
   handler('workspace:restore',async()=>{if(buildBusy||projectBusy)throw new Error('WORKSPACE_BUSY');const s=await dialog.showOpenDialog(win,{filters:[{name:'SQLite backup',extensions:['sqlite']}],properties:['openFile']});const path=s.filePaths[0];if(s.canceled||!path)return false;if((await stat(path)).size>64*1024*1024)throw new Error('BACKUP_TOO_LARGE');const imported=inspectBackup(path);const confirmed=await dialog.showMessageBox(win,brandedMessage({buttons:['Cancel','Restore backup'],defaultId:0,cancelId:0,message:'Replace local workspace records? A backup of the current database will be retained.'}));if(confirmed.response!==1)return false;const target=store.path;const staged=target+'.restore-'+Date.now();const checked=new WorkspaceStore(staged);try{populateBackup(checked,imported);checked.state();}finally{checked.close();}await store.backup(target+'.before-restore.sqlite');store.close();const previous=target+'.replaced-'+Date.now();let moved=false;try{await rm(target+'-wal',{force:true});await rm(target+'-shm',{force:true});await rename(target,previous);moved=true;await rename(staged,target);store=new WorkspaceStore(target);}catch(e){if(moved){try{await rename(previous,target);}catch{}}store=new WorkspaceStore(target);throw e;}clearCurrentDocument();return true;});
-  win.once('ready-to-show',()=>win.show());await win.loadURL('jective://studio/index.html');
-}).catch(e=>{operationLog?.record('startup',safeErrorCode(e));console.error('JECTIVE startup failed:',safeErrorCode(e));app.quit();});
+  win.once('ready-to-show',()=>{if(placement.maximized)win.maximize();win.show();});await win.loadURL('jective://studio/index.html');
+}).catch(async e=>{
+ const code=safeErrorCode(e);operationLog?.record('startup',code);
+ try{await dialog.showMessageBox(brandedMessage({type:'error',buttons:['Close'],title:'Unable to start',message:'The app could not start. Local project data has not been cleared. Ask your administrator to check the installation and app data.',detail:'JECTIVE '+code}));await operationLog?.flush();}
+ catch{console.error('JECTIVE startup failed:',code);}
+ finally{app.quit();}
+});
 app.on('before-quit',()=>{service?.cancel();void devices.close();store?.close();});app.on('window-all-closed',()=>app.quit());
 
 
