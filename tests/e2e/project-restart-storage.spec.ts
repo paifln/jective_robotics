@@ -24,6 +24,7 @@ test('Unicode source, snapshots and file revision survive an actual Electron res
   const recovered=await page.evaluate(()=>window.jective.workspace());expect(recovered.ok&&recovered.value.recovery).toEqual(saved);expect(await page.evaluate(id=>window.jective.snapshots(id),saved.id)).toEqual(versions);
   await app.evaluate(({dialog},path)=>{dialog.showOpenDialog=async()=>({canceled:false,filePaths:[path]});},file);
   expect(await page.evaluate(()=>window.jective.open())).toEqual({ok:true,value:saved});
+  expect(await page.evaluate(project=>window.jective.acceptProjectOpen(project),saved)).toEqual({ok:true,value:saved});
   const updated=await page.evaluate(project=>window.jective.save({...project,source:project.source+'// новая версия\r\n'}),saved);expect(updated.ok&&updated.value.revision).toBe(2);expect(updated.ok&&JSON.parse(await readFile(file,'utf8')).source).toBe(updated.ok&&updated.value.source);
   if(!updated.ok)throw new Error(updated.error.message);
   const external={...updated.value,revision:updated.value.revision,source:updated.value.source+'// external editor fixture\r\n'};const externalBytes=JSON.stringify(external,null,2);await writeFile(file,externalBytes);

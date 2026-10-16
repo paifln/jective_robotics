@@ -13,6 +13,7 @@ test('reading a workspace project preserves the saved file binding; opening expl
    const read=await window.jective.workspaceProject(initial.value.id);if(!read.ok||!read.value)throw Error('READ_FAILED');
    const saved=await window.jective.save({...initial.value,source:initial.value.source+'\n// edit after read'});if(!saved.ok)throw Error(saved.error.message);
    const opened=await window.jective.workspaceOpenProject(saved.value.id);if(!opened.ok||!opened.value)throw Error('OPEN_FAILED');
+   const accepted=await window.jective.acceptProjectOpen(opened.value);if(!accepted.ok)throw Error('OPEN_ACKNOWLEDGEMENT_FAILED');
    const afterOpen=await window.jective.save(saved.value);return {saved:saved.value,afterOpen};
   });
   expect(result.saved.revision).toBe(2);expect(JSON.parse(await readFile(path,'utf8')).source).toContain('// edit after read');expect(result.afterOpen.ok).toBe(false);expect(result.afterOpen.ok?null:result.afterOpen.error.code).toBe('SAVE_CANCELLED');expect(await app.evaluate(()=> (globalThis as typeof globalThis&{__saveCalls:()=>number}).__saveCalls())).toBe(2);

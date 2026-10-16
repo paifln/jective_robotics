@@ -35,9 +35,29 @@ jobs:
       - run: npm run lint
       - run: npm run architecture:test
       - run: npm run assistant:test
+      - name: Check Windows private setup with synthetic credentials
+        run: powershell -NoProfile -File tests/assistant-windows-setup.ps1
       - run: npm run audio:test
       - run: npm run security:audit
       - run: npm run build -- --production
       - run: npm run test:coverage
       - name: Check basic desktop behavior without an SDK
-        run: npx playwright test tests/e2e/launch-motivation.spec.ts tests/e2e/managed-manual.spec.ts tests/e2e/desktop-shell.spec.ts tests/e2e/reading-keyboard-scale.spec.ts
+        run: npx playwright test tests/e2e/launch-motivation.spec.ts tests/e2e/managed-manual.spec.ts tests/e2e/desktop-shell.spec.ts tests/e2e/reading-keyboard-scale.spec.ts tests/e2e/portable-import-security.spec.ts tests/e2e/toolchain-import-review.spec.ts tests/e2e/assistant-provisioning-env.spec.ts
+
+  assistant-linux:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Check out source
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7, verified 2026-10-15
+        with:
+          persist-credentials: false
+      - name: Set up Node.js 24
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7, verified 2026-10-15
+        with:
+          node-version: '24'
+          package-manager-cache: false
+      - name: Check dependency-free gateway and administration boundaries
+        run: node --test tests/assistant-gateway.node.mjs tests/assistant-server-hardening.node.mjs tests/assistant-hosted.node.mjs tests/assistant-railway-config.node.mjs
+      - name: Check isolated Linux image, permissions, authentication and restart quotas
+        run: node scripts/verify-assistant-container.mjs

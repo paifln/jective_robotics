@@ -1,0 +1,22 @@
+{
+  "exitCode": 0,
+  "finishedAt": "2026-10-16T04:54:38.4295096Z",
+  "scannerSignature": "Valid",
+  "before": {
+    "app.asar": "5b42d8b095feb569a71472b8667ba8e133253d8c6f75b9be5e67fff7e00b2630",
+    "JECTIVE Robotics Studio.exe": "ef47808eb62110e5f52bcb70ff621113824973a5890877b82c2d6f735fa19ca7",
+    "JECTIVE Robotics Studio Setup 0.8.18.exe": "9b19a4202a3c5c768d845961726cf12be407959643c69f9bfd5186a705bbd03d"
+  },
+  "startedAt": "2026-10-16T04:53:59.4212380Z",
+  "after": {
+    "app.asar": "5b42d8b095feb569a71472b8667ba8e133253d8c6f75b9be5e67fff7e00b2630",
+    "JECTIVE Robotics Studio.exe": "ef47808eb62110e5f52bcb70ff621113824973a5890877b82c2d6f735fa19ca7",
+    "JECTIVE Robotics Studio Setup 0.8.18.exe": "9b19a4202a3c5c768d845961726cf12be407959643c69f9bfd5186a705bbd03d"
+  },
+  "status": "NO_THREATS_REPORTED",
+  "command": "MpCmdRun -Scan -ScanType 3 -File <isolated package directory> -DisableRemediation",
+  "scope": "Microsoft Defender custom scan of isolated security r3 package directory; remediation disabled. No security settings changed.",
+  "output": "Scan starting...\r\nScan finished.\r\nScanning <isolated package directory> found no threats.\r\n",
+  "unchanged": true,
+  "limitation": "This one custom scan is not a guarantee of malware absence or overall product security. No installer was installed."
+}

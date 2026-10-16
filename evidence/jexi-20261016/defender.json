@@ -1,0 +1,15 @@
+{
+  "output": "Scan starting... Scan finished. Scanning the isolated Jexi r2 unpacked directory found no threats.",
+  "scope": "Microsoft Defender custom scan of isolated Jexi r2 unpacked directory, no installer; remediation disabled, settings unchanged",
+  "exitCode": 0,
+  "after": {
+    "JECTIVE Robotics Studio.exe": "a0ee4f408dfefdae0ed0d29c336767a79bc7a0511f51a9ce1c6cfbc04779f76f",
+    "app.asar": "cae4f12e037610b4eaae944aaf7f415a814721433afd0f664505acb8e7bbdc0c"
+  },
+  "before": {
+    "JECTIVE Robotics Studio.exe": "a0ee4f408dfefdae0ed0d29c336767a79bc7a0511f51a9ce1c6cfbc04779f76f",
+    "app.asar": "cae4f12e037610b4eaae944aaf7f415a814721433afd0f664505acb8e7bbdc0c"
+  },
+  "scannerSignature": "Valid",
+  "checkedAt": "2026-10-16T05:48:41.8815903Z"
+}

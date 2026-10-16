@@ -1,0 +1,38 @@
+{
+  "checkedAt": "2026-10-16T04:47:48.709Z",
+  "scope": "Actual unchanged production EXE/ASAR under paths with spaces and Cyrillic, temporary loopback Chromium diagnostics and isolated profile/reused ordinary approved SDK copy. No main inspector/fuse changes or hardware access.",
+  "fixture": "security-r3-compiler-20261016-36ec3a6f",
+  "phase": "PASS",
+  "observationBudgetMs": 810000,
+  "observationBudgetReason": "Two independently bounded 300s hash scans plus 180s CLI and 30s observer allowance. Production deadlines unchanged; historical 360s failure retained. The complete declared SDK scope is rehashed; duration depends on the host.",
+  "physical": "NOT RUN",
+  "upload": "NOT RUN",
+  "win10": "NOT RUN",
+  "builds": [
+    {
+      "operationId": "becc5310-ff1d-40ca-b6cc-84b32cd92e80",
+      "state": "succeeded",
+      "exitCode": 0,
+      "elapsedMs": 374169,
+      "environment": "05d780d8394605ad310a76c978d1015bd0b80fcc80305f8c4d3852b23cfb5533",
+      "rawLogBytes": 207,
+      "rawLogHash": "8addab64ba370635795da41ca8c8f87a046c7394eae8408b89206f4feaf5630d",
+      "journalTextEqual": true,
+      "artifacts": [
+        "boot_app0.bin",
+        "sketch.ino.bin",
+        "sketch.ino.bootloader.bin",
+        "sketch.ino.elf",
+        "sketch.ino.merged.bin",
+        "sketch.ino.partitions.bin"
+      ]
+    }
+  ],
+  "externalRendererRequests": [],
+  "rendererURL": "jective://studio/index.html",
+  "nodeRequireAvailable": false,
+  "savedSourceRecovered": true,
+  "asarUnchanged": true,
+  "exeUnchanged": true,
+  "finishedAt": "2026-10-16T04:54:13.289Z"
+}

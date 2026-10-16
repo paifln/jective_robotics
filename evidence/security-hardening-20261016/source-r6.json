@@ -1,0 +1,117 @@
+{
+  "startedAt": "2026-10-16T04:49:02.273Z",
+  "scope": "Immutable candidate Git export with no SDK; pinned dependencies shared by junction, not independent npm ci. Conservative GUI selection, not full UI, physical, installer or public-service qualification.",
+  "steps": [
+    {
+      "command": "npm run github:test",
+      "exitCode": 0,
+      "elapsedMs": 2490
+    },
+    {
+      "command": "npm run github:check",
+      "exitCode": 0,
+      "elapsedMs": 3962
+    },
+    {
+      "command": "npm run typecheck",
+      "exitCode": 0,
+      "elapsedMs": 17567
+    },
+    {
+      "command": "npm run lint",
+      "exitCode": 0,
+      "elapsedMs": 30729
+    },
+    {
+      "command": "npm run architecture:test",
+      "exitCode": 0,
+      "elapsedMs": 9327
+    },
+    {
+      "command": "npm run assistant:test",
+      "exitCode": 0,
+      "elapsedMs": 1035
+    },
+    {
+      "command": "npm run audio:test",
+      "exitCode": 0,
+      "elapsedMs": 784
+    },
+    {
+      "command": "npm run security:audit",
+      "exitCode": 0,
+      "elapsedMs": 12006
+    },
+    {
+      "command": "npm run build -- --production",
+      "exitCode": 0,
+      "elapsedMs": 5352
+    },
+    {
+      "command": "npm run test:coverage",
+      "exitCode": 0,
+      "elapsedMs": 53999
+    },
+    {
+      "command": "npx playwright test --config .verification/security-playwright.config.ts tests/e2e/activity-baseline.spec.ts tests/e2e/analog-lesson.spec.ts tests/e2e/analog-plot.spec.ts tests/e2e/announcement-monitor.spec.ts tests/e2e/assistant-conversation-layout.spec.ts tests/e2e/assistant-managed-chat.spec.ts tests/e2e/assistant-provisioning-env.spec.ts tests/e2e/assistant-settings-refresh.spec.ts tests/e2e/assistant-setup-errors.spec.ts tests/e2e/avoidance.spec.ts tests/e2e/backup.spec.ts tests/e2e/board-profile-refresh.spec.ts tests/e2e/branding-dialogs.spec.ts tests/e2e/capstone-proposal-lesson.spec.ts tests/e2e/challenge-cancellation.spec.ts tests/e2e/challenge-lesson.spec.ts tests/e2e/challenge-panel.spec.ts tests/e2e/challenge-worker.spec.ts tests/e2e/code-copy.spec.ts tests/e2e/code-reading-zoom.spec.ts tests/e2e/collections.spec.ts tests/e2e/collision-cancellation.spec.ts tests/e2e/collision-lesson.spec.ts tests/e2e/collision-panel.spec.ts tests/e2e/collision-worker.spec.ts tests/e2e/communication-lesson.spec.ts tests/e2e/components-dock.spec.ts tests/e2e/content-assistant.spec.ts tests/e2e/course-challenge.spec.ts tests/e2e/dashboard-lesson.spec.ts tests/e2e/dashboard.spec.ts tests/e2e/debounce.spec.ts tests/e2e/decisions.spec.ts tests/e2e/design.spec.ts tests/e2e/desktop-shell.spec.ts tests/e2e/differential.spec.ts tests/e2e/distance-input.spec.ts tests/e2e/distance-lesson.spec.ts tests/e2e/encoder.spec.ts tests/e2e/engagement-shell.spec.ts tests/e2e/entered-measurements.spec.ts tests/e2e/final-demonstration-lesson.spec.ts tests/e2e/foundations-help.spec.ts tests/e2e/functions-interface.spec.ts tests/e2e/functions-lesson.spec.ts tests/e2e/functions.spec.ts tests/e2e/investigation-cancellation.spec.ts tests/e2e/investigation-lesson.spec.ts tests/e2e/investigation-panel.spec.ts tests/e2e/investigation-worker.spec.ts tests/e2e/launch-motivation.spec.ts tests/e2e/learning-interface.spec.ts tests/e2e/learning-load-protection.spec.ts tests/e2e/lesson-animation.spec.ts tests/e2e/lesson-audio.spec.ts tests/e2e/lesson-reading-surface.spec.ts tests/e2e/lesson-recommendation.spec.ts tests/e2e/lesson-visibility.spec.ts tests/e2e/line-calibration.spec.ts tests/e2e/line-following.spec.ts tests/e2e/localized-controls.spec.ts tests/e2e/loops.spec.ts tests/e2e/managed-manual.spec.ts tests/e2e/mapping.spec.ts tests/e2e/messages.spec.ts tests/e2e/mini-project.spec.ts tests/e2e/motor-ramp.spec.ts tests/e2e/motor-safety.spec.ts tests/e2e/motor-substitution.spec.ts tests/e2e/native-startup-error.spec.ts tests/e2e/nonblocking-time.spec.ts tests/e2e/obstacle-stop.spec.ts tests/e2e/orientation.spec.ts tests/e2e/performance-improvement-panel.spec.ts tests/e2e/persistence.spec.ts tests/e2e/pid.spec.ts tests/e2e/pixel-game.spec.ts tests/e2e/portable-import-security.spec.ts tests/e2e/precision.spec.ts tests/e2e/preferences.spec.ts tests/e2e/profile-exchange-ui.spec.ts tests/e2e/profile-registry.spec.ts tests/e2e/profile-version-selection.spec.ts tests/e2e/project-actions.spec.ts tests/e2e/project-list-design.spec.ts tests/e2e/project-read-binding.spec.ts tests/e2e/project-restart-storage.spec.ts tests/e2e/proportional-line.spec.ts tests/e2e/pwm-lesson.spec.ts tests/e2e/pwm-simulation.spec.ts tests/e2e/reading-design.spec.ts tests/e2e/reading-keyboard-scale.spec.ts tests/e2e/reliability-review-panel.spec.ts tests/e2e/renderer-crash-recovery.spec.ts tests/e2e/repeatable-cancellation.spec.ts tests/e2e/repeatable-lesson.spec.ts tests/e2e/repeatable-worker.spec.ts tests/e2e/requirement-matrix-lesson.spec.ts tests/e2e/requirement-matrix-panel.spec.ts tests/e2e/review-sharing.spec.ts tests/e2e/rover-inspection.spec.ts tests/e2e/save-navigation.spec.ts tests/e2e/scene-controls.spec.ts tests/e2e/serial-export.spec.ts tests/e2e/servo.spec.ts tests/e2e/sharing-lesson.spec.ts tests/e2e/simulator-visibility.spec.ts tests/e2e/sound-lesson.spec.ts tests/e2e/sound.spec.ts tests/e2e/square-route.spec.ts tests/e2e/state-machine.spec.ts tests/e2e/studio-density.spec.ts tests/e2e/studio-localization.spec.ts tests/e2e/studio.spec.ts tests/e2e/telemetry.spec.ts tests/e2e/timed-motion.spec.ts tests/e2e/toolchain-import-review.spec.ts tests/e2e/uncertainty-cancellation.spec.ts tests/e2e/uncertainty-lesson.spec.ts tests/e2e/uncertainty-panel.spec.ts tests/e2e/uncertainty-worker.spec.ts tests/e2e/variables.spec.ts tests/e2e/wheel-speed.spec.ts tests/e2e/window-placement.spec.ts tests/e2e/worksheet.spec.ts tests/e2e/workspace-startup-recovery.spec.ts tests/e2e/world-coordinates-lesson.spec.ts tests/e2e/world-designer.spec.ts tests/e2e/world-files.spec.ts tests/e2e/world-validation.spec.ts",
+      "exitCode": 0,
+      "elapsedMs": 897909
+    }
+  ],
+  "status": "PASS",
+  "selectedFiles": 130,
+  "excludedFiles": 28,
+  "immutableInputs": {
+    "files": 1073,
+    "changed": []
+  },
+  "finishedAt": "2026-10-16T05:06:18.504Z",
+  "ui": {
+    "stats": {
+      "startTime": "2026-10-16T04:51:37.516Z",
+      "duration": 879826.756,
+      "expected": 132,
+      "skipped": 0,
+      "unexpected": 0,
+      "flaky": 0
+    },
+    "errors": []
+  },
+  "unit": {
+    "files": 204,
+    "total": 616,
+    "passed": 616
+  },
+  "coverage": {
+    "lines": {
+      "total": 2316,
+      "covered": 2310,
+      "skipped": 0,
+      "pct": 99.74
+    },
+    "statements": {
+      "total": 5489,
+      "covered": 5388,
+      "skipped": 0,
+      "pct": 98.15
+    },
+    "functions": {
+      "total": 1080,
+      "covered": 1065,
+      "skipped": 0,
+      "pct": 98.61
+    },
+    "branches": {
+      "total": 3860,
+      "covered": 3718,
+      "skipped": 0,
+      "pct": 96.32
+    },
+    "branchesTrue": {
+      "total": 0,
+      "covered": 0,
+      "skipped": 0,
+      "pct": 100
+    }
+  }
+}

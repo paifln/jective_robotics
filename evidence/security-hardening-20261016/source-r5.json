@@ -1,0 +1,106 @@
+{
+  "startedAt": "2026-10-16T04:39:59.466Z",
+  "scope": "Immutable candidate Git export with no SDK; pinned dependencies shared by junction, not independent npm ci. Conservative GUI selection, not full UI, physical, installer or public-service qualification.",
+  "steps": [
+    {
+      "command": "npm run github:test",
+      "exitCode": 0,
+      "elapsedMs": 1397
+    },
+    {
+      "command": "npm run github:check",
+      "exitCode": 0,
+      "elapsedMs": 1956
+    },
+    {
+      "command": "npm run typecheck",
+      "exitCode": 0,
+      "elapsedMs": 12567
+    },
+    {
+      "command": "npm run lint",
+      "exitCode": 0,
+      "elapsedMs": 21408
+    },
+    {
+      "command": "npm run architecture:test",
+      "exitCode": 0,
+      "elapsedMs": 13571
+    },
+    {
+      "command": "npm run assistant:test",
+      "exitCode": 0,
+      "elapsedMs": 1660
+    },
+    {
+      "command": "npm run audio:test",
+      "exitCode": 0,
+      "elapsedMs": 1830
+    },
+    {
+      "command": "npm run security:audit",
+      "exitCode": 0,
+      "elapsedMs": 3720
+    },
+    {
+      "command": "npm run build -- --production",
+      "exitCode": 0,
+      "elapsedMs": 8275
+    },
+    {
+      "command": "npm run test:coverage",
+      "exitCode": 0,
+      "elapsedMs": 54850
+    },
+    {
+      "command": "npx playwright test --config .verification/security-playwright.config.ts tests/e2e/launch-motivation.spec.ts tests/e2e/managed-manual.spec.ts tests/e2e/desktop-shell.spec.ts tests/e2e/reading-keyboard-scale.spec.ts tests/e2e/portable-import-security.spec.ts tests/e2e/toolchain-import-review.spec.ts tests/e2e/project-read-binding.spec.ts tests/e2e/project-restart-storage.spec.ts tests/e2e/workspace-startup-recovery.spec.ts tests/e2e/assistant-provisioning-env.spec.ts tests/e2e/assistant-managed-chat.spec.ts tests/e2e/assistant-conversation-layout.spec.ts",
+      "exitCode": 0,
+      "elapsedMs": 89195
+    }
+  ],
+  "status": "PASS",
+  "selectedFiles": 12,
+  "excludedFiles": "Broad 129-file UI phase belongs to r2 snapshot",
+  "immutableInputs": {
+    "files": 1064,
+    "changed": []
+  },
+  "finishedAt": "2026-10-16T04:43:31.657Z",
+  "unit": {
+    "files": 204,
+    "total": 616,
+    "passed": 616
+  },
+  "coverage": {
+    "lines": {
+      "total": 2316,
+      "covered": 2310,
+      "skipped": 0,
+      "pct": 99.74
+    },
+    "statements": {
+      "total": 5489,
+      "covered": 5388,
+      "skipped": 0,
+      "pct": 98.15
+    },
+    "functions": {
+      "total": 1080,
+      "covered": 1065,
+      "skipped": 0,
+      "pct": 98.61
+    },
+    "branches": {
+      "total": 3860,
+      "covered": 3718,
+      "skipped": 0,
+      "pct": 96.32
+    },
+    "branchesTrue": {
+      "total": 0,
+      "covered": 0,
+      "skipped": 0,
+      "pct": 100
+    }
+  }
+}

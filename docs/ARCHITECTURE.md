@@ -6,6 +6,8 @@
 
 ## Managed assistant service boundary
 
+New managed learner credentials encrypt a versioned envelope containing both the token and its canonical gateway endpoint. Editing the plaintext endpoint cannot redirect that stored credential: endpoint mismatch fails before fetch. Old unbound learner ciphertext requires explicit administrator reprovisioning rather than silent trust of the current editable endpoint. The provider key remains server-only, and the HTTP Bearer token format is unchanged. This is protection against configuration substitution, not against an attacker controlling the Windows user account or the process memory.
+
 All desktop builds use the JECTIVE gateway and encrypted learner tokens; provider credentials belong exclusively on the server. Server HTTP lifecycle, input/credential policy, bounded body reads, OpenAI adapter, runtime configuration, private-file reads, encryption and durable quotas now live in separate modules under `services/assistant`. See its README and administrator deployment guide. The server is not bundled into student assets or started by importing its modules. Legacy direct-provider development fixtures remain for compatibility testing, not student deployment.
 
 Electron main owns native dialogs, SQLite, fixed external CLI invocation, actual serial transport, archive import/export and encrypted credentials. Preload exposes named typed methods with Zod request/response validation. Main checks the sender, main frame and local origin. React owns local Blockly/Monaco and presentation; hardware and persistence logic remain in domain services. Main assets use a contained `jective://studio` scheme. No development server is used.
@@ -20,6 +22,12 @@ JSON save uses size-bound reads, temporary sibling fsync and rename with a revis
 
 ## Archives
 
+The 16 October hardening separates ZIP container checks (`portable-zip.ts`), bounded native reads (`bounded-file.ts`) and schema validation. The private two-member reader validates matching central/local records, offsets, unique names, supported compression, actual output length and CRC32. Native inflate has a hard output limit independent of the ZIP size claim. No files are extracted. ZIP64, encryption, split volumes, prefixed executables and extra members are intentionally outside this private format. CRC is corruption detection, not publisher authentication.
+
+`DocumentSession` owns external-file bindings and one prepared candidate. Open/import/local-copy/snapshot selection prepares a candidate without changing the active binding. Renderer first deserializes a cloned workspace into an isolated headless Blockly workspace, then acknowledges the exact prepared project through `project:acceptOpen`. Main accepts no renderer-selected path; changed/stale acknowledgements fail. Imported recovery is persisted only at acceptance. A database failure leaves the previous binding in place. Successful save or explicit new-document actions invalidate pending candidates. The old single-step project opening bridge now prepares only; integrations must acknowledge after validation.
+
+The pure workspace-data contract bounds depth, nodes and aggregate characters before recursive deserialization, rejects cycles, executable/accessor data, unsupported prototypes and prototype-sensitive keys, and preserves repeated acyclic values. Current limits are 1,024 levels, 100,000 values and 4,000,000 characters including keys. They are editor-input resource limits, not an OS sandbox or a guarantee that every document will render cheaply.
+
 Bounded ZIP `.jective`: exactly `manifest.json` and `content.json`. Manifest format `jective`, version 1, kind project/assignment/submission. Content is schema-validated. No filesystem extraction occurs; unknown entry names, traversal and size excess are rejected. Source is never executed on import. IDs persist across classroom exchange. Identical duplicate submissions are harmless; conflicting ID or learner/version pairs fail. Revised assignments require new IDs. CSV cells are quoted and formula prefixes escaped.
 
 ## IR and simulation
@@ -29,6 +37,8 @@ The shared instruction model includes indicators, PWM, waits, labelled numeric p
 The worker robot model uses 20 ms fixed ticks, differential drive, body collisions, configurable track/radius/speed/acceleration/probe positions and distance range, and seeded optional distance noise. State messages are schema-checked; at most one tick request is pending. Reset terminates the old worker. Per-tick instructions and total duration are bounded. Six local worlds and validated scenario edits share this model. Export includes IR, scenario and bounded state trace. It is not an ESP32/C++ emulator.
 
 ## Tools and devices
+
+Offline bundle review shows the exact manifest digest and requires native confirmation with the JECTIVE icon. The build lock covers selection, review and installation; a changed manifest after consent is rejected. `verified-copy.ts` reads a source handle in bounded chunks, hashes those same bytes while writing exclusive staging files, and checks size and observed mutation. The staged manifest is the original checked byte sequence, not a later reread. Windows device names, trailing-dot/space aliases and ambiguous paths are rejected. Staging is validated before recursive cleanup; publication retains the prior target and restores it after a failed final rename. These checks do not turn an unsigned third-party tool bundle into a trusted publisher release.
 
 Toolchain is isolated from global Arduino settings. CLI 1.5.1 and ESP32 core 3.3.12 are enforced. Each compile has unique sketch/output directories and a source/profile/wiring digest, resolved profile, real logs/exit status and artifact hashes. Success requires .bin and .elf. Failed new builds invalidate the prior upload candidate. Upload verifies the latest operation, matching source and every artifact hash; main requires an enumerated explicit port and native confirmation, then closes serial first. Logs are bounded; continuous streaming and extended lifecycle fault tests remain incomplete.
 
@@ -47,6 +57,10 @@ Blockly initialization and Monaco initialization have separate lifecycles. Monac
 DeviceService lists actual OS ports, opens only an explicit current selection, decodes UTF-8 across chunks, distinguishes raw lines from bounded versioned frames, and bounds queue/display sizes. Reconnect never arms. Host actuation integration and physical firmware identity acceptance remain unfinished. Raw monitor rejects reserved protocol commands.
 
 ## Content and assistant
+
+Server hosting is separate from desktop configuration. The Railway launcher materialises encrypted provider data and a hash-only registry into a private temporary folder, keeps SQLite quotas on an explicitly attached volume and drops UID/GID before serving requests. The Windows administrator wizard owns local ACL/DPAPI setup. A separate deployment adapter sends variables through private stdin to an explicit project/service/environment without automatic deployment. Neither adapter is exposed to learner IPC or included in the desktop installer. The Linux verification job uses synthetic credentials and a container with networking disabled; it does not validate a real provider account.
+
+Assistant configuration storage lives separately from transport in `configuration.ts`, with a 32 KiB read cap and strict UTF-8. `atomic-file.ts` provides exclusive unique sibling writes, fsync and replacement for both projects and encrypted learner-token settings; a failed exclusive open does not delete a pre-existing temporary file. The helper does not claim cross-process compare-and-replace or Windows ACL acceptance. Assistant HTTP failures and declared/observed oversized responses cancel their bodies, release reader locks and abort the transport before releasing the request slot. Actual loopback lifecycle tests cover unfinished bodies without using a provider account.
 
 Learner ask errors are translated by a pure presentation module using only validated diagnostic codes. Unknown codes fall back to local-hint/documentation guidance; backend message text never enters that status. Provider failure tests distinguish explicit IPC response fixtures from actual local HTTP transport and live provider credentials.
 

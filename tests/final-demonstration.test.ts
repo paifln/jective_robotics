@@ -19,13 +19,13 @@ it('binds the actual saved multifile project and resolved profile to a bounded c
  const fake={...p,payload:{...p.payload,report:{...p.payload.report,review:{...p.payload.report.review,score:16}}}};await expect(verifyDemonstrationPackage(fake)).rejects.toThrow('DEMONSTRATION_PACKAGE_TAMPERED');
  await expect(createDemonstrationPackage(d,{...project,revision:3})).rejects.toThrow('DEMONSTRATION_PROJECT_MISMATCH');
  await expect(createDemonstrationPackage(d,{...project,workspace:{huge:'x'.repeat(2*1024*1024)}})).rejects.toThrow('DEMONSTRATION_PACKAGE_LIMIT');
- await expect(createDemonstrationPackage(d,{...project,workspace:{unsupported:()=>1}})).rejects.toThrow('DEMONSTRATION_NON_JSON');
+ await expect(createDemonstrationPackage(d,{...project,workspace:{unsupported:()=>1}})).rejects.toThrow('PROJECT_WORKSPACE_UNSAFE');
  const nested:Record<string,unknown>={};let leaf=nested;for(let i=0;i<40;i++){const next={};leaf.child=next;leaf=next;}await expect(createDemonstrationPackage(d,{...project,workspace:nested})).rejects.toThrow('DEMONSTRATION_PACKAGE_LIMIT');
  const nullable=await createDemonstrationPackage(d,{...project,workspace:{flags:[true,false,null]},wiring:{led:null}});expect((await verifyDemonstrationPackage(nullable)).payload.project.wiring!.led).toBeNull();
- await expect(createDemonstrationPackage(d,{...project,workspace:{many:Array.from({length:100001},()=>0)}})).rejects.toThrow('DEMONSTRATION_PACKAGE_LIMIT');
+ await expect(createDemonstrationPackage(d,{...project,workspace:{many:Array.from({length:100001},()=>0)}})).rejects.toThrow('PROJECT_WORKSPACE_UNSAFE');
  await expect(createDemonstrationPackage(d,{...project,workspace:{unicode:'\u0410'.repeat(1100000)}})).rejects.toThrow('DEMONSTRATION_PACKAGE_LIMIT');
  await expect(createDemonstrationPackage(d,{...project,workspace:{[('key').repeat(800000)]:0}})).rejects.toThrow('DEMONSTRATION_PACKAGE_LIMIT');
- await expect(createDemonstrationPackage(d,{...project,workspace:{nonfinite:NaN}})).rejects.toThrow('DEMONSTRATION_NON_JSON');
+ await expect(createDemonstrationPackage(d,{...project,workspace:{nonfinite:NaN}})).rejects.toThrow('PROJECT_WORKSPACE_UNSAFE');
 });
 it('persists reported rubric and verification categories through native SQLite backup without accepting checked status',async()=>{
  const root=await mkdtemp(join(tmpdir(),'jective-demonstration-')),source=new WorkspaceStore(join(root,'source.sqlite')),target=new WorkspaceStore(join(root,'target.sqlite'));

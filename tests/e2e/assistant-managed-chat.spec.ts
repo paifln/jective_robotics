@@ -17,7 +17,13 @@ test('provisioned managed assistant opens immediately, retains dialogue and keep
   const page=await app.firstWindow();const errors:string[]=[];page.on('pageerror',error=>errors.push(error.message));await expect(page.locator('#launch-screen')).toHaveCount(0);
   await page.locator('header>label>select').selectOption('en');await openAssistant(page);
   const chat=page.locator('.learner-chat');await expect(chat.getByLabel('Question',{exact:true})).toBeVisible();await expect(page.locator('.online-help')).toHaveCount(0);
+  await expect(page.locator('.assistant-popover-title strong')).toContainText('Jexi');
+  await expect(chat.getByRole('heading',{name:'Hi, I’m Jexi!',exact:true})).toBeVisible();
+  await expect.poll(()=>chat.locator('.jexi-mascot-welcome img').evaluate((image:HTMLImageElement)=>image.complete&&image.naturalWidth>0)).toBe(true);
   await chat.getByLabel('Question',{exact:true}).fill('What does wait do?');await chat.getByRole('button',{name:'Request hint',exact:true}).click();await expect(chat.locator('.assistant-answer')).toHaveText('LOCAL GATEWAY FIXTURE 1');
+  await expect(chat.getByLabel('Question',{exact:true})).toHaveValue('');
+  await chat.getByLabel('Question',{exact:true}).fill('Draft before sending');await chat.getByLabel('Question',{exact:true}).press('Shift+Enter');
+  await expect(chat.getByLabel('Question',{exact:true})).toHaveValue('Draft before sending\n');expect(requests).toHaveLength(1);
   await chat.getByLabel('Question',{exact:true}).fill('Give another example');await chat.getByRole('button',{name:'Request hint',exact:true}).click();await expect(chat.locator('.assistant-answer')).toHaveText('LOCAL GATEWAY FIXTURE 2');
   expect(requests).toHaveLength(2);expect(requests[0]!.history).toEqual([]);expect(requests[1]!.history).toEqual([{role:'user',content:'What does wait do?'},{role:'assistant',content:'LOCAL GATEWAY FIXTURE 1'}]);expect(requests[1]!.context).toBe('');expect(requests[1]).not.toHaveProperty('model');
   await expect(chat.getByRole('log')).toContainText('What does wait do?');await expect(chat.getByRole('log')).toContainText('Give another example');
@@ -26,6 +32,10 @@ test('provisioned managed assistant opens immediately, retains dialogue and keep
   const savedConfiguration=await readFile(join(root,'assistant.json'),'utf8');const denied=await page.evaluate(()=>window.jective.assistantConfigure({enabled:true,endpoint:'https://api.openai.com/v1',model:'SHOULD_NOT_BE_USED',apiKey:'TEST_ONLY_REJECTED_PROVIDER_FIXTURE'}));expect(denied).toMatchObject({ok:false,error:{code:'AI_ADMIN_CONFIGURATION_REQUIRED'}});expect(await readFile(join(root,'assistant.json'),'utf8')).toBe(savedConfiguration);expect(requests).toHaveLength(2);
   expect(await readFile(join(root,'assistant.json'),'utf8')).not.toContain('t'.repeat(43));expect(await app.evaluate(()=>process.env.JECTIVE_ASSISTANT_TOKEN)).toBeUndefined();
   await chat.getByRole('button',{name:'New conversation',exact:true}).click();await expect(chat.getByRole('log')).not.toContainText('What does wait do?');
+  const mascot=chat.locator('.jexi-mascot-welcome');await expect(mascot).toHaveAttribute('data-active','true');
+  await page.getByRole('button',{name:'Minimize chat',exact:true}).click();await expect(mascot).toHaveAttribute('data-active','false');await openAssistant(page);await expect(mascot).toHaveAttribute('data-active','true');
+  await page.emulateMedia({reducedMotion:'reduce'});expect(await mascot.locator('img').evaluate(image=>getComputedStyle(image).animationName)).toBe('none');await page.emulateMedia({reducedMotion:'no-preference'});
+  await page.screenshot({path:'test-results/jexi-welcome.png',animations:'disabled'});
   await page.locator('header').getByRole('button',{name:'Help',exact:true}).click();await expect(page.locator('.assistant-setup')).toHaveCount(0);await expect(page.locator('.help-dialog input[type=password]')).toHaveCount(0);await page.keyboard.press('Escape');
   await page.setViewportSize({width:800,height:700});expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);await page.screenshot({path:'test-results/managed-chat-800.png',animations:'disabled'});expect(errors).toEqual([]);
  }finally{

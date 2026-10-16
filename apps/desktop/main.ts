@@ -1,4 +1,5 @@
 import {rendererRecovery} from './infrastructure/renderer-recovery';
+import {takeAssistantProvisioning,type AssistantProvisioning} from './infrastructure/assistant-provisioning';
 import {restoreWindowPlacement} from '../../packages/contracts/window-placement';
 import {readWindowPlacement,trackWindowPlacement} from './infrastructure/window-placement';
 import {controlWindow,windowState} from './infrastructure/window-controls';
@@ -19,7 +20,7 @@ import {join,resolve} from 'node:path';
 import {pathToFileURL} from 'node:url';
 import {PreferencesSchema,ProjectSchema,AssignmentSchema,SubmissionSchema,GradeSchema} from '../../packages/contracts';
 import {z} from 'zod';
-import {mkdir,readFile,writeFile,stat,rename,rm,realpath} from 'node:fs/promises';
+import {mkdir,writeFile,stat,rename,rm,realpath} from 'node:fs/promises';
 import {verifyProjectProfile} from '../../packages/profiles/binding';
 import {WorkspaceStore,inspectBackup,populateBackup} from '../../packages/persistence/workspace';
 import {encodeArchive,decodeArchive,csvCell} from '../../packages/persistence/archives';
@@ -28,21 +29,24 @@ import {ProfileRegistry} from '../../packages/profiles/registry';
 import {encodeProfile} from '../../packages/profiles/exchange';
 import {reviewProfileMigration} from '../../packages/profiles/migration';
 import {readProjectSnapshot,projectFileFingerprint,writeProject} from '../../packages/persistence';
+import {DocumentSession} from '../../packages/persistence/document-session';
+import {readBoundedFile} from '../../packages/persistence/bounded-file';
+import {MAX_PORTABLE_ARCHIVE} from '../../packages/persistence/portable-zip';
 import {ToolchainService} from '../../packages/toolchain';
-import {importBundle} from '../../packages/toolchain/bundle';
+import {importBundle,inspectBundleManifest} from '../../packages/toolchain/bundle';
 import {AssistantService} from '../../packages/assistant';
 import {trustedStudioDocument,studioAsset,containedPath} from './infrastructure/security';
 import {OperationLog,safeErrorCode} from './infrastructure/operation-log';
 protocol.registerSchemesAsPrivileged([{scheme:'jective',privileges:{standard:true,secure:true,supportFetchAPI:true,stream:true}}]);
-let win:BrowserWindow;let service:ToolchainService;let store:WorkspaceStore;let operationLog:OperationLog;const devices=new DeviceService();let currentPath:string|null=null;let revision:number|null=null;let buildBusy=false;let projectBusy=false;
+let pendingAssistantProvisioning:AssistantProvisioning|null=takeAssistantProvisioning(process.env);
+let win:BrowserWindow;let service:ToolchainService;let store:WorkspaceStore;let operationLog:OperationLog;const devices=new DeviceService();const documents=new DocumentSession();let buildBusy=false;let projectBusy=false;
 let activeOperations=0;let restoringWorkspace=false;
-let currentFingerprint:string|null=null;
-let documentEpoch=0;function clearCurrentDocument(){documentEpoch++;currentPath=null;revision=null;currentFingerprint=null;}
+function clearCurrentDocument(){documents.clear();}
 function currentLocale(){try{return store?.state().locale??'ru';}catch{return 'ru' as const;}}
 function brandedMessage(options:Electron.MessageBoxOptions){const locale=currentLocale();return {...options,message:nativeText(options.message,locale),buttons:options.buttons?.map(label=>nativeText(label,locale)),title:options.title?'JECTIVE — '+nativeText(options.title,locale):'JECTIVE Robotics Studio',icon:nativeImage.createFromPath(join(__dirname,'renderer','jective-icon.png')).resize({width:64,height:64})};}
 function resolveProject(value:unknown){const p=ProjectSchema.parse(value);const {profile,hash}=verifyProjectProfile(p);return {...p,profileVersion:profile.version,profileHash:hash};}
 async function chooseExport(extension:string,name:string,bytes:Uint8Array|string){const selected=await dialog.showSaveDialog(win,{defaultPath:name+'.'+extension,filters:[{name:extension,extensions:[extension]}]});if(selected.canceled||!selected.filePath)return false;await writeFile(selected.filePath,bytes);return true;}
-async function chooseArchive(){const selected=await dialog.showOpenDialog(win,{filters:[{name:'JECTIVE portable file',extensions:['jective']}],properties:['openFile']});if(selected.canceled||!selected.filePaths[0])return null;const path=selected.filePaths[0];if((await stat(path)).size>8*1024*1024)throw new Error('ARCHIVE_TOO_LARGE');return decodeArchive(await readFile(path));}
+async function chooseArchive(){const selected=await dialog.showOpenDialog(win,{filters:[{name:'JECTIVE portable file',extensions:['jective']}],properties:['openFile']});if(selected.canceled||!selected.filePaths[0])return null;const path=selected.filePaths[0];return decodeArchive(await readBoundedFile(path,{maxBytes:MAX_PORTABLE_ARCHIVE,tooLarge:'ARCHIVE_TOO_LARGE',invalid:'ARCHIVE_UNSAFE',changed:'ARCHIVE_CHANGED'}));}
 function handler(channel:string,fn:(value:unknown)=>Promise<unknown>){ipcMain.handle(channel,async(event,value:unknown)=>{
   if(event.sender!==win.webContents||event.senderFrame!==win.webContents.mainFrame||!trustedStudioDocument(event.senderFrame.url)){operationLog?.record(channel,'IPC_DENIED');throw new Error('IPC_DENIED');}
   try{
@@ -52,7 +56,7 @@ function handler(channel:string,fn:(value:unknown)=>Promise<unknown>){ipcMain.ha
    activeOperations++;
    try{return {ok:true,value:await fn(value)};}
    finally{activeOperations--;if(restore)restoringWorkspace=false;}
-  }catch(e){operationLog?.record(channel,safeErrorCode(e));const message=e instanceof Error?e.message:'UNKNOWN';return {ok:false,error:{code:message.split(':')[0]??'UNKNOWN',message}};}
+  }catch(e){operationLog?.record(channel,safeErrorCode(e));const message=e instanceof z.ZodError&&e.issues.some(issue=>issue.message==='PROJECT_WORKSPACE_UNSAFE')?'PROJECT_WORKSPACE_UNSAFE':e instanceof Error?e.message:'UNKNOWN';return {ok:false,error:{code:message.split(':')[0]??'UNKNOWN',message}};}
 });}
 app.commandLine.appendSwitch('autoplay-policy','no-user-gesture-required');
 if(process.env.JECTIVE_WORKSPACE_ROOT)app.setPath('userData',resolve(process.env.JECTIVE_WORKSPACE_ROOT));
@@ -63,11 +67,11 @@ if(primaryInstance)app.whenReady().then(async()=>{
   await mkdir(app.getPath('userData'),{recursive:true});operationLog=new OperationLog(join(app.getPath('userData'),'logs','operations.jsonl'));operationLog.record('application','STARTED');store=new WorkspaceStore(join(app.getPath('userData'),'workspace.sqlite'));
   const assistant=new AssistantService(join(app.getPath('userData'),'assistant.json'),true);
   // Provision only a revocable learner credential, never the provider key.
-  if(process.env.JECTIVE_ASSISTANT_SERVER&&process.env.JECTIVE_ASSISTANT_TOKEN){
-    try{await assistant.configure({enabled:true,endpoint:process.env.JECTIVE_ASSISTANT_SERVER,model:'jective-managed',apiKey:process.env.JECTIVE_ASSISTANT_TOKEN});}
+  const provisioning=pendingAssistantProvisioning;pendingAssistantProvisioning=null;
+  if(provisioning?.server&&provisioning.token){
+    try{await assistant.configure({enabled:true,endpoint:provisioning.server,model:'jective-managed',apiKey:provisioning.token});}
     catch{operationLog.record('assistant','PROVISION_FAILED');}
-    delete process.env.JECTIVE_ASSISTANT_TOKEN;
-  }
+  }else if(provisioning?.server||provisioning?.token)operationLog.record('assistant','PROVISION_INCOMPLETE');
   const profileRegistry=new ProfileRegistry(join(app.getPath('userData'),'board-profiles'));
   handler('learning:load',async value=>store.learning(value));
   handler('learning:save',async value=>store.saveLearning(value));
@@ -106,10 +110,20 @@ if(primaryInstance)app.whenReady().then(async()=>{
   win.webContents.on('render-process-gone',()=>{void recoverRenderer('PROCESS_GONE');});
   win.webContents.once('did-finish-load',()=>win.webContents.on('did-fail-load',(_event,errorCode,_description,_url,isMainFrame)=>{if(isMainFrame&&errorCode!==-3)void recoverRenderer('LOAD_FAILED');}));
   win.webContents.on('will-prevent-unload',event=>{const choice=dialog.showMessageBoxSync(win,brandedMessage({type:'question',buttons:['Keep editing','Discard unsaved changes and close'],defaultId:0,cancelId:0,title:'Unsaved project',message:'The project has unsaved changes.'}));if(choice===1)event.preventDefault();});
-  handler('toolchain:status',async()=>{const r=await service.run(['version']);if(r.code!==0)throw new Error('CLI_UNAVAILABLE: '+r.log);return r.log;});
-  handler('toolchain:import',async()=>{if(buildBusy)throw new Error('TOOLCHAIN_BUSY');const selected=await dialog.showOpenDialog(win,{title:'Choose an extracted JECTIVE offline toolchain bundle',properties:['openDirectory']});if(selected.canceled||!selected.filePaths[0])return false;buildBusy=true;try{await importBundle(selected.filePaths[0],service.root);await service.config();return true;}finally{buildBusy=false;}});
-  handler('project:open',async()=>{if(projectBusy)throw new Error('PROJECT_BUSY');projectBusy=true;try{const selected=await dialog.showOpenDialog(win,{filters:[{name:'JECTIVE project',extensions:['json']}],properties:['openFile']});if(selected.canceled)return null;const path=selected.filePaths[0];if(!path) return null;const snapshot=await readProjectSnapshot(path),p=snapshot.project;documentEpoch++;currentPath=path;revision=p.revision;currentFingerprint=snapshot.fingerprint;return p;}finally{projectBusy=false;}});
-  handler('project:save',async value=>{if(projectBusy)throw new Error('PROJECT_BUSY');projectBusy=true;try{const requestedEpoch=documentEpoch;const p=resolveProject(value);const storedBefore=JSON.stringify(store.project(p.id));let target=currentPath;let expected=revision,expectedFingerprint=currentFingerprint;if(!target){const selected=await dialog.showSaveDialog(win,{defaultPath:p.name+'.jective.json',filters:[{name:'JECTIVE project',extensions:['json']}]});if(selected.canceled||!selected.filePath)throw new Error('SAVE_CANCELLED');target=selected.filePath;expected=null;expectedFingerprint=null;}const saved=await writeProject(target,p,expected,expectedFingerprint);const stillCurrent=requestedEpoch===documentEpoch;if(stillCurrent){currentPath=target;revision=saved.revision;currentFingerprint=projectFileFingerprint(JSON.stringify(saved,null,2));}store.completedSave(saved,stillCurrent,JSON.stringify(store.project(p.id))===storedBefore);return saved;}finally{projectBusy=false;}});
+  handler('toolchain:status',async()=>{if(buildBusy)throw new Error('TOOLCHAIN_BUSY');const r=await service.run(['version']);if(r.code!==0)throw new Error('CLI_UNAVAILABLE: '+r.log);return r.log;});
+  handler('toolchain:import',async()=>{
+   if(buildBusy)throw new Error('TOOLCHAIN_BUSY');buildBusy=true;
+   try{
+    const selected=await dialog.showOpenDialog(win,{title:nativeText('Choose an extracted JECTIVE offline toolchain bundle',currentLocale()),properties:['openDirectory']});
+    if(selected.canceled||!selected.filePaths[0])return false;
+    const source=selected.filePaths[0],review=await inspectBundleManifest(source);
+    const confirmed=await dialog.showMessageBox(win,brandedMessage({type:'warning',buttons:['Cancel','Install reviewed tools'],defaultId:0,cancelId:0,message:'Install these build tools? They can execute programs when compiling. Only continue if your administrator verified their source. A matching hash is not a publisher signature.',detail:'SHA-256: '+review.sha256+'\n'+new Intl.NumberFormat(currentLocale()).format(review.files)+' / '+new Intl.NumberFormat(currentLocale()).format(review.bytes)+' B'}));
+    if(confirmed.response!==1)return false;
+    await importBundle(source,service.root,{expectedManifestHash:review.sha256});await service.config();return true;
+   }finally{buildBusy=false;}
+  });
+  handler('project:open',async()=>{if(projectBusy)throw new Error('PROJECT_BUSY');projectBusy=true;try{const selected=await dialog.showOpenDialog(win,{filters:[{name:'JECTIVE project',extensions:['json']}],properties:['openFile']});if(selected.canceled)return null;const path=selected.filePaths[0];if(!path) return null;const snapshot=await readProjectSnapshot(path),p=snapshot.project;return documents.prepare(p,{path,revision:p.revision,fingerprint:snapshot.fingerprint});}finally{projectBusy=false;}});
+  handler('project:save',async value=>{if(projectBusy)throw new Error('PROJECT_BUSY');projectBusy=true;try{const requestedEpoch=documents.version;const p=resolveProject(value);const storedBefore=JSON.stringify(store.project(p.id));const binding=documents.binding;let target=binding?.path??null;let expected=binding?.revision??null,expectedFingerprint=binding?.fingerprint??null;if(!target){const selected=await dialog.showSaveDialog(win,{defaultPath:p.name+'.jective.json',filters:[{name:'JECTIVE project',extensions:['json']}]});if(selected.canceled||!selected.filePath)throw new Error('SAVE_CANCELLED');target=selected.filePath;expected=null;expectedFingerprint=null;}const saved=await writeProject(target,p,expected,expectedFingerprint);const stillCurrent=documents.adoptSaved({path:target,revision:saved.revision,fingerprint:projectFileFingerprint(JSON.stringify(saved,null,2))},requestedEpoch);store.completedSave(saved,stillCurrent,JSON.stringify(store.project(p.id))===storedBefore);return saved;}finally{projectBusy=false;}});
   handler('build:compile',async value=>{if(buildBusy)throw new Error('TOOLCHAIN_BUSY');buildBusy=true;try{return await service.compile(resolveProject(value));}finally{buildBusy=false;}});
   handler('build:journalPage',async value=>{const request=z.object({operationId:z.uuid(),offset:z.number().int().min(0).max(64*1024*1024)}).strict().parse(value);return service.journalPage(request.operationId,request.offset);});
   handler('build:journalExport',async value=>{const id=z.uuid().parse(value);await service.journalPage(id,0);const selected=await dialog.showSaveDialog(win,{defaultPath:'jective-compiler-'+id+'.log',filters:[{name:'Log',extensions:['log']}]});if(selected.canceled||!selected.filePath)return false;await service.exportJournal(id,selected.filePath);return true;});
@@ -117,7 +131,7 @@ if(primaryInstance)app.whenReady().then(async()=>{
   handler('project:new',async()=>{clearCurrentDocument();return true;});
   handler('project:duplicate',async value=>{if(projectBusy)throw new Error('PROJECT_BUSY');projectBusy=true;try{const original=resolveProject(value),copy=createProjectCopy(original,crypto.randomUUID());store.duplicate(original,copy);clearCurrentDocument();return copy;}finally{projectBusy=false;}});
   handler('project:convertCopy',async value=>{if(projectBusy)throw new Error('PROJECT_BUSY');projectBusy=true;try{const original=resolveProject(value),copy=createCodeCopy(original,crypto.randomUUID());store.conversion(original,copy);clearCurrentDocument();return copy;}finally{projectBusy=false;}});
-  handler('workspace:project',async value=>store.project(z.uuid().parse(value)));handler('workspace:openProject',async value=>{const p=store.project(z.uuid().parse(value));if(p){clearCurrentDocument();}return p;});handler('workspace:delete',async value=>{const id=z.uuid().parse(value);const confirmed=await dialog.showMessageBox(win,brandedMessage({buttons:['Cancel','Delete local project and snapshots'],defaultId:0,cancelId:0,message:'Delete local recovery and snapshots for this project? Exported files are not removed.'}));if(confirmed.response!==1)return false;store.removeProject(id);return true;});handler('workspace:snapshots',async value=>store.snapshots(z.uuid().parse(value)));handler('workspace:snapshot',async value=>{const p=z.object({project:ProjectSchema,label:z.string().min(1).max(100)}).strict().parse(value);store.snapshot(resolveProject(p.project),p.label);return true;});handler('workspace:restoreSnapshot',async value=>{const p=store.restoreSnapshot(z.number().int().positive().parse(value));if(p){clearCurrentDocument();return {...p,id:crypto.randomUUID(),revision:0};}return null;});
+  handler('workspace:project',async value=>store.project(z.uuid().parse(value)));handler('workspace:openProject',async value=>{const p=store.project(z.uuid().parse(value));return p?documents.prepare(p,null):null;});handler('workspace:delete',async value=>{const id=z.uuid().parse(value);const confirmed=await dialog.showMessageBox(win,brandedMessage({buttons:['Cancel','Delete local project and snapshots'],defaultId:0,cancelId:0,message:'Delete local recovery and snapshots for this project? Exported files are not removed.'}));if(confirmed.response!==1)return false;store.removeProject(id);return true;});handler('workspace:snapshots',async value=>store.snapshots(z.uuid().parse(value)));handler('workspace:snapshot',async value=>{const p=z.object({project:ProjectSchema,label:z.string().min(1).max(100)}).strict().parse(value);store.snapshot(resolveProject(p.project),p.label);return true;});handler('workspace:restoreSnapshot',async value=>{const p=store.restoreSnapshot(z.number().int().positive().parse(value));if(p)return documents.prepare({...p,id:crypto.randomUUID(),revision:0},null);return null;});
   handler('workspace:activity',async()=>store.activity().days);
   handler('workspace:activityBaseline',async value=>{store.activityBaseline(resolveProject(value));return true;});
   handler('workspace:projects',async value=>store.listProjects(ProjectListRequestSchema.parse(value)));
@@ -127,7 +141,8 @@ if(primaryInstance)app.whenReady().then(async()=>{
   handler('learning:knowledge',async value=>{const assessment=assessKnowledge(value);if(assessment.result.passed)store.progress(assessment.lessonId,'knowledge-check-passed');return assessment.result;});
   handler('workspace:progress',async value=>{const p=z.object({lessonId:z.string().regex(/^L\d{2}$/),state:z.enum(['started','self-reported-complete','simulation-complete','teacher-reviewed'])}).strict().parse(value);store.reportProgress(p.lessonId,p.state);return true;});
   handler('project:export',async value=>{const p=resolveProject(value);return chooseExport('jective',p.name,encodeArchive('project',p));});
-  handler('project:import',async()=>{const archive=await chooseArchive();if(!archive)return null;if(archive.kind!=='project')throw new Error('ARCHIVE_KIND');clearCurrentDocument();store.autosave(archive.value);return archive.value;});
+  handler('project:import',async()=>{if(projectBusy)throw new Error('PROJECT_BUSY');projectBusy=true;try{const archive=await chooseArchive();if(!archive)return null;if(archive.kind!=='project')throw new Error('ARCHIVE_KIND');return documents.prepare(archive.value,null,true);}finally{projectBusy=false;}});
+  handler('project:acceptOpen',async value=>{return documents.accept(value,p=>store.autosave(resolveProject(p)));});
   handler('project:arduino',async value=>{const p=resolveProject(value);const selected=await dialog.showOpenDialog(win,{properties:['openDirectory','createDirectory']});if(selected.canceled||!selected.filePaths[0])return false;await exportArduinoProject(p,selected.filePaths[0]);return true;});
   handler('devices:list',async()=>devices.list());
   devices.subscribe(event=>{if(win&&!win.isDestroyed())win.webContents.send('serial:event',event);});

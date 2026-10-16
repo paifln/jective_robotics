@@ -1,0 +1,10 @@
+{
+  "status": "PASS",
+  "result": {
+    "files": 59753,
+    "bytes": 6875767932,
+    "previous": null
+  },
+  "elapsedMs": 104448,
+  "scope": "Real installed bundle manifest and every listed file; streaming verification only, no staging or target changes; no signature/authenticity, hardware or compile claim."
+}

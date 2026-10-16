@@ -1,0 +1,106 @@
+{
+  "startedAt": "2026-10-16T04:25:45.958Z",
+  "scope": "Immutable candidate Git export with no SDK; pinned dependencies shared by junction, not independent npm ci. Conservative GUI selection, not full UI, physical, installer or public-service qualification.",
+  "steps": [
+    {
+      "command": "npm run github:test",
+      "exitCode": 0,
+      "elapsedMs": 1504
+    },
+    {
+      "command": "npm run github:check",
+      "exitCode": 0,
+      "elapsedMs": 1887
+    },
+    {
+      "command": "npm run typecheck",
+      "exitCode": 0,
+      "elapsedMs": 14352
+    },
+    {
+      "command": "npm run lint",
+      "exitCode": 0,
+      "elapsedMs": 19919
+    },
+    {
+      "command": "npm run architecture:test",
+      "exitCode": 0,
+      "elapsedMs": 3352
+    },
+    {
+      "command": "npm run assistant:test",
+      "exitCode": 0,
+      "elapsedMs": 936
+    },
+    {
+      "command": "npm run audio:test",
+      "exitCode": 0,
+      "elapsedMs": 825
+    },
+    {
+      "command": "npm run security:audit",
+      "exitCode": 0,
+      "elapsedMs": 2274
+    },
+    {
+      "command": "npm run build -- --production",
+      "exitCode": 0,
+      "elapsedMs": 5803
+    },
+    {
+      "command": "npm run test:coverage",
+      "exitCode": 0,
+      "elapsedMs": 26243
+    },
+    {
+      "command": "npx playwright test --config .verification/security-playwright.config.ts tests/e2e/launch-motivation.spec.ts tests/e2e/managed-manual.spec.ts tests/e2e/desktop-shell.spec.ts tests/e2e/reading-keyboard-scale.spec.ts tests/e2e/portable-import-security.spec.ts tests/e2e/toolchain-import-review.spec.ts tests/e2e/project-read-binding.spec.ts tests/e2e/project-restart-storage.spec.ts tests/e2e/workspace-startup-recovery.spec.ts",
+      "exitCode": 0,
+      "elapsedMs": 74640
+    }
+  ],
+  "status": "PASS",
+  "selectedFiles": 9,
+  "excludedFiles": "Broad 129-file UI phase belongs to r2 snapshot",
+  "immutableInputs": {
+    "files": 1058,
+    "changed": []
+  },
+  "finishedAt": "2026-10-16T04:28:18.937Z",
+  "unit": {
+    "files": 201,
+    "total": 610,
+    "passed": 610
+  },
+  "coverage": {
+    "lines": {
+      "total": 2305,
+      "covered": 2299,
+      "skipped": 0,
+      "pct": 99.73
+    },
+    "statements": {
+      "total": 5471,
+      "covered": 5371,
+      "skipped": 0,
+      "pct": 98.17
+    },
+    "functions": {
+      "total": 1078,
+      "covered": 1063,
+      "skipped": 0,
+      "pct": 98.6
+    },
+    "branches": {
+      "total": 3844,
+      "covered": 3703,
+      "skipped": 0,
+      "pct": 96.33
+    },
+    "branchesTrue": {
+      "total": 0,
+      "covered": 0,
+      "skipped": 0,
+      "pct": 100
+    }
+  }
+}

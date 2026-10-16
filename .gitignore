@@ -127,3 +127,22 @@ Desktop.ini
 !/evidence/wip-indicator-wiring
 !/evidence/wip-profile-version-selection
 !/evidence/workspace-messages-20261013/studio-localization.json
+
+# Reviewed, compact 16 October verification records. Secrets, raw traces and
+# counterfactual stack dumps remain local; do not unignore this whole tree.
+!/evidence/security-hardening-20261016/source-r4.json
+!/evidence/security-hardening-20261016/source-r5.json
+!/evidence/security-hardening-20261016/source-r6.json
+!/evidence/security-hardening-20261016/defender-security-r3.json
+!/evidence/security-hardening-20261016/installed-bundle-stream.json
+!/evidence/security-hardening-20261016/local-container-checks.json
+!/evidence/security-hardening-20261016/windows-setup-wizard.json
+!/evidence/security-hardening-20261016/server-image-integrity.json
+!/evidence/security-hardening-20261016/railway-https.json
+!/evidence/security-hardening-20261016/container-ci-verifier.json
+!/evidence/package-snapshots/current-source-jexi-r2-20261016/ui-smoke.json
+!/evidence/jexi-20261016/defender.json
+!/evidence/package-snapshots/current-source-security-r3-20261016/package-verification.json
+!/evidence/package-snapshots/current-source-security-r3-20261016/ui-smoke.json
+!/evidence/package-snapshots/current-source-security-r3-20261016/hashes.json
+!/evidence/package-snapshots/current-source-security-r3-20261016/learner-security-r3-compiler-20261016-36ec3a6f/result.json

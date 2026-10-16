@@ -13,6 +13,8 @@ const settings=text(
 );
 const messages:Record<string,Copy>={
  AI_INVALID_LEARNER_TOKEN:settings,
+ AI_CREDENTIAL_CONTEXT_CHANGED:settings,
+ AI_CREDENTIAL_REPROVISION_REQUIRED:text('Ask your teacher to renew this app’s assistant access after the security update. Local lessons and hints still work.','После обновления безопасности попроси учителя заново подключить помощника на этом компьютере. Локальные уроки и подсказки продолжают работать.','Қауіпсіздік жаңартуынан кейін мұғалімнен осы компьютердегі көмекшіні қайта қосуды сұра. Жергілікті сабақтар мен кеңестер жұмыс істейді.'),
  AI_MANAGED_CONFIGURATION_REQUIRED:settings,
  AI_ACCESS_UNAVAILABLE:text('Your assistant access has expired or is unavailable. Ask your teacher to restore it. The offline reference still works.','Доступ к помощнику истёк или недоступен. Попроси учителя восстановить его. Справка без интернета продолжает работать.','Көмекшіге қолжетімділік мерзімі аяқталған немесе қолжетімсіз. Мұғалімнен қалпына келтіруді сұра. Желісіз анықтама жұмыс істейді.'),
  AI_SERVICE_UNAVAILABLE:text('The assistant service is unavailable. Try later or ask your teacher to check the connection.','Сервис помощника недоступен. Попробуй позже или попроси учителя проверить подключение.','Көмекші қызметі қолжетімсіз. Кейінірек көр немесе мұғалімнен қосылымды тексеруді сұра.'),

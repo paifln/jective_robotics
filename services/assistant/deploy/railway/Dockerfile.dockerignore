@@ -1,0 +1,8 @@
+**
+!services/
+!services/assistant/
+!services/assistant/*.mjs
+!services/assistant/deploy/
+!services/assistant/deploy/railway/
+!services/assistant/deploy/railway/Dockerfile
+!services/assistant/deploy/railway/start.mjs

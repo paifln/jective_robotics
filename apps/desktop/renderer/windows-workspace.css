@@ -1,5 +1,7 @@
 /* Windows workspace: compact chrome, stable commands, colourful functional accents. */
 :root{--titlebar-height:36px;--commandbar-height:52px;--chrome-height:88px}
+.operation-notice{position:fixed;z-index:1500;top:calc(var(--chrome-height) + 12px);right:16px;width:min(480px,calc(100vw - 110px));max-height:calc(100dvh - var(--chrome-height) - 32px);overflow:auto;display:grid;grid-template-columns:24px minmax(0,1fr) 30px;align-items:start;gap:10px;padding:14px;border:1px solid var(--line);border-left:3px solid #c47b19;border-radius:8px;background:var(--surface);color:var(--ink);box-shadow:0 8px 24px #0002}
+.operation-notice-icon{display:grid;place-items:center;width:23px;height:23px;border-radius:50%;background:#fff0d2;color:#825300;font-weight:800}.operation-notice strong{font-size:14px}.operation-notice p{margin:6px 0 0;font-size:13px;line-height:1.5;white-space:pre-line;overflow-wrap:anywhere}.operation-notice>.icon-button{min-width:28px;min-height:28px;padding:0}
 body[data-theme=light]{--page:#f3f5fa;--surface:#fff;--field:#edf1f8;--line:#dfe5ef;--ink:#20283a;--muted:#5c687d;--accent:#294fc5;--chrome:#eaf0fa}
 body[data-theme=dark]{--page:#181d29;--surface:#202737;--field:#293347;--line:#3a475f;--ink:#edf3ff;--muted:#b2bfd5;--accent:#b5caff;--chrome:#1c2434}
 html,body,#root{height:100%;min-height:0}
@@ -89,6 +91,53 @@ body[data-theme] .studio-toolbar .action-button:nth-child(3):not(:disabled){colo
  body[data-theme] main>header{padding-inline:12px;gap:8px}
 }
 @media(prefers-reduced-motion:reduce){.assistant-popover{animation:none}}
+
+/* Jexi messenger: local raster character, quiet chrome and a clear composer. */
+.jexi-mascot{display:inline-flex;position:relative;flex:none;align-items:center;justify-content:center;width:44px;height:44px;overflow:visible}
+.jexi-mascot img{display:block;width:100%;height:100%;object-fit:contain;transform-origin:50% 90%;filter:drop-shadow(0 3px 3px #17365b20);animation:jexi-breathe 4.8s ease-in-out infinite;animation-play-state:paused;user-select:none;pointer-events:none}
+.jexi-mascot[data-active=true] img{animation-play-state:running}
+.jexi-mascot-small{overflow:hidden;border-radius:12px;background:#e7f0ff}
+.jexi-mascot-small img{position:absolute;top:0;left:-25%;width:150%;height:auto;max-width:none;transform-origin:50% 40%}
+.jexi-mascot-welcome{width:130px;height:150px;margin:0 auto 12px}
+.assistant-launcher{width:56px;height:56px;border-radius:18px;background:#e6efff!important;border-color:#adcbff;box-shadow:0 5px 20px #16345b25!important;padding:3px}
+.assistant-launcher:hover{background:#d6e7ff!important}
+.assistant-launcher .jexi-mascot{width:50px;height:50px}
+.assistant-popover{width:min(440px,calc(100vw - 32px));border-radius:18px;box-shadow:0 16px 55px #10274630;bottom:88px}
+.assistant-popover-title{padding:12px 16px;background:var(--surface);gap:12px}
+.assistant-popover-title strong{font-size:17px;letter-spacing:-.02em}
+.assistant-popover-title small{font-size:11px;line-height:1.4}
+.jexi-status-dot{display:inline-block;width:6px;height:6px;border-radius:50%;background:#377cfa;vertical-align:middle;margin-left:4px}
+.assistant-popover .learner-chat.feature{padding:0 14px 10px!important;background:var(--surface)}
+.assistant-popover .chat-heading{margin:0;padding:3px 0 0;min-height:24px}
+.assistant-popover .chat-heading button{display:grid;place-items:center;width:28px;height:28px;background:transparent;border:0;color:var(--muted);font-size:0;padding:0}
+.assistant-popover .chat-heading button:after{content:'+';font-size:22px;font-weight:400;line-height:1}
+.assistant-popover .chat-transcript{padding:12px 2px 16px;gap:12px}
+.assistant-popover .chat-welcome{display:grid;grid-template-columns:76px minmax(0,1fr);align-items:center;column-gap:12px;padding:6px 0;max-width:100%;text-align:left}
+.assistant-popover .jexi-mascot-welcome{grid-row:1/3;width:76px;height:90px;margin:0}
+.assistant-popover .chat-welcome h3{font-size:17px;margin:0 0 4px}
+.chat-welcome h3{font-size:20px;letter-spacing:-.025em;color:var(--ink);margin:0 0 7px}
+.assistant-popover .chat-welcome p{font-size:13px;line-height:1.65}
+.assistant-popover .chat-welcome .jexi-mascot img{width:100%;height:100%;margin:0}
+.chat-message-user{background:#2368e8!important;color:#fff;border-color:transparent;border-radius:17px 17px 4px 17px}
+.chat-message-user small{color:#e0ecff}
+.chat-message-assistant{width:auto;max-width:94%;background:var(--field);border-color:transparent;border-radius:17px 17px 17px 4px}
+.assistant-popover .chat-message{padding:10px 13px;font-size:13px}
+.chat-message-assistant small{color:var(--accent)}
+.chat-message pre,.chat-message p{line-height:1.6;margin-top:5px}
+.chat-waiting{align-items:center;color:var(--muted);font-size:11px;gap:5px}
+.chat-waiting span{margin-right:5px}
+.assistant-popover .chat-composer{border-top:1px solid var(--line);padding-top:10px;max-height:48%;gap:5px 8px}
+.assistant-popover .chat-composer>label:has(textarea){font-size:0;gap:0}
+.assistant-popover .chat-composer textarea{background:var(--field);border:1px solid var(--line);min-height:46px;height:46px;border-radius:14px;padding:11px 12px;font-size:13px;line-height:1.5}
+.assistant-popover .chat-composer>.chat-send,.assistant-popover .chat-composer>.chat-cancel{background:#2368e8!important;border-radius:12px;width:40px;height:40px;margin-bottom:3px}
+.assistant-popover .chat-composer>.note{font-size:10px;line-height:1.4;color:var(--muted);margin:0}
+.assistant-popover .chat-composer>label:not(:has(textarea)){font-size:11px;margin:0}
+.assistant-popover .chat-review{margin-top:4px;font-size:11px}
+@keyframes jexi-breathe{0%,100%{transform:translateY(0) rotate(-2deg)}45%{transform:translateY(-5px) rotate(2deg)}65%{transform:translateY(-3px) rotate(0)}}
+@media(max-width:800px){.assistant-popover{bottom:144px}.jexi-mascot-welcome{width:104px;height:120px}}
+@media(max-height:650px){.jexi-mascot-welcome{width:66px;height:76px;margin-bottom:6px}.chat-welcome h3{font-size:17px}.assistant-popover .chat-welcome{padding:4px}}
+@media(prefers-reduced-motion:reduce){.jexi-mascot img{animation:none}}
+body[data-reading-still=true] .jexi-mascot img{animation:none}
 
 .notification-center{position:relative;display:flex;align-items:center;flex:none}
 .notification-bell{position:relative;display:grid;place-items:center;width:32px;height:32px;border:0;background:transparent!important;color:var(--ink)}

@@ -1,0 +1,116 @@
+{
+  "startedAt": "2026-10-16T04:47:38.766Z",
+  "scope": "Actual unchanged production EXE and isolated profile; temporary loopback Chrome diagnostics, no main inspector, no handler overrides, two local gateway fixture requests, no live provider/toolchain/hardware requests.",
+  "status": "PASS",
+  "pageUrl": "jective://studio/index.html",
+  "launchMotivation": {
+    "text": "Каждая внимательная проверка делает твою идею надёжнее.",
+    "author": "JECTIVE",
+    "offline": true
+  },
+  "windowChrome": {
+    "maximize": true,
+    "restore": true,
+    "closeControl": true
+  },
+  "readingControls": {
+    "iconOnly": true,
+    "optionSizePx": 24,
+    "recordedAudioDecoded": true,
+    "pause": true,
+    "settingsEscapeDismissed": true
+  },
+  "lessonVisuals": {
+    "genericIllustrationRemoved": true,
+    "adcInteractive": true,
+    "adcAtMaximum": 4095
+  },
+  "assistant": {
+    "provisioned": true,
+    "credentialEncrypted": true,
+    "studentConfigurationDenied": true,
+    "immediateChat": true,
+    "localGatewayRequests": 2,
+    "liveProvider": "NOT RUN"
+  },
+  "chatLayout": [
+    {
+      "width": 1200,
+      "height": 800,
+      "pageHeight": 800,
+      "pageWidth": 1200,
+      "composerBottom": 619.21875,
+      "logHeight": 171,
+      "logScrollHeight": 2529
+    },
+    {
+      "width": 800,
+      "height": 700,
+      "pageHeight": 700,
+      "pageWidth": 800,
+      "composerBottom": 495.625,
+      "logHeight": 90,
+      "logScrollHeight": 2529
+    }
+  ],
+  "sceneControls": {
+    "startY": 1.4,
+    "linePreserved": true,
+    "jsonEditorAbsent": true
+  },
+  "localizedNames": [
+    "ru",
+    "kk"
+  ],
+  "blocklyNavigation": {
+    "width": 800,
+    "height": 700,
+    "locales": [
+      "en",
+      "ru",
+      "kk"
+    ],
+    "ordinaryPointerClicks": true
+  },
+  "codeZoom": {
+    "keyboard": true,
+    "reset": true,
+    "sourceUnchanged": true
+  },
+  "managedManual": {
+    "locales": [
+      "en",
+      "ru",
+      "kk"
+    ],
+    "serverKeyBoundary": true,
+    "conversationHistoryExplained": true,
+    "legacyKeyFormAbsent": true,
+    "eightTopics": true
+  },
+  "compilerJournalPrivacy": {
+    "locales": [
+      "en",
+      "ru",
+      "kk"
+    ],
+    "sourceAndPathsExplained": true
+  },
+  "projectBrowser": {
+    "seeded": 55,
+    "pageSize": 50,
+    "olderProjectSearch": true,
+    "olderProjectRead": true
+  },
+  "pageErrors": [],
+  "rendererHttpRequests": [],
+  "after": {
+    "exe": "ef47808eb62110e5f52bcb70ff621113824973a5890877b82c2d6f735fa19ca7",
+    "asar": "5b42d8b095feb569a71472b8667ba8e133253d8c6f75b9be5e67fff7e00b2630"
+  },
+  "before": {
+    "exe": "ef47808eb62110e5f52bcb70ff621113824973a5890877b82c2d6f735fa19ca7",
+    "asar": "5b42d8b095feb569a71472b8667ba8e133253d8c6f75b9be5e67fff7e00b2630"
+  },
+  "finishedAt": "2026-10-16T04:47:48.579Z"
+}

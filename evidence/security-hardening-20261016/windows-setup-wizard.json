@@ -1,0 +1,8 @@
+﻿{
+    "scope":  "Actual Windows PowerShell wizard with explicit fake key; owner-only ACLs and current-user DPAPI round trip",
+    "connectApp":  "Metadata return, installer and insecure endpoint rejection, environment restoration checked; application launch not executed",
+    "provider":  "No real credentials or paid requests",
+    "publicDeployment":  "NOT RUN",
+    "status":  "PASS",
+    "checkedAt":  "2026-10-16T05:14:56.6507918Z"
+}

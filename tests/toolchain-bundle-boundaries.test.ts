@@ -37,7 +37,7 @@ it('case-duplicate manifest entries and directories masquerading as files cannot
  try{
   await mkdir(join(source,'data/packages/esp32/hardware/esp32/3.3.12'),{recursive:true});await writeFile(join(source,corePath),payload);await mkdir(target);await writeFile(join(target,'sentinel'),'existing');
   await writeFile(join(source,'jective-toolchain-manifest.json'),JSON.stringify({...manifest,files:[file,{...file,path:corePath.toUpperCase().replace('DATA/','data/') }]}));await expect(importBundle(source,target)).rejects.toThrow('TOOLCHAIN_PATH_UNSAFE');
-  await writeFile(join(source,'jective-toolchain-manifest.json'),JSON.stringify({...manifest,files:[{...file,path:'data/packages'}]}));await expect(importBundle(source,target)).rejects.toThrow('TOOLCHAIN_HASH_MISMATCH');expect(await readFile(join(target,'sentinel'),'utf8')).toBe('existing');expect(await readdir(root)).toEqual(['source','target']);
+  await writeFile(join(source,'jective-toolchain-manifest.json'),JSON.stringify({...manifest,files:[file,{...file,path:'data/packages'}]}));await expect(importBundle(source,target)).rejects.toThrow('TOOLCHAIN_HASH_MISMATCH');expect(await readFile(join(target,'sentinel'),'utf8')).toBe('existing');expect(await readdir(root)).toEqual(['source','target']);
  }finally{await rm(root,{recursive:true,force:true});}
 });
 it('a directory junction escaping the selected source is rejected before installing its content',async()=>{

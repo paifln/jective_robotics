@@ -1,0 +1,68 @@
+{
+  "startedAt": "2026-10-16T05:46:20.587Z",
+  "scope": "Local Linux Docker, synthetic credentials, disabled container networking. Not Railway, HTTPS or provider verification.",
+  "status": "PASS",
+  "checks": [
+    {
+      "name": "Actual production CMD, health, authentication and private non-root storage",
+      "status": "PASS",
+      "identity": {
+        "uid": 1000,
+        "gid": 1000,
+        "mode": 384,
+        "identity": [
+          "Uid:\t1000\t1000\t1000\t1000",
+          "Gid:\t1000\t1000\t1000\t1000",
+          "Groups:\t ",
+          "CapEff:\t0000000000000000"
+        ]
+      }
+    },
+    {
+      "name": "Explicit local provider fixture and durable quota across actual restart",
+      "status": "PASS"
+    }
+  ],
+  "image": "sha256:83bcfa3261c4cf3724f4d26134a42929bb82db3e031b98f86cbd88c33d3d7ee9",
+  "applicationFiles": {
+    "services/assistant/credentials.mjs": "0493dab3c4fed2ab0d9ae421fc098779851ca788ca08599e46310c6cb8e4901e",
+    "services/assistant/deploy/railway/start.mjs": "ffdd582d479ddf0507c3da6dcc920a40e5db6ad5b4170011aea1d38fac5cc683",
+    "services/assistant/policy.mjs": "ed09e4c95b790cef43b433096e34476e961fc0e16324b4940dfb3896d1c38379",
+    "services/assistant/private-file.mjs": "d7065da8627b9172fb685e089656da0e00576cba5daf34a6502eab202e42b403",
+    "services/assistant/provider.mjs": "6cd33a99a25fe925191b6dd7445ac11962375bff43cd7bdc2281af287ff54d6e",
+    "services/assistant/provision.mjs": "be3466f3b7ad897702633dfbd5314ea45fcaf57a7713e14216d1a56a5ad84ca7",
+    "services/assistant/quota-store.mjs": "fb205e737aa306144701eed321440de25cbe98cbafa46184aa58ee8a037c77cf",
+    "services/assistant/request-body.mjs": "792e6e9fd751f605ca04b8bf8f346dde649501619be3ad1b786264ae709fe5e4",
+    "services/assistant/runtime.mjs": "165cf9064f0d72535744fbad60dac376505211aaf4590bad27c492018a272e85",
+    "services/assistant/secret-store.mjs": "5cceb96c0b67905d3a10c96ae5eaa25adf607a68747e91ebb2694240fec9377e",
+    "services/assistant/server.mjs": "1b395534d5529d0c27316f1ec9c28c86f562791cb8fb13dabc8696836c88b594",
+    "services/assistant/setup-local.mjs": "5528e5cbe5554e40736a3edbde5d590be33ce62cfabdf940260110d7912e14b0"
+  },
+  "cleanup": [
+    {
+      "resource": "container",
+      "exitCode": 0
+    },
+    {
+      "resource": "container",
+      "exitCode": 0
+    },
+    {
+      "resource": "volume",
+      "exitCode": 0
+    },
+    {
+      "resource": "volume",
+      "exitCode": 0
+    },
+    {
+      "resource": "image",
+      "exitCode": 0
+    },
+    {
+      "resource": "temporary directory",
+      "exitCode": 0
+    }
+  ],
+  "finishedAt": "2026-10-16T05:46:27.216Z"
+}

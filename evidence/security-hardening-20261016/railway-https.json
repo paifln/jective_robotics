@@ -1,0 +1,65 @@
+{
+  "startedAt": "2026-10-16T05:44:47.741Z",
+  "origin": "https://jective-assistant-production.up.railway.app",
+  "scope": "Public HTTPS boundary only. No real token, provider call, model, balance, cloud process identity or durable quota verification.",
+  "status": "PASS",
+  "checks": [
+    {
+      "name": "health",
+      "status": 200,
+      "cacheControl": "no-store",
+      "contentType": "application/json",
+      "nosniff": "nosniff",
+      "crossOriginAccess": null
+    },
+    {
+      "name": "missing credential",
+      "status": 401,
+      "cacheControl": "no-store",
+      "contentType": "application/json",
+      "nosniff": "nosniff",
+      "crossOriginAccess": null
+    },
+    {
+      "name": "invalid credential",
+      "status": 401,
+      "cacheControl": "no-store",
+      "contentType": "application/json",
+      "nosniff": "nosniff",
+      "crossOriginAccess": null
+    },
+    {
+      "name": "cross-origin chat",
+      "status": 404,
+      "cacheControl": "no-store",
+      "contentType": "application/json",
+      "nosniff": "nosniff",
+      "crossOriginAccess": null
+    },
+    {
+      "name": "cross-origin health",
+      "status": 404,
+      "cacheControl": "no-store",
+      "contentType": "application/json",
+      "nosniff": "nosniff",
+      "crossOriginAccess": null
+    },
+    {
+      "name": "unsupported method",
+      "status": 404,
+      "cacheControl": "no-store",
+      "contentType": "application/json",
+      "nosniff": "nosniff",
+      "crossOriginAccess": null
+    },
+    {
+      "name": "unknown route",
+      "status": 404,
+      "cacheControl": "no-store",
+      "contentType": "application/json",
+      "nosniff": "nosniff",
+      "crossOriginAccess": null
+    }
+  ],
+  "finishedAt": "2026-10-16T05:44:49.705Z"
+}

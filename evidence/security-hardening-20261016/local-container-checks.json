@@ -1,0 +1,145 @@
+{
+  "scope": "Local Docker Linux; disabled networking and fake provider data. No external deployment.",
+  "runs": [
+    {
+      "startedAt": "2026-10-16T04:56:35.266Z",
+      "scope": "Local Docker Linux image; network disabled; explicit fake provider key and local fixture upstream only. Not Railway, HTTPS or real OpenAI verification.",
+      "steps": [
+        {
+          "name": "Unauthenticated request",
+          "status": 401
+        },
+        {
+          "name": "Authenticated local upstream fixture",
+          "status": 200
+        },
+        {
+          "name": "Quota after actual container restart",
+          "status": 429
+        }
+      ],
+      "status": "PASS",
+      "image": "sha256:be44e341389b359148ae35e97076aa0efcfe26d77e9f4b0870dc72f33198755f",
+      "identity": "Uid:\t1000\t1000\t1000\t1000\nGid:\t1000\t1000\t1000\t1000\nGroups:\t \nCapEff:\t0000000000000000",
+      "cleanupContainer": 0,
+      "cleanupVolume": 0,
+      "finishedAt": "2026-10-16T04:56:38.041Z"
+    },
+    {
+      "startedAt": "2026-10-16T04:51:46.614Z",
+      "scope": "Local Docker Linux image; network disabled; explicit fake provider key and local fixture upstream only. Not Railway, HTTPS or real OpenAI verification.",
+      "steps": [
+        {
+          "name": "Unauthenticated request",
+          "status": 401
+        },
+        {
+          "name": "Authenticated local upstream fixture",
+          "status": 200
+        },
+        {
+          "name": "Quota after actual container restart",
+          "status": 429
+        }
+      ],
+      "status": "PASS",
+      "image": "sha256:3d84a232b1bef01b399a69310d7e1ee1f62750812a05f50b322048da73a7b37f",
+      "identity": "Uid:\t1000\t1000\t1000\t1000\nGid:\t1000\t1000\t1000\t1000\nGroups:",
+      "cleanupContainer": 0,
+      "cleanupVolume": 0,
+      "finishedAt": "2026-10-16T04:51:50.378Z"
+    },
+    {
+      "startedAt": "2026-10-16T04:48:41.231Z",
+      "scope": "Local Docker Linux image; network disabled; explicit fake provider key and local fixture upstream only. Not Railway, HTTPS or real OpenAI verification.",
+      "steps": [
+        {
+          "name": "Unauthenticated request",
+          "status": 401
+        },
+        {
+          "name": "Authenticated local upstream fixture",
+          "status": 200
+        },
+        {
+          "name": "Quota after actual container restart",
+          "status": 429
+        }
+      ],
+      "status": "PASS",
+      "image": "sha256:207f1650df47b7f715599d9e76a63e1e3492bce4fca86dddef15825220f43e7c",
+      "identity": "Uid:\t1000\t1000\t1000\t1000\nGid:\t1000\t1000\t1000\t1000\nGroups:",
+      "cleanupContainer": 0,
+      "cleanupVolume": 0,
+      "finishedAt": "2026-10-16T04:48:44.676Z"
+    },
+    {
+      "startedAt": "2026-10-16T04:51:51.085Z",
+      "scope": "Actual default Docker CMD with network disabled; health and invalid authentication only; fake provider data. No real upstream or Railway deployment.",
+      "status": "PASS",
+      "image": "sha256:3d84a232b1bef01b399a69310d7e1ee1f62750812a05f50b322048da73a7b37f",
+      "health": 200,
+      "storageAndIdentity": {
+        "unauthorized": 401,
+        "uid": 1000,
+        "gid": 1000,
+        "mode": 384,
+        "process": [
+          "Uid:\t1000\t1000\t1000\t1000",
+          "Gid:\t1000\t1000\t1000\t1000",
+          "Groups:\t "
+        ]
+      },
+      "logs": "JECTIVE assistant listening behind managed HTTPS ingress\n",
+      "cleanupContainer": 0,
+      "cleanupVolume": 0,
+      "finishedAt": "2026-10-16T04:51:53.261Z"
+    },
+    {
+      "startedAt": "2026-10-16T04:56:35.300Z",
+      "scope": "Actual default Docker CMD with network disabled; health and invalid authentication only; fake provider data. No real upstream or Railway deployment.",
+      "status": "PASS",
+      "image": "sha256:be44e341389b359148ae35e97076aa0efcfe26d77e9f4b0870dc72f33198755f",
+      "health": 200,
+      "storageAndIdentity": {
+        "unauthorized": 401,
+        "uid": 1000,
+        "gid": 1000,
+        "mode": 384,
+        "process": [
+          "Uid:\t1000\t1000\t1000\t1000",
+          "Gid:\t1000\t1000\t1000\t1000",
+          "Groups:\t ",
+          "CapEff:\t0000000000000000"
+        ]
+      },
+      "logs": "JECTIVE assistant listening behind managed HTTPS ingress\n",
+      "cleanupContainer": 0,
+      "cleanupVolume": 0,
+      "finishedAt": "2026-10-16T04:56:36.891Z"
+    },
+    {
+      "startedAt": "2026-10-16T04:54:21.161Z",
+      "scope": "Actual default Docker CMD with network disabled; health and invalid authentication only; fake provider data. No real upstream or Railway deployment.",
+      "status": "PASS",
+      "image": "sha256:3d84a232b1bef01b399a69310d7e1ee1f62750812a05f50b322048da73a7b37f",
+      "health": 200,
+      "storageAndIdentity": {
+        "unauthorized": 401,
+        "uid": 1000,
+        "gid": 1000,
+        "mode": 384,
+        "process": [
+          "Uid:\t1000\t1000\t1000\t1000",
+          "Gid:\t1000\t1000\t1000\t1000",
+          "Groups:\t ",
+          "CapEff:\t0000000000000000"
+        ]
+      },
+      "logs": "JECTIVE assistant listening behind managed HTTPS ingress\n",
+      "cleanupContainer": 0,
+      "cleanupVolume": 0,
+      "finishedAt": "2026-10-16T04:54:22.488Z"
+    }
+  ]
+}
