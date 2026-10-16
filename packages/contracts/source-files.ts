@@ -1,6 +1,9 @@
 import {z} from 'zod';
 /** Flat portable names avoid traversal, Windows devices and case-only collisions. */
-export const SourceFileNameSchema=z.string().regex(/^[A-Za-z][A-Za-z0-9_-]{0,63}\.(?:h|hpp|cpp)$/).refine(name=>! /^(?:con|prn|aux|nul|com[1-9]|lpt[1-9])\./i.test(name),'RESERVED_FILE_NAME');
+export const SourceFileNameSchema=z.string().regex(/^[A-Za-z][A-Za-z0-9_-]{0,63}\.(?:h|hpp|cpp)$/).refine(name=>! /^(?:con|prn|aux|nul|com[1-9]|lpt[1-9])\./i.test(name),'RESERVED_FILE_NAME')
+ // ESP32 copies this sketch file into a compiler @response file. It is not an
+ // ordinary C++ header: importing it would allow project-controlled build flags.
+ .refine(name=>name.toLowerCase()!=='build_opt.h','RESERVED_BUILD_CONTROL_FILE');
 export const SourceFilesSchema=z.record(SourceFileNameSchema,z.string().max(100000)).refine(files=>Object.keys(files).length<=15,'SOURCE_FILE_COUNT').refine(files=>new Set(Object.keys(files).map(name=>name.toLowerCase())).size===Object.keys(files).length,'SOURCE_FILE_CASE_COLLISION');
 export type SourceFiles=z.infer<typeof SourceFilesSchema>;
 export interface ProjectSources {source:string;sourceFiles?:SourceFiles}

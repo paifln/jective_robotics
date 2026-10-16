@@ -1,0 +1,85 @@
+{
+  "checkedAt": "2026-10-16T19:06:37.956Z",
+  "status": "PASS",
+  "snapshot": "current-source-evening-r3-20261016",
+  "sha256": {
+    "exe": "aab6ac51422c050689a715dfd93a8354ee57ac3520ddac80ae7cf02ef73b670f",
+    "asar": "d02b507ece525735fbc2328a88ef8a9ddeb9ba33752da00edd6711b43ba388de"
+  },
+  "stats": {
+    "startTime": "2026-10-16T18:49:38.588Z",
+    "duration": 715438.066,
+    "expected": 1,
+    "skipped": 0,
+    "unexpected": 0,
+    "flaky": 0
+  },
+  "scope": "Actual UI and pinned compiler with an isolated profile. No upload, serial port opening, provider request or installer.",
+  "builds": [
+    {
+      "state": "succeeded",
+      "operationId": "b928366c-c610-40e8-936a-d2654426e04f",
+      "elapsedMs": 415074,
+      "artifacts": [
+        "boot_app0.bin",
+        "sketch.ino.bin",
+        "sketch.ino.bootloader.bin",
+        "sketch.ino.elf",
+        "sketch.ino.merged.bin",
+        "sketch.ino.partitions.bin"
+      ],
+      "progressSamples": [
+        "Files checked: 1 · 0 MiB · 0 s",
+        "Files checked: 264 · 41.7 MiB · 0 s",
+        "Files checked: 506 · 42.9 MiB · 1 s",
+        "Files checked: 728 · 43.9 MiB · 1 s",
+        "Files checked: 890 · 44.8 MiB · 2 s",
+        "Files checked: 1,092 · 45.8 MiB · 2 s",
+        "Files checked: 1,297 · 47.1 MiB · 3 s",
+        "Files checked: 1,533 · 48.1 MiB · 3 s",
+        "Files checked: 1,695 · 101.1 MiB · 4 s",
+        "Files checked: 1,883 · 105.2 MiB · 4 s",
+        "Files checked: 2,058 · 108.3 MiB · 5 s",
+        "Files checked: 2,191 · 111.8 MiB · 5 s",
+        "Files checked: 2,201 · 139.9 MiB · 6 s",
+        "Files checked: 2,214 · 160.2 MiB · 6 s",
+        "Files checked: 2,269 · 203.1 MiB · 7 s",
+        "Files checked: 2,342 · 248.6 MiB · 7 s",
+        "Files checked: 2,448 · 297.3 MiB · 8 s",
+        "Files checked: 2,622 · 484.3 MiB · 8 s",
+        "Files checked: 2,792 · 488.2 MiB · 9 s",
+        "Files checked: 2,928 · 490.2 MiB · 9 s"
+      ]
+    },
+    {
+      "state": "failed",
+      "operationId": "9b1dc90a-9359-4053-b4a4-9c0cfa2e894a",
+      "elapsedMs": 283752,
+      "artifacts": [],
+      "progressSamples": [
+        "Files checked: 1 · 0 MiB · 0 s",
+        "Files checked: 165 · 40.8 MiB · 0 s",
+        "Files checked: 378 · 42.3 MiB · 1 s",
+        "Files checked: 711 · 43.9 MiB · 2 s",
+        "Files checked: 827 · 44.5 MiB · 2 s",
+        "Files checked: 996 · 45.5 MiB · 3 s",
+        "Files checked: 1,185 · 46.2 MiB · 3 s",
+        "Files checked: 1,370 · 47.2 MiB · 4 s",
+        "Files checked: 1,571 · 48.4 MiB · 4 s",
+        "Files checked: 1,683 · 100.7 MiB · 5 s",
+        "Files checked: 1,803 · 104.9 MiB · 5 s",
+        "Files checked: 1,956 · 105.7 MiB · 6 s",
+        "Files checked: 2,114 · 109.2 MiB · 6 s",
+        "Files checked: 2,191 · 111.8 MiB · 7 s",
+        "Files checked: 2,202 · 142 MiB · 7 s",
+        "Files checked: 2,214 · 160.2 MiB · 8 s",
+        "Files checked: 2,226 · 197.4 MiB · 8 s",
+        "Files checked: 2,342 · 248.6 MiB · 9 s",
+        "Files checked: 2,467 · 297.4 MiB · 9 s",
+        "Files checked: 2,670 · 485.5 MiB · 10 s"
+      ]
+    }
+  ],
+  "recovery": true,
+  "limitations": "This package predates the later reserved build_opt.h protection. Artifact names/state and real UI progress were checked here; the stronger independent artifact-byte checks are in the later R4 run."
+}

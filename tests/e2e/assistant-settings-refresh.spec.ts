@@ -27,6 +27,7 @@ test('online assistant disables requests after settings validation fails and rec
   await app.evaluate(()=>{(globalThis as typeof globalThis&{settingsInvalid:boolean}).settingsInvalid=false;});
   await page.evaluate(()=>window.dispatchEvent(new Event('assistant-settings-changed')));await expect(request).toBeEnabled();
   await request.click();await expect(chat.locator('.assistant-answer')).toHaveText('TEST ONLY ANSWER');
+  await expect(chat.getByLabel('Question',{exact:true})).toHaveValue('');await chat.getByLabel('Question',{exact:true}).fill('A new draft after the successful answer');
   await expect(chat.getByRole('status').last()).toContainText('Check the suggestion before use');
   await page.evaluate(()=>window.dispatchEvent(new Event('focus')));await expect(request).toBeEnabled();
   await expect(chat.getByRole('status').last()).toContainText('Check the suggestion before use');

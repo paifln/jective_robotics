@@ -1,0 +1,66 @@
+{
+  "checkedAt": "2026-10-16T19:50:06.992Z",
+  "status": "PASS",
+  "scope": "Current source/dist five additional software UI cases after the final runtime changes. Isolated profiles; mocked assistant/device/build handlers; no physical upload or paid model request.",
+  "stats": {
+    "startTime": "2026-10-16T19:47:20.645Z",
+    "duration": 27800.758,
+    "expected": 5,
+    "skipped": 0,
+    "unexpected": 0,
+    "flaky": 0
+  },
+  "cases": [
+    {
+      "title": "assistant file review respects consent, source snapshots and project identity without live AI or device commands",
+      "status": "expected",
+      "results": [
+        {
+          "status": "passed",
+          "durationMs": 9515
+        }
+      ]
+    },
+    {
+      "title": "validated build stages are localized and foreign or malformed events cannot replace the current log",
+      "status": "expected",
+      "results": [
+        {
+          "status": "passed",
+          "durationMs": 4494
+        }
+      ]
+    },
+    {
+      "title": "compiler journal preview pages, keyboard navigation, localized labels and export request",
+      "status": "expected",
+      "results": [
+        {
+          "status": "passed",
+          "durationMs": 3830
+        }
+      ]
+    },
+    {
+      "title": "desktop surfaces remain usable in both themes and compact windows",
+      "status": "expected",
+      "results": [
+        {
+          "status": "passed",
+          "durationMs": 4910
+        }
+      ]
+    },
+    {
+      "title": "invalid port replies are explained safely, stale selections clear and USB controls remain retryable",
+      "status": "expected",
+      "results": [
+        {
+          "status": "passed",
+          "durationMs": 3400
+        }
+      ]
+    }
+  ],
+  "priorHistory": "additional-ui.json preserves the earlier startup failure and retry history."
+}

@@ -12,7 +12,25 @@ import {createProjectCopy} from '../packages/contracts/project-copy';
 import {WorkspaceStore,inspectBackup,populateBackup} from '../packages/persistence/workspace';
 import {encodeArchive,decodeArchive} from '../packages/persistence/archives';
 import {exportArduinoProject} from '../packages/persistence/arduino-export';
+import {zipSync,strToU8} from 'fflate';
 const project=():Project=>({schemaVersion:1,id:randomUUID(),name:'Multiple source fixture',profileId:'esp32-devkit-reference',mode:'code',source:'#include "behavior.h"\nvoid setup(){}\nvoid loop(){step();}\n',sourceFiles:{'behavior.h':'#pragma once\nvoid step();\n','behavior.cpp':'#include "behavior.h"\nvoid step(){}\n'},workspace:{},revision:0});
+it('rejects ESP32 compiler response files at project, archive, export and persistence boundaries',async()=>{
+ const root=await mkdtemp(join(tmpdir(),'jective-build-control-')),store=new WorkspaceStore(join(root,'workspace.sqlite'));
+ try{
+  for(const name of ['build_opt.h','BUILD_OPT.h','Build_Opt.h']){
+   const p={...project(),sourceFiles:{[name]:'-DJECTIVE_UNTRUSTED_PROJECT_FLAG'}};
+   expect(()=>ProjectSchema.parse(p)).toThrow('RESERVED_BUILD_CONTROL_FILE');
+   expect(()=>sourceEntries(p)).toThrow('RESERVED_BUILD_CONTROL_FILE');
+   expect(()=>encodeArchive('project',p)).toThrow('RESERVED_BUILD_CONTROL_FILE');
+   const forged=zipSync({'manifest.json':strToU8(JSON.stringify({format:'jective',version:1,kind:'project'})),'content.json':strToU8(JSON.stringify(p))});
+   expect(()=>decodeArchive(forged)).toThrow('RESERVED_BUILD_CONTROL_FILE');
+   expect(()=>store.autosave(p)).toThrow('RESERVED_BUILD_CONTROL_FILE');
+   await expect(exportArduinoProject(p,root)).rejects.toThrow('RESERVED_BUILD_CONTROL_FILE');
+   expect(store.project(p.id)).toBeNull();
+  }
+  expect(ProjectSchema.parse({...project(),sourceFiles:{'build_options.h':'#pragma once'}}).sourceFiles).toBeDefined();
+ }finally{store.close();await rm(root,{recursive:true,force:true});}
+});
 it('accepts legacy projects but rejects traversal, Windows devices and case collisions',()=>{
  const p=project();expect(ProjectSchema.parse(p)).toEqual(p);const legacy={...p};delete legacy.sourceFiles;expect(ProjectSchema.parse(legacy)).toEqual(legacy);
  for(const name of ['../escape.cpp','dir/a.h','dir\\a.h','C:a.cpp','a.cpp:stream','con.h','AUX.cpp','COM1.h','lpt9.hpp','a.ino','.h','a.h ','a.H','a..h'])expect(()=>ProjectSchema.parse({...p,sourceFiles:{[name]:''}}),name).toThrow();

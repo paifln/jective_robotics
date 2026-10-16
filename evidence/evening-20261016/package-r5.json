@@ -1,0 +1,181 @@
+{
+  "snapshot": "current-source-evening-r5-20261017",
+  "checkedAt": "2026-10-16T19:40:24.348Z",
+  "scope": "Isolated Windows_NT 10.0.26300 packaged startup, duplicate instance and intentional ASAR tamper; no physical upload; no installer installation",
+  "host": {
+    "os": "Windows_NT",
+    "release": "10.0.26300",
+    "node": "v24.21.0"
+  },
+  "packagedAssets": 278,
+  "fuses": {
+    "0": 48,
+    "1": 49,
+    "2": 48,
+    "3": 48,
+    "4": 49,
+    "5": 49,
+    "6": 48,
+    "7": 48,
+    "8": 49,
+    "version": "1"
+  },
+  "startup": {
+    "rendererInitialized": true,
+    "elapsedMs": 2963
+  },
+  "singleInstance": {
+    "secondExitCode": 0,
+    "firstStillRunning": true
+  },
+  "tamper": {
+    "exitCode": 1,
+    "signalCode": null,
+    "integrityDiagnostic": "\r\nASAR Integrity Violation: got a hash mismatch (ecf9aa89c21ac31333c0b99ed87113ceec80492b32f087a1963fe6a9a8ec3a55 vs 2e205924b22b26bff6ad00201c7bc8b57c9beaebd43bfa777e6e6e790fd69d28)\n",
+    "mutation": "One whitespace byte in packed main.cjs; integrity header unchanged"
+  },
+  "archiveRestored": true,
+  "sha256": {
+    "exe": "dc005ef6ec1d46032675d80da1e9dc5a2a712691eacf2209e31ee456a831a41d",
+    "asar": "d7ccd9c931f72f7b224d2b28f5ca13100b7d2728552f415f6adbd17a52836ec1"
+  },
+  "ui": {
+    "startedAt": "2026-10-16T19:21:18.863Z",
+    "scope": "Actual unchanged Jexi production EXE and isolated profile; startup timing/animation excluded; temporary loopback Chrome diagnostics, no main inspector, no handler overrides, two local gateway fixture requests, no live provider/toolchain/hardware requests.",
+    "status": "PASS",
+    "pageUrl": "jective://studio/index.html",
+    "windowChrome": {
+      "maximize": true,
+      "restore": true,
+      "closeControl": true
+    },
+    "readingControls": {
+      "iconOnly": true,
+      "optionSizePx": 24,
+      "recordedAudioDecoded": true,
+      "pause": true,
+      "settingsEscapeDismissed": true
+    },
+    "lessonVisuals": {
+      "genericIllustrationRemoved": true,
+      "adcInteractive": true,
+      "adcAtMaximum": 4095
+    },
+    "jexi": {
+      "name": true,
+      "packagedRasterDecoded": true
+    },
+    "assistant": {
+      "provisioned": true,
+      "credentialEncrypted": true,
+      "studentConfigurationDenied": true,
+      "immediateChat": true,
+      "localGatewayRequests": 2,
+      "liveProvider": "NOT RUN"
+    },
+    "chatLayout": [
+      {
+        "width": 1200,
+        "height": 800,
+        "pageHeight": 800,
+        "pageWidth": 1200,
+        "composerBottom": 618.671875,
+        "logHeight": 232,
+        "logScrollHeight": 2389
+      },
+      {
+        "width": 800,
+        "height": 700,
+        "pageHeight": 700,
+        "pageWidth": 800,
+        "composerBottom": 462.671875,
+        "logHeight": 92,
+        "logScrollHeight": 2389
+      }
+    ],
+    "sceneControls": {
+      "startY": 1.4,
+      "linePreserved": true,
+      "jsonEditorAbsent": true
+    },
+    "localizedNames": [
+      "ru",
+      "kk"
+    ],
+    "blocklyNavigation": {
+      "width": 800,
+      "height": 700,
+      "locales": [
+        "en",
+        "ru",
+        "kk"
+      ],
+      "ordinaryPointerClicks": true
+    },
+    "codeZoom": {
+      "keyboard": true,
+      "reset": true,
+      "sourceUnchanged": true
+    },
+    "managedManual": {
+      "locales": [
+        "en",
+        "ru",
+        "kk"
+      ],
+      "serverKeyBoundary": true,
+      "conversationHistoryExplained": true,
+      "legacyKeyFormAbsent": true,
+      "eightTopics": true
+    },
+    "compilerJournalPrivacy": {
+      "locales": [
+        "en",
+        "ru",
+        "kk"
+      ],
+      "sourceAndPathsExplained": true
+    },
+    "projectBrowser": {
+      "seeded": 55,
+      "pageSize": 50,
+      "olderProjectSearch": true,
+      "olderProjectRead": true
+    },
+    "sourceFileSafety": {
+      "reservedNamesRejected": 3,
+      "ordinaryHeaderAdded": true
+    },
+    "pageErrors": [],
+    "rendererHttpRequests": [],
+    "after": {
+      "exe": "dc005ef6ec1d46032675d80da1e9dc5a2a712691eacf2209e31ee456a831a41d",
+      "asar": "d7ccd9c931f72f7b224d2b28f5ca13100b7d2728552f415f6adbd17a52836ec1"
+    },
+    "before": {
+      "exe": "dc005ef6ec1d46032675d80da1e9dc5a2a712691eacf2209e31ee456a831a41d",
+      "asar": "d7ccd9c931f72f7b224d2b28f5ca13100b7d2728552f415f6adbd17a52836ec1"
+    },
+    "finishedAt": "2026-10-16T19:21:33.982Z"
+  },
+  "finalHashCheck": {
+    "checkedAt": "2026-10-16T19:54:18.290Z",
+    "status": "PASS",
+    "scope": "Read-only final hash comparison of application, ASAR and unsigned Setup against the separately verified records; no launch or installation.",
+    "files": [
+      {
+        "file": "win-unpacked/JECTIVE Robotics Studio.exe",
+        "sha256": "dc005ef6ec1d46032675d80da1e9dc5a2a712691eacf2209e31ee456a831a41d"
+      },
+      {
+        "file": "win-unpacked/resources/app.asar",
+        "sha256": "d7ccd9c931f72f7b224d2b28f5ca13100b7d2728552f415f6adbd17a52836ec1"
+      },
+      {
+        "file": "JECTIVE Robotics Studio Setup 0.8.18.exe",
+        "sha256": "d5bb2012cd0f06f10af4a614cd1c928a64b49f2177ca41956d8258f89eeddd4d"
+      }
+    ]
+  },
+  "status": "PASS_WITH_STATED_SCOPE"
+}

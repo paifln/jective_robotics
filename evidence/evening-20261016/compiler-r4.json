@@ -1,0 +1,179 @@
+{
+  "scope": "Actual UI and pinned compiler with an isolated profile. No upload, serial port opening, provider request or installer.",
+  "builds": [
+    {
+      "state": "succeeded",
+      "operationId": "5dbb2307-3498-4700-b1ee-ca8d26bb1c27",
+      "elapsedMs": 417706,
+      "artifacts": [
+        "boot_app0.bin",
+        "sketch.ino.bin",
+        "sketch.ino.bootloader.bin",
+        "sketch.ino.elf",
+        "sketch.ino.merged.bin",
+        "sketch.ino.partitions.bin"
+      ],
+      "progressSamples": [
+        "Files checked: 150 · 40.8 MiB · 0 s",
+        "Files checked: 318 · 42 MiB · 1 s",
+        "Files checked: 471 · 42.7 MiB · 1 s",
+        "Files checked: 649 · 43.5 MiB · 2 s",
+        "Files checked: 819 · 44.5 MiB · 2 s",
+        "Files checked: 981 · 45.4 MiB · 3 s",
+        "Files checked: 1,170 · 46.1 MiB · 3 s",
+        "Files checked: 1,326 · 47.1 MiB · 4 s",
+        "Files checked: 1,528 · 48 MiB · 4 s",
+        "Files checked: 1,592 · 90.4 MiB · 5 s",
+        "Files checked: 1,659 · 100 MiB · 5 s",
+        "Files checked: 1,710 · 102.2 MiB · 6 s",
+        "Files checked: 1,742 · 103.6 MiB · 6 s",
+        "Files checked: 1,826 · 105.1 MiB · 7 s",
+        "Files checked: 1,865 · 105.2 MiB · 8 s",
+        "Files checked: 1,897 · 105.4 MiB · 8 s",
+        "Files checked: 1,914 · 105.5 MiB · 9 s",
+        "Files checked: 1,936 · 105.5 MiB · 9 s",
+        "Files checked: 1,969 · 105.8 MiB · 10 s",
+        "Files checked: 2,009 · 105.8 MiB · 10 s"
+      ],
+      "artifactBytes": 10170212,
+      "sourceVerified": true,
+      "environment": {
+        "sha256": "05d780d8394605ad310a76c978d1015bd0b80fcc80305f8c4d3852b23cfb5533",
+        "files": 59748,
+        "bytes": 6852176031
+      },
+      "stages": [
+        {
+          "stage": "toolchain",
+          "at": 1792177605959
+        },
+        {
+          "stage": "environment-before",
+          "at": 1792177609067
+        },
+        {
+          "stage": "compile",
+          "at": 1792177792540
+        },
+        {
+          "stage": "environment-after",
+          "at": 1792177857709
+        },
+        {
+          "stage": "artifacts",
+          "at": 1792178022953
+        }
+      ],
+      "boundaryIntervals": [
+        {
+          "stage": "toolchain",
+          "elapsedMs": 3108
+        },
+        {
+          "stage": "environment-before",
+          "elapsedMs": 183473
+        },
+        {
+          "stage": "compile",
+          "elapsedMs": 65169
+        },
+        {
+          "stage": "environment-after",
+          "elapsedMs": 165244
+        }
+      ]
+    },
+    {
+      "state": "failed",
+      "operationId": "2848b060-50b8-4714-aa58-7b3b996366c8",
+      "elapsedMs": 286892,
+      "artifacts": [],
+      "progressSamples": [
+        "Files checked: 1 · 0 MiB · 0 s",
+        "Files checked: 190 · 40.9 MiB · 0 s",
+        "Files checked: 361 · 42.2 MiB · 1 s",
+        "Files checked: 509 · 42.9 MiB · 1 s",
+        "Files checked: 654 · 43.5 MiB · 2 s",
+        "Files checked: 817 · 44.5 MiB · 2 s",
+        "Files checked: 1,211 · 46.2 MiB · 3 s",
+        "Files checked: 1,436 · 47.5 MiB · 4 s",
+        "Files checked: 1,653 · 100 MiB · 4 s",
+        "Files checked: 1,846 · 105.2 MiB · 5 s",
+        "Files checked: 2,058 · 108.3 MiB · 5 s",
+        "Files checked: 2,192 · 118.7 MiB · 6 s",
+        "Files checked: 2,204 · 143.7 MiB · 6 s",
+        "Files checked: 2,215 · 162.5 MiB · 7 s",
+        "Files checked: 2,237 · 199.6 MiB · 7 s",
+        "Files checked: 2,339 · 248.5 MiB · 8 s",
+        "Files checked: 2,467 · 297.4 MiB · 8 s",
+        "Files checked: 2,677 · 485.6 MiB · 9 s",
+        "Files checked: 2,894 · 490.1 MiB · 9 s",
+        "Files checked: 3,373 · 494.4 MiB · 10 s"
+      ],
+      "artifactBytes": 0,
+      "sourceVerified": true,
+      "environment": {
+        "sha256": "05d780d8394605ad310a76c978d1015bd0b80fcc80305f8c4d3852b23cfb5533",
+        "files": 59748,
+        "bytes": 6852176031
+      },
+      "stages": [
+        {
+          "stage": "toolchain",
+          "at": 1792178023785
+        },
+        {
+          "stage": "environment-before",
+          "at": 1792178026948
+        },
+        {
+          "stage": "compile",
+          "at": 1792178272461
+        },
+        {
+          "stage": "artifacts",
+          "at": 1792178310127
+        }
+      ],
+      "boundaryIntervals": [
+        {
+          "stage": "toolchain",
+          "elapsedMs": 3163
+        },
+        {
+          "stage": "environment-before",
+          "elapsedMs": 245513
+        },
+        {
+          "stage": "compile",
+          "elapsedMs": 37666
+        }
+      ]
+    }
+  ],
+  "recovery": true,
+  "status": "PASS",
+  "snapshot": "current-source-evening-r4-20261017",
+  "sha256": {
+    "exe": "b47854fe70ab79c765cac9ebfc4609f875c06eecc8d9bc9caa7bbbffe9af33c3",
+    "asar": "1440be7814a71cacd8928814c0ee9bfcb9230474642c35d8300f4972c1f5108a"
+  },
+  "stats": {
+    "startTime": "2026-10-16T19:06:39.612Z",
+    "duration": 718129.734,
+    "expected": 1,
+    "skipped": 0,
+    "unexpected": 0,
+    "flaky": 0
+  },
+  "host": {
+    "Caption": "Майкрософт Windows 11 Pro",
+    "Version": "10.0.26300",
+    "MemoryGiB": 15.3
+  },
+  "cpu": {
+    "Name": "AMD Ryzen 5 5600H with Radeon Graphics         ",
+    "NumberOfLogicalProcessors": 12
+  },
+  "limits": "Repeated SDK on one host with concurrent source GUI verification; not a cold-cache baseline or speed guarantee. No physical upload, serial opening, paid model call, Windows10 or installer execution."
+}

@@ -1,0 +1,17 @@
+{
+  "scannerSignature": "Valid",
+  "finishedAt": "2026-10-16T18:51:33.5223343Z",
+  "startedAt": "2026-10-16T18:50:34.4391605Z",
+  "output": "Custom scan completed: found no threats.",
+  "after": {
+    "JECTIVE Robotics Studio.exe": "aab6ac51422c050689a715dfd93a8354ee57ac3520ddac80ae7cf02ef73b670f",
+    "app.asar": "d02b507ece525735fbc2328a88ef8a9ddeb9ba33752da00edd6711b43ba388de"
+  },
+  "scope": "Microsoft Defender custom scan of evening r3 unpacked application only. No installer. Remediation disabled; no security settings changed.",
+  "before": {
+    "JECTIVE Robotics Studio.exe": "aab6ac51422c050689a715dfd93a8354ee57ac3520ddac80ae7cf02ef73b670f",
+    "app.asar": "d02b507ece525735fbc2328a88ef8a9ddeb9ba33752da00edd6711b43ba388de"
+  },
+  "exitCode": 0,
+  "status": "PASS_WITH_LIMITED_SCOPE"
+}

@@ -1,11 +1,76 @@
 import {it,expect,vi} from 'vitest';
 import {mkdtemp,mkdir,writeFile,readFile,lstat,readdir,rm,symlink,utimes} from 'node:fs/promises';
-import type {ReadStream} from 'node:fs';
+import {createReadStream,appendFileSync,truncateSync,type ReadStream} from 'node:fs';
 import {Readable} from 'node:stream';
 import {join} from 'node:path';
 import {tmpdir} from 'node:os';
 import {snapshotEnvironment,snapshotEnvironmentUsing} from '../packages/toolchain/environment';
+import {EnvironmentProgressSchema,type EnvironmentProgress} from '../packages/contracts/build-stage';
 import {prepareEnvironmentFixture} from './helpers/toolchain-environment';
+it('prefetches at most eight sibling stats and rejects a disappearing sibling',async()=>{
+ const root=await mkdtemp(join(tmpdir(),'jective-env-metadata-'));
+ try{
+  const cli=await prepareEnvironmentFixture(root),core=join(root,'data','packages','esp32','hardware','esp32','3.3.12');
+  for(let i=0;i<19;i++)await writeFile(join(core,`header-${i}.h`),'content');
+  const expected=await snapshotEnvironment(cli,root,'3.3.12');let active=0,peak=0;
+  const delayed=(async(path)=>{active++;peak=Math.max(peak,active);try{await new Promise(done=>setTimeout(done,2));return await lstat(path);}finally{active--;}}) as typeof lstat;
+  expect(await snapshotEnvironmentUsing(cli,root,'3.3.12',()=>false,{lstat:delayed,readdir,createReadStream})).toEqual(expected);
+  // Eight prefetched siblings and up to eight concurrent post-read checks.
+  expect(peak).toBeGreaterThan(1);expect(peak).toBeLessThanOrEqual(16);expect(active).toBe(0);
+  const missing=(async(path)=>{if(String(path)===join(core,'header-7.h'))throw Object.assign(new Error('MISSING_SIBLING'),{code:'ENOENT'});return lstat(path);}) as typeof lstat;
+  await expect(snapshotEnvironmentUsing(cli,root,'3.3.12',()=>false,{lstat:missing,readdir,createReadStream})).rejects.toThrow('MISSING_SIBLING');
+ }finally{await rm(root,{recursive:true,force:true});}
+});
+it('reports only completed content verification and keeps observer failures out of the digest',async()=>{
+ const root=await mkdtemp(join(tmpdir(),'jective-env-progress-'));
+ try{
+  const cli=await prepareEnvironmentFixture(root),progress:EnvironmentProgress[]=[];
+  const expected=await snapshotEnvironment(cli,root,'3.3.12');
+  expect(await snapshotEnvironment(cli,root,'3.3.12',()=>false,value=>{progress.push(value);})).toEqual(expected);
+  expect(progress.length).toBeGreaterThan(0);expect(progress.at(-1)).toMatchObject({files:expected.files,bytes:expected.bytes});
+  for(let i=0;i<progress.length;i++){expect(EnvironmentProgressSchema.safeParse(progress[i]).success).toBe(true);expect(Object.keys(progress[i]!).sort()).toEqual(['bytes','elapsedMs','files']);if(i){expect(progress[i]!.files).toBeGreaterThanOrEqual(progress[i-1]!.files);expect(progress[i]!.bytes).toBeGreaterThanOrEqual(progress[i-1]!.bytes);}}
+  expect(await snapshotEnvironment(cli,root,'3.3.12',()=>false,()=>{throw new Error('PRESENTATION_ONLY');})).toEqual(expected);
+ }finally{await rm(root,{recursive:true,force:true});}
+});
+it('bounds out-of-order metadata behind a slow file while preserving the complete digest',async()=>{
+ const root=await mkdtemp(join(tmpdir(),'jective-env-reorder-'));let release!:()=>void,pending:Promise<unknown>|undefined;
+ const gate=new Promise<void>(done=>{release=done;});let started=0;
+ try{
+  const cli=await prepareEnvironmentFixture(root),core=join(root,'data','packages','esp32','hardware','esp32','3.3.12'),names=Array.from({length:2200},(_,i)=>'virtual-'+i+'.h');
+  const small=await lstat(cli);small.size=1;
+  const virtual=(path:unknown)=>String(path).startsWith(join(core,'virtual-'));
+  const io=(blocked:boolean)=>({
+   lstat:(async(path)=>virtual(path)?small:lstat(path)) as typeof lstat,
+   readdir:(async(path)=>String(path)===core?['platform.txt',...names]:readdir(path)) as typeof readdir,
+   createReadStream:(path:Parameters<typeof createReadStream>[0])=>Readable.from((async function*(){started++;if(blocked&&String(path)===cli)await gate;yield virtual(path)?Buffer.from('x'):await readFile(path);})()) as ReadStream
+  });
+  const expected=await snapshotEnvironmentUsing(cli,root,'3.3.12',()=>false,io(false));started=0;
+  pending=snapshotEnvironmentUsing(cli,root,'3.3.12',()=>false,io(true));
+  await vi.waitFor(()=>expect(started).toBeGreaterThan(1000),{timeout:3000});await new Promise(done=>setTimeout(done,50));
+  expect(started).toBeLessThanOrEqual(1024);release();expect(await pending).toEqual(expected);expect(expected.files).toBe(2202);
+ }finally{release();await pending?.catch(()=>{});await rm(root,{recursive:true,force:true});}
+});
+it('small and empty files use bounded buffers without changing the full content digest',async()=>{
+ const root=await mkdtemp(join(tmpdir(),'jective-env-buffers-'));
+ try{
+  const cli=await prepareEnvironmentFixture(root),core=join(root,'data','packages','esp32','hardware','esp32','3.3.12');
+  await writeFile(join(core,'empty.h'),'');await writeFile(join(core,'large.a'),Buffer.alloc(1024*1024+7,65));
+  const legacy=await snapshotEnvironmentUsing(cli,root,'3.3.12',()=>false,{lstat,readdir,createReadStream:path=>createReadStream(path,{highWaterMark:256*1024})});
+  const options=new Map<string,unknown>();
+  const bounded=await snapshotEnvironmentUsing(cli,root,'3.3.12',()=>false,{lstat,readdir,createReadStream:(path,settings)=>{options.set(String(path),settings);return createReadStream(path,settings);}});
+  expect(bounded).toEqual(legacy);expect(bounded.files).toBe(4);
+  for(const [path,settings]of options){const {size}=await lstat(path);expect(settings).toEqual({highWaterMark:Math.max(1,Math.min(256*1024,size)),...(size>0?{start:0,end:size-1}:{})});}
+ }finally{await rm(root,{recursive:true,force:true});}
+});
+it('bounded reads still reject growth and truncation after the initial stat',async()=>{
+ const root=await mkdtemp(join(tmpdir(),'jective-env-size-change-'));
+ try{
+  const cli=await prepareEnvironmentFixture(root);
+  const changed=(mutate:()=>void)=>snapshotEnvironmentUsing(cli,root,'3.3.12',()=>false,{lstat,readdir,createReadStream:(path,options)=>{if(String(path)===cli)mutate();return createReadStream(path,options);}});
+  await expect(changed(()=>appendFileSync(cli,'unexpected growth'))).rejects.toThrow('ENVIRONMENT_CHANGED_DURING_READ');
+  await expect(changed(()=>truncateSync(cli,1))).rejects.toThrow('ENVIRONMENT_CHANGED_DURING_READ');
+ }finally{await rm(root,{recursive:true,force:true});}
+});
 it('a slow stream does not stall free hashing slots, while concurrency and digest stay bounded',async()=>{
  const root=await mkdtemp(join(tmpdir(),'jective-env-pool-'));let release!:()=>void,pending:Promise<unknown>|undefined;
  const gate=new Promise<void>(resolve=>{release=resolve;});let active=0,peak=0,started=0;

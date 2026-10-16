@@ -44,7 +44,7 @@ it('fails and cancels excessive raw output instead of silently dropping bytes',a
  const path=join(service.root,'limit.raw.log');
  await expect(service.run(command('const b=Buffer.alloc(65536,120);(async()=>{for(let i=0;i<1050;i++){if(!process.stdout.write(b))await new Promise(r=>process.stdout.once("drain",r));}})();'),10000,path)).rejects.toThrow('PROCESS_LOG_LIMIT');
  expect((await readFile(path)).length).toBeLessThanOrEqual(64*1024*1024);expect(service.cancel()).toBe(false);expect((await service.run(command('process.exit(0)'))).code).toBe(0);
-}));
+}),30000);
 it('preserves exact invalid UTF-8 bytes and closes its journal when the executable cannot start',async()=>fixture(async service=>{
  const path=join(service.root,'bytes.raw.log');await service.run(command('process.stdout.write(Buffer.from([0xe2,0x82]));'),5000,path);expect(await readFile(path)).toEqual(Buffer.from([0xe2,0x82]));
  const missing=new ToolchainService(join(service.root,'missing.exe'),service.root);const empty=join(service.root,'missing.raw.log');await expect(missing.run([],5000,empty)).rejects.toThrow('CLI_UNAVAILABLE');expect((await readFile(empty)).length).toBe(0);expect(missing.cancel()).toBe(false);

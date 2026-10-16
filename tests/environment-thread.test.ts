@@ -6,6 +6,7 @@ import {tmpdir} from 'node:os';
 import {snapshotEnvironmentInThread} from '../apps/desktop/infrastructure/environment-thread';
 import {snapshotEnvironment} from '../packages/toolchain/environment';
 import {prepareEnvironmentFixture} from './helpers/toolchain-environment';
+import type {EnvironmentProgress} from '../packages/contracts/build-stage';
 
 async function cleanup(root:string){if(!resolve(root).startsWith(resolve(tmpdir())+sep)||!basename(root).startsWith('jective-env-thread-'))throw new Error('UNSAFE_CLEANUP');await rm(root,{recursive:true,force:true});}
 it('real worker returns the same content snapshot and propagates missing-file failures',async()=>{
@@ -13,7 +14,8 @@ it('real worker returns the same content snapshot and propagates missing-file fa
  try{
   const worker=join(root,'worker.cjs');await build({entryPoints:['apps/desktop/environment.worker.ts'],outfile:worker,bundle:true,platform:'node',format:'cjs',external:['original-fs']});
   const cli=await prepareEnvironmentFixture(root),expected=await snapshotEnvironment(cli,root,'3.3.12');
-  expect(await snapshotEnvironmentInThread(cli,root,'3.3.12',()=>false,worker)).toEqual(expected);
+  const progress:EnvironmentProgress[]=[];expect(await snapshotEnvironmentInThread(cli,root,'3.3.12',()=>false,worker,300000,value=>{progress.push(value);if(value.files===1)throw new Error('DISPLAY_FAILED');})).toEqual(expected);
+  expect(progress.at(-1)).toMatchObject({files:expected.files,bytes:expected.bytes});
   await expect(snapshotEnvironmentInThread(join(root,'missing.exe'),root,'3.3.12',()=>false,worker)).rejects.toThrow('ENOENT');
  }finally{await cleanup(root);}
 });
@@ -22,6 +24,8 @@ it('rejects malformed replies, crashes, early exits and cancellation without ret
  try{
   const worker=join(root,'worker.cjs');
   await writeFile(worker,"require('node:worker_threads').parentPort.postMessage({ok:true,value:{sha256:'fake'}})");
+  await expect(snapshotEnvironmentInThread('fixture',root,'3.3.12',()=>false,worker)).rejects.toThrow('INVALID_REPLY');
+  await writeFile(worker,"require('node:worker_threads').parentPort.postMessage({type:'progress',value:{files:1,bytes:2,elapsedMs:3,path:'NOT_ALLOWED'}})");
   await expect(snapshotEnvironmentInThread('fixture',root,'3.3.12',()=>false,worker)).rejects.toThrow('INVALID_REPLY');
   await writeFile(worker,"throw new Error('FIXTURE_WORKER_CRASH')");
   await expect(snapshotEnvironmentInThread('fixture',root,'3.3.12',()=>false,worker)).rejects.toThrow('FIXTURE_WORKER_CRASH');

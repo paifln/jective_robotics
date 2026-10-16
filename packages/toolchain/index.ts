@@ -1,6 +1,6 @@
 import {snapshotEnvironment,EnvironmentSnapshotSchema} from './environment';
 import {spawn,type ChildProcess} from 'node:child_process';
-import {mkdir,writeFile,readdir,readFile} from 'node:fs/promises';
+import {mkdir,writeFile,readdir} from 'node:fs/promises';
 import {join} from 'node:path';
 import {createHash,randomUUID} from 'node:crypto';
 import {StringDecoder} from 'node:string_decoder';
@@ -11,12 +11,13 @@ import {verifyProjectProfile} from '../profiles/binding';
 import {ProjectSchema,type Project,type BuildResult} from '../contracts';
 import {sourceEntries,sortedSourceFiles} from '../contracts/source-files';
 import {verifySourceSnapshot} from './source-snapshot';
+import {readBuildManifest,snapshotBuildArtifacts} from './build-snapshot';
 import {z} from 'zod';
 import type {BuildStage,BuildStageEvent} from '../contracts/build-stage';
 export function buildSourceHash(project:Project){const hash=createHash('sha256').update(project.source).update(JSON.stringify(verifyProjectProfile(project).profile)).update(JSON.stringify(project.wiring??{}));const files=sortedSourceFiles(project.sourceFiles);if(files.length)hash.update('\0sourceFiles\0').update(JSON.stringify(files));return hash.digest('hex');}
 export class ToolchainService {
   private hashing=false;private hashInterrupted=false;
-  private async environment(coreVersion:string){this.hashing=true;this.hashInterrupted=false;try{return await this.snapshotter(this.executable,this.root,coreVersion,()=>this.hashInterrupted);}finally{this.hashing=false;}}
+  private async environment(coreVersion:string,projectId?:string,stage?:'environment-before'|'environment-after'){this.hashing=true;this.hashInterrupted=false;try{return await this.snapshotter(this.executable,this.root,coreVersion,()=>this.hashInterrupted,projectId&&stage?progress=>this.onStage({projectId,stage,progress}):undefined);}finally{this.hashing=false;}}
   private child:ChildProcess|null=null;
   private running=false;
   private interrupted=false;
@@ -59,14 +60,14 @@ export class ToolchainService {
     const cores=await this.run(['core','list','--json']);if(cores.code!==0)throw new Error('CORE_QUERY_FAILED: '+cores.log);
     const installed=z.object({platforms:z.array(z.object({id:z.string(),installed_version:z.string().optional()}))}).parse(JSON.parse(cores.stdout));
     const core=installed.platforms.find(p=>p.id===profile.core);if(!core?.installed_version)throw new Error('CORE_MISSING: run the approved toolchain setup procedure');if(core.installed_version!==profile.coreVersion)throw new Error('CORE_VERSION_MISMATCH: requires '+profile.coreVersion);
-    stage('environment-before');const environment=await this.environment(profile.coreVersion);
+    stage('environment-before');const environment=await this.environment(profile.coreVersion,project.id,'environment-before');
     const operationId=randomUUID();const sourceHash=buildSourceHash(project);
     const folder=join(this.root,'builds',operationId);const sketch=join(folder,'sketch');const output=join(folder,'output');
     await mkdir(sketch,{recursive:true});await mkdir(output);const sourceFileHashes:Record<string,string>={};for(const [name,text]of sourceEntries(project)){await writeFile(join(sketch,name),text,{flag:'wx'});sourceFileHashes[name]=createHash('sha256').update(text).digest('hex');}
     this.rememberJournal(operationId,join(folder,'compiler.raw.log'));
     stage('compile');const result=await this.run(['compile','--clean','--fqbn',profile.fqbn,'--build-path',output,sketch],180000,join(folder,'compiler.raw.log'));
     if(result.code===0){
-      stage('environment-after');const environmentAfter=await this.environment(profile.coreVersion);
+      stage('environment-after');const environmentAfter=await this.environment(profile.coreVersion,project.id,'environment-after');
       if(environmentAfter.sha256!==environment.sha256){
         // Preserve the failed integrity check for diagnosis without publishing any
         // upload candidate. The compiler's exit code alone is not build success.
@@ -78,15 +79,21 @@ export class ToolchainService {
     const artifacts=result.code===0?(await readdir(output)).filter(f=>f.endsWith('.bin')||f.endsWith('.elf')):[];
     const state:BuildResult['state']=result.interrupted||result.code===null?'interrupted':result.code===0&&artifacts.includes('sketch.ino.bin')&&artifacts.includes('sketch.ino.elf')?'succeeded':'failed';
     const manifest={operationId,state,sourceHash,artifacts,exitCode:result.code,log:result.log};
-    const hashes:Record<string,string>={};for(const f of artifacts)hashes[f]=createHash('sha256').update(await readFile(join(output,f))).digest('hex');
-    await writeFile(join(folder,'manifest.json'),JSON.stringify({...manifest,rawLogFile:'compiler.raw.log',profile,cliVersion:version.stdout.trim(),coreVersion:core.installed_version,fqbn:profile.fqbn,environment,sourceFileHashes,artifactHashes:hashes},null,2));if(state==='succeeded'){this.latestBuild.set(project.id,operationId);this.latestEnvironment.set(project.id,environment.sha256);}return manifest;
+    const {hashes,sizes}=await snapshotBuildArtifacts(output,artifacts);
+    await writeFile(join(folder,'manifest.json'),JSON.stringify({...manifest,rawLogFile:'compiler.raw.log',profile,cliVersion:version.stdout.trim(),coreVersion:core.installed_version,fqbn:profile.fqbn,environment,sourceFileHashes,artifactHashes:hashes,artifactSizes:sizes},null,2));if(state==='succeeded'){this.latestBuild.set(project.id,operationId);this.latestEnvironment.set(project.id,environment.sha256);}return manifest;
   }
   async upload(project:Project,operationId:string,port:string):Promise<BuildResult>{
    project=ProjectSchema.parse(project);
    if(project.mode==='blocks')indicatorPin(project);const profile=verifyProjectProfile(project).profile;if(profile.provisional)throw new Error('WIRING_UNASSIGNED');if(!/^COM[1-9]\d{0,3}$/i.test(port))throw new Error('PORT_INVALID');if(this.latestBuild.get(project.id)!==operationId)throw new Error('BUILD_STALE: compile this source successfully before upload');
-   const folder=join(this.root,'builds',z.uuid().parse(operationId));const manifest=z.object({state:z.literal('succeeded'),sourceHash:z.string().regex(/^[a-f0-9]{64}$/),artifacts:z.array(z.string()).refine(files=>new Set(files).size===files.length&&files.includes('sketch.ino.bin')&&files.includes('sketch.ino.elf'),'BUILD_ARTIFACTS_INCOMPLETE'),artifactHashes:z.record(z.string(),z.string().regex(/^[a-f0-9]{64}$/))}).parse(JSON.parse(await readFile(join(folder,'manifest.json'),'utf8')));if(manifest.sourceHash!==buildSourceHash(project))throw new Error('BUILD_STALE');for(const file of manifest.artifacts){if(!/^[a-zA-Z0-9_.-]+$/.test(file)||createHash('sha256').update(await readFile(join(folder,'output',file))).digest('hex')!==manifest.artifactHashes[file])throw new Error('ARTIFACT_CHANGED');}
-   await verifySourceSnapshot(folder,project);
-   const environment=EnvironmentSnapshotSchema.parse(JSON.parse(await readFile(join(folder,'manifest.json'),'utf8')).environment);if(environment.sha256!==this.latestEnvironment.get(project.id)||(await this.environment(profile.coreVersion)).sha256!==environment.sha256)throw new Error('BUILD_ENVIRONMENT_CHANGED');
+   const folder=join(this.root,'builds',z.uuid().parse(operationId)),document=await readBuildManifest(folder);
+   const manifest=z.object({state:z.literal('succeeded'),sourceHash:z.string().regex(/^[a-f0-9]{64}$/),artifacts:z.array(z.string()).max(256).refine(files=>new Set(files).size===files.length&&files.includes('sketch.ino.bin')&&files.includes('sketch.ino.elf'),'BUILD_ARTIFACTS_INCOMPLETE'),artifactHashes:z.record(z.string(),z.string().regex(/^[a-f0-9]{64}$/)),environment:EnvironmentSnapshotSchema}).parse(document);
+   if(manifest.sourceHash!==buildSourceHash(project))throw new Error('BUILD_STALE');
+   // The full SDK scan can take minutes. Validate it before the final reads of
+   // the files the uploader will use, so mutations during that scan are caught.
+   const environment=manifest.environment;if(environment.sha256!==this.latestEnvironment.get(project.id)||(await this.environment(profile.coreVersion)).sha256!==environment.sha256)throw new Error('BUILD_ENVIRONMENT_CHANGED');
+   const current=await snapshotBuildArtifacts(join(folder,'output'),manifest.artifacts);
+   for(const file of manifest.artifacts)if(current.hashes[file]!==manifest.artifactHashes[file])throw new Error('ARTIFACT_CHANGED');
+   await verifySourceSnapshot(folder,project,document);
    const uploadId=randomUUID();this.rememberJournal(uploadId,join(folder,'upload-'+uploadId+'.raw.log'));const result=await this.run(['upload','--fqbn',profile.fqbn,'--port',port,'--input-dir',join(folder,'output'),join(folder,'sketch')],180000,join(folder,'upload-'+uploadId+'.raw.log'));const value:BuildResult={operationId:uploadId,sourceHash:manifest.sourceHash,state:result.interrupted||result.code===null?'interrupted':result.code===0?'succeeded':'failed',exitCode:result.code,log:result.log,artifacts:[]};await writeFile(join(folder,'upload-'+value.operationId+'.json'),JSON.stringify({...value,rawLogFile:'upload-'+uploadId+'.raw.log',port,handshake:'NOT RUN',physical:'NOT RUN'},null,2));return value;
   }
 }

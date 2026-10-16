@@ -1,0 +1,19 @@
+{
+  "scannerSignature": "Valid",
+  "finishedAt": "2026-10-16T19:07:08.4358093Z",
+  "startedAt": "2026-10-16T19:05:59.4928344Z",
+  "output": "Custom scan of unpacked application and NSIS installer completed: found no threats.",
+  "after": {
+    "app.asar": "1440be7814a71cacd8928814c0ee9bfcb9230474642c35d8300f4972c1f5108a",
+    "JECTIVE Robotics Studio.exe": "b47854fe70ab79c765cac9ebfc4609f875c06eecc8d9bc9caa7bbbffe9af33c3",
+    "JECTIVE Robotics Studio Setup 0.8.18.exe": "d1c2a0c104547f1dfcf05aef692dd2060fa0637c828967bb8e8601c75b84a7bc"
+  },
+  "scope": "Microsoft Defender custom scan of evening r4 unpacked application and NSIS installer. No installation performed. Remediation disabled; no security settings changed.",
+  "before": {
+    "app.asar": "1440be7814a71cacd8928814c0ee9bfcb9230474642c35d8300f4972c1f5108a",
+    "JECTIVE Robotics Studio.exe": "b47854fe70ab79c765cac9ebfc4609f875c06eecc8d9bc9caa7bbbffe9af33c3",
+    "JECTIVE Robotics Studio Setup 0.8.18.exe": "d1c2a0c104547f1dfcf05aef692dd2060fa0637c828967bb8e8601c75b84a7bc"
+  },
+  "exitCode": 0,
+  "status": "PASS_WITH_LIMITED_SCOPE"
+}

@@ -17,8 +17,13 @@ test('validated build stages are localized and foreign or malformed events canno
    await page.locator('main>header>label>select').selectOption(locale);await emit({projectId:id,stage:'environment-before'});await expect(log).toContainText(expected);
   }
   const original=await log.textContent();await emit({projectId:randomUUID(),stage:'compile'});await expect(log).toHaveText(original!);await emit({projectId:id,stage:'succeeded'});await expect(log).toHaveText(original!);
+  await page.locator('main>header>label>select').selectOption('en');
+  await emit({projectId:id,stage:'environment-before',progress:{files:123,bytes:5*1024**2,elapsedMs:1500}});
+  const progress=page.locator('.build-integrity-progress');await expect(progress).toContainText('Files checked: 123');await expect(progress).toHaveAttribute('aria-live','off');
+  const phase=await log.textContent();await emit({projectId:id,stage:'environment-before',progress:{files:124,bytes:6*1024**2,elapsedMs:2000}});await expect(progress).toContainText('124');await expect(log).toHaveText(phase!);
+  const count=await progress.textContent();for(const event of [{projectId:id,stage:'environment-before',progress:{files:-1,bytes:0,elapsedMs:0}},{projectId:id,stage:'compile',progress:{files:1,bytes:1,elapsedMs:1}},{projectId:randomUUID(),stage:'environment-before',progress:{files:999,bytes:0,elapsedMs:0}}]){await emit(event);await expect(progress).toHaveText(count!);}
   await page.locator('main>header>label>select').selectOption('en');await emit({projectId:id,stage:'environment-after'});await expect(log).toContainText('Checking that toolchain files stayed unchanged');
-  await emit({projectId:id,stage:'artifacts'});await expect(log).toContainText('Checking the build result');await expect(log).not.toContainText('State: succeeded');
+  await emit({projectId:id,stage:'artifacts'});await expect(log).toContainText('Checking the build result');await expect(log).not.toContainText('State: succeeded');await expect(progress).toBeHidden();
   // Explicit error-response fixture, not actual compiler or hardware acceptance.
   await app.evaluate(({ipcMain})=>{ipcMain.removeHandler('build:compile');ipcMain.handle('build:compile',()=>({ok:false,error:{code:'BUILD_ENVIRONMENT_CHANGED',message:'BUILD_ENVIRONMENT_CHANGED'}}));});
   for(const [locale,expected,command] of [['en','Upload is blocked','Compile — check code for the board'],['ru','Загрузка на плату заблокирована','Компилировать — проверить код для платы'],['kk','Тақшаға жүктеу бұғатталды','Компиляция — тақша кодын тексеру']] as const){

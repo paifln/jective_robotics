@@ -126,6 +126,7 @@ body[data-theme] :is(button,input,select,textarea,summary,a):focus-visible{outli
 .results-toggle{display:grid;place-items:center;width:30px;height:30px;padding:4px;border:0;border-radius:5px;background:transparent!important;color:var(--muted)}
 .results-toggle:hover{background:var(--field)!important;color:var(--ink)}
 .studio>.output[data-collapsed=true]>:not(h2){display:none}
+.studio>.output>.build-integrity-progress{font-size:12px;font-variant-numeric:tabular-nums;color:var(--muted);margin:4px 0 8px}
 .studio>.output[data-collapsed=true]>h2{margin-bottom:0}
 .photo-source{font-size:13px;color:var(--muted);border-top:1px solid var(--line);padding-top:10px}
 .photo-source p{overflow-wrap:anywhere;user-select:text}

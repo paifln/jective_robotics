@@ -1,5 +1,10 @@
 import {it,expect} from 'vitest';
 import {operationErrorText} from '../apps/desktop/renderer/operation-error-text';
+it('explains damaged or stale build snapshots with a recompilation step instead of private paths',()=>{
+ for(const code of ['BUILD_MANIFEST_INVALID','ARTIFACT_CHANGED','SOURCE_FILE_CHANGED','BUILD_STALE'])for(const locale of ['en','ru','kk'] as const){
+  const text=operationErrorText({code,message:'C:/private/student/build/output.bin'},locale);expect(text).not.toContain('C:/private');expect(text.length).toBeGreaterThan(code.length+30);expect(text).toMatch(locale==='en'?/ompile/:locale==='ru'?/скомпилируй/i:/құрастыр/);expect(text.split(code)).toHaveLength(2);
+ }
+});
 it('provides localized journal recovery without exposing raw private diagnostics',()=>{
  for(const code of ['PROCESS_LOG_UNAVAILABLE','PROCESS_LOG_UNSAFE','PROCESS_LOG_LIMIT'])for(const locale of ['en','ru','kk'] as const){const text=operationErrorText({code,message:'private fixture path'},locale);expect(text.length).toBeGreaterThan(code.length+30);expect(text.split(code)).toHaveLength(2);expect(text).not.toContain('private fixture path');}
  expect(operationErrorText({code:'toString',message:'unknown diagnostic'},'en')).toBe('toString\nunknown diagnostic');

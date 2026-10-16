@@ -1,0 +1,23 @@
+{
+  "checkedAt": "2026-10-16T19:18:57.907Z",
+  "status": "PASS_AFTER_CONFIRMED_REGRESSION",
+  "scope": "Software-only uploader fixture, no port opening or physical upload. Mutates compiled binary or a header after the real fixture SDK scan and before upload can begin.",
+  "before": {
+    "selected": 1,
+    "failed": 1,
+    "skipped": 14,
+    "result": "Unsafe baseline reached the fixture uploader instead of rejecting the changed artifact."
+  },
+  "after": {
+    "tests": 25,
+    "passed": 25,
+    "files": 3,
+    "result": "Both artifact and source mutations reject before any uploader call."
+  },
+  "change": "The full SDK integrity scan now precedes the final bounded artifact and source checks; no second manifest read or duplicate binary pass added.",
+  "limits": "Does not eliminate every interprocess TOCTOU race, prove hardware behavior or provide an OS sandbox.",
+  "inputs": {
+    "toolchainSha256": "2ae5f8e1c567be752061daf99ce6eeaab2b3d96bc8abdce50f0579909bad5fee",
+    "testSha256": "65edfa55c0ced1ea87b256ccce681e91279f7f0125176373f8ee1e6d404c332a"
+  }
+}

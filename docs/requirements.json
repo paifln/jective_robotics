@@ -36,16 +36,20 @@
         "apps/desktop/renderer/useLessonAudio.ts",
         "apps/desktop/renderer/visible-lesson.ts",
         "apps/desktop/renderer/useProjectBrowser.ts",
-        "packages/contracts/project-browser.ts"
+        "packages/contracts/project-browser.ts",
+        "packages/toolchain/build-snapshot.ts",
+        "apps/desktop/renderer/CodeFileTabs.tsx"
       ],
       "evidence": [
         "evidence/verification-summary.json",
         "evidence/reading-audio-module-20261013/verification.md",
         "evidence/project-browser-refactor-20261014.md",
         "evidence/all-project-browser-20261014/verification.md",
-        "evidence/project-browser-partial-error-20261014/verification.md"
+        "evidence/project-browser-partial-error-20261014/verification.md",
+        "evidence/evening-20261016/verification.md",
+        "evidence/evening-20261016/source-r9.json"
       ],
-      "remaining": "Typed service/IPC boundaries, exclusive workspace restoration and separated reading/audio lifecycle are implemented. Broader fault handling, maintainability and complete security acceptance remain."
+      "remaining": "Bounded build-manifest/artifact readers are separated into a toolchain module; metadata hashing has bounded concurrency/reorder memory and validated progress messages. File-management handlers are separated from markup. Broader fault handling, maintainability and complete security acceptance remain."
     },
     {
       "id": "S4",
@@ -143,9 +147,11 @@
       ],
       "evidence": [
         "evidence/verification-summary.json",
-        "evidence/journal-ui/verification.md"
+        "evidence/journal-ui/verification.md",
+        "evidence/evening-20261016/verification.md",
+        "evidence/evening-20261016/source-r9.json"
       ],
-      "remaining": "Deterministic supported C++ and diagnostic navigation; cooperative runtime integration remains. Complete compiler-journal preview/export implemented with bounded IPC; actual source compiler GUI preview/export passes with preserved initial selector failure and explicit dialog destination override. Continuous output and access after restart/integrity rejection remain incomplete."
+      "remaining": "Bounded compiler journals and one-document build snapshot checks exist. Final artifact/source validation follows the long SDK scan; a software regression demonstrates rejection of mutations during that scan before any uploader call. Continuous output and journal access after restart/integrity rejection remain incomplete."
     },
     {
       "id": "S9",
@@ -161,9 +167,12 @@
         "evidence/verification-summary.json",
         "evidence/compiler-journal/verification.md",
         "evidence/journal-ui/verification.md",
-        "evidence/package-snapshots/current-source-ui-recovery-20261013/learner-ui-recovery-journey-20261013-3d7530c7/verification.md"
+        "evidence/package-snapshots/current-source-ui-recovery-20261013/learner-ui-recovery-journey-20261013-3d7530c7/verification.md",
+        "evidence/evening-20261016/verification.md",
+        "evidence/evening-20261016/source-r9.json",
+        "evidence/evening-20261016/compiler-r5.json"
       ],
-      "remaining": "Actual good/bad compilation and copied offline bundle builds have evidence for earlier immutable snapshots, including packaged Unicode/space paths. This does not verify the current latest snapshot. Current compiled release matrix, clean disconnected deployment, upload, log streaming and cross-session/integrity-failure acceptance remain."
+      "remaining": "Latest R5 packaged UI passed valid/invalid compilation, exact source and artifact hashes/sizes, stage order and autosave/restart. The same unchanged EXE passed one valid build/recovery from a copied Cyrillic application path. Full current example matrix, clean disconnected installed deployment and physical upload remain unverified."
     },
     {
       "id": "S10",
@@ -328,9 +337,11 @@
         "evidence/assistant-protocol-20261013/verification.md",
         "evidence/assistant-request-preview-20261013/verification.md",
         "evidence/assistant-cancellation-20261013/verification.md",
-        "evidence/package-snapshots/current-source-reading-access-20261013/verification.md"
+        "evidence/package-snapshots/current-source-reading-access-20261013/verification.md",
+        "evidence/evening-20261016/live-jexi.json",
+        "evidence/evening-20261016/railway-https.json"
       ],
-      "remaining": "Managed server assistant prepared with encrypted server provider key, external master, expiring hashed learner tokens and durable quotas. Packaged client stores only encrypted learner token and denies student configuration. Local fixture requests, chat and early cancellation verified; remote JECTIVE deployment, TLS, live provider/model credentials and operational acceptance NOT RUN."
+      "remaining": "Railway pilot is deployed; seven public HTTPS boundary checks passed again at 00:37 on 17 October without a valid token/model call. One genuine authorized OpenAI answer passed earlier without learner files. Cloud quota persistence across restart, cloud UID, budget/operations and mass token issuance remain unverified; local container evidence does not prove cloud properties."
     },
     {
       "id": "S17",
@@ -368,7 +379,9 @@
       "status": "PARTIAL",
       "files": [
         "docs/THREAT_MODEL.md",
-        "packages/persistence/archives.ts"
+        "packages/persistence/archives.ts",
+        "packages/contracts/source-files.ts",
+        "SECURITY.md"
       ],
       "evidence": [
         "evidence/verification-summary.json",
@@ -377,9 +390,12 @@
         "evidence/assistant-protocol-20261013/verification.md",
         "evidence/assistant-request-preview-20261013/verification.md",
         "evidence/package-snapshots/current-source-study-flow-20261013/verification.md",
-        "evidence/package-snapshots/current-source-reading-access-20261013/verification.md"
+        "evidence/package-snapshots/current-source-reading-access-20261013/verification.md",
+        "evidence/evening-20261016/verification.md",
+        "evidence/evening-20261016/source-r9.json",
+        "evidence/evening-20261016/upload-check-order.json"
       ],
-      "remaining": "Sender/CSP/archive boundaries, packaged credential restrictions and production Electron fuses/tamper rejection verified in scoped snapshots. Managed gateway prepared, not remotely deployed. Complete adversarial, privacy, deployment and operational security acceptance remains."
+      "remaining": "Scoped sender/CSP/archive, endpoint-bound encrypted learner credentials and production fuses/tamper checks passed. ESP32 build_opt.h is rejected across project/archive/storage/export/CLI boundaries. Build inputs are checked after the long SDK scan. Complete adversarial, privacy, signed distribution and cloud operational acceptance remain."
     },
     {
       "id": "S20",
@@ -410,9 +426,14 @@
         "evidence/package-snapshots/current-source-reading-access-20261013/verification.md",
         "evidence/requirements-refresh-20261013/unit.json",
         "evidence/current-coverage-20261013/verification.md",
-        "evidence/project-content-conflict-20261013/verification.md"
+        "evidence/project-content-conflict-20261013/verification.md",
+        "evidence/evening-20261016/verification.md",
+        "evidence/evening-20261016/source-r5.json",
+        "evidence/evening-20261016/source-r9.json",
+        "evidence/evening-20261016/additional-ui-final.json",
+        "evidence/evening-20261016/runtime-equivalence.json"
       ],
-      "remaining": "Fresh full domain regression: 550 passed, zero failed. V8 package TypeScript coverage: 96.32 percent branches; unchanged 80-percent per-file gate PASS. Current targeted source Electron and scoped production checks have separate reports; historic failures retained. Complete safety-transition audit, server coverage, all current compiler examples, installed-user flows and physical acceptance remain."
+      "remaining": "Clean immutable R9 passed 633 domain tests in 206 files, 96.29 percent package branches with the unchanged 80-percent per-file gate, and 133 selected GUI cases in 131 files. All 1091 inputs unchanged; owner index guard passed. Five additional current GUI cases passed separately. Historical failures/export warnings retained. Full safety-transition audit, all compiler examples, installed-user flows, independent review and physical acceptance remain."
     },
     {
       "id": "S21",
@@ -423,9 +444,12 @@
         "docs/DEPLOYMENT.md"
       ],
       "evidence": [
-        "evidence/verification-summary.json"
+        "evidence/verification-summary.json",
+        "evidence/evening-20261016/verification.md",
+        "evidence/evening-20261016/installer-r4.json",
+        "evidence/evening-20261016/installer-r5.json"
       ],
-      "remaining": "Installer and offline bundle produced; clean OS, signing and distribution gates remain."
+      "remaining": "Latest R5 unsigned NSIS installer and unpacked EXE built separately. Source icon bytes found in both and extracted installer icon inspected. Packaged fuses/tamper/startup/UI, real compiler/recovery, and Defender application+installer scan passed within scope. No installation/update/uninstall, signing or Windows10 qualification performed."
     },
     {
       "id": "S22",
@@ -480,9 +504,11 @@
         "evidence/verification-summary.json",
         "evidence/package-snapshots/current-source-20261012/verification.md",
         "evidence/package-snapshots/current-source-20261012/summary.json",
-        "evidence/package-snapshots/current-source-20261012/package-verification.json"
+        "evidence/package-snapshots/current-source-20261012/package-verification.json",
+        "evidence/evening-20261016/verification.md",
+        "evidence/evening-20261016/source-r9.json"
       ],
-      "remaining": "Current-source unpacked Windows11build26200 package startup, duplicate-instance behavior and integrity protection verified independently of old publicinstaller. Clean NSIS installation/upgrade/repair/uninstall on Windows10 andWindows11, standard-user deployment lifecycle remain NOT RUN. Snapshot stillversion0.8.18, identified by separate binary/archive hashes, not a published installer."
+      "remaining": "Latest R5 unpacked Windows11 Pro build26300 startup, duplicate instance, 278 protected build assets, fuses and ASAR tamper rejection/restoration verified. A separate unsigned NSIS installer was built, icon-inspected and scanned, not installed. Clean installation/upgrade/repair/uninstall on Windows10/Windows11 and standard-user deployment remain NOT RUN. Version remains 0.8.18, identified by hashes; release/publication not updated."
     },
     {
       "id": "AC02",
@@ -530,9 +556,12 @@
         "evidence/package-snapshots/current-source-unicode-20261012/verification.md",
         "evidence/package-snapshots/current-source-unicode-20261012/summary.json",
         "evidence/package-snapshots/current-source-learning-search-20261012/learner-packaged-journey-20261013-4bd6d4f0/verification.md",
-        "evidence/package-snapshots/current-source-ui-recovery-20261013/learner-ui-recovery-journey-20261013-3d7530c7/verification.md"
+        "evidence/package-snapshots/current-source-ui-recovery-20261013/learner-ui-recovery-journey-20261013-3d7530c7/verification.md",
+        "evidence/evening-20261016/verification.md",
+        "evidence/evening-20261016/source-r9.json",
+        "evidence/evening-20261016/quiet-native.json"
       ],
-      "remaining": "Full source Electron multifile GUI passed on rerun: actual invalid compiler diagnostic navigation, repaired valid exit0, four compiled sources and six artifact hashes verified against expected edited fixture and original SDK digest. Prior BUILD_ENVIRONMENT_CHANGED postcompile failure preserved; intermittent cause unresolved, one passing rerun is not absence proof. Failed-integrity manifests retain both snapshots and never publish upload candidates. Native242-246s latency finding persists. Current packaged Cyrillic/space-path acceptance and physical upload remain unverified. Current packaged invalid/fixed compiler and committed recovery pass under ordinary Unicode app/profile/SDK paths; stale-upload/device and full installed acceptance remain unverified."
+      "remaining": "Latest R5 actual packaged valid/invalid compiler UI, source/artifact hashes/sizes, stage order and recovery passed. A separate copied Cyrillic-app/profile/SDK-path valid build and recovery passed with unchanged EXE/ASAR: 323563ms on the repeated SDK. This is not a cold/4-core baseline or a universal speed claim. Earlier intermittent fingerprint failure remains unresolved history. Physical upload, all current examples, multifile release matrix and installed acceptance remain unverified."
     },
     {
       "id": "AC04",
@@ -619,9 +648,10 @@
         "evidence/nonblocking-time/source-ui.json",
         "evidence/nonblocking-time/compiler.json",
         "evidence/collections-telemetry/source-e2e-0.8.8.json",
-        "evidence/collections-telemetry/compiler.json"
+        "evidence/collections-telemetry/compiler.json",
+        "evidence/evening-20261016/verification.md"
       ],
-      "remaining": "Published 0.8.11 contains L01-L44 draft EN/RU/KK lessons plus eight introductory activities. L43 includes coordinate/world practice and L44 includes actual repeatable worker experiments, checked activities and validated report export. L45-L60 (16 lessons), independent technical language review and remaining acceptance remain. Model/simulation/compiler/physical evidence stay separate; the full packaged learner workflow is not verified."
+      "remaining": "Current source has all 60 authored EN/RU/KK lesson drafts and eight introductory activities. Content validation finds no missing lessons but remains NOT COMPLETE pending independent technical language review. Earlier installer evidence covered a smaller course; it is not current full-curriculum acceptance. Model/simulation/compiler/physical evidence remain separate; full packaged learner journey and independent pedagogical/accessibility review remain unverified."
     },
     {
       "id": "AC10",
@@ -694,7 +724,7 @@
         "evidence/startup-measure/editor-deferral-comparison.json",
         "evidence/startup-measure/before-editor-deferral.json"
       ],
-      "remaining": "Actual source fresh-process/workspace launch median2563.92ms across5 after deferred Monaco initialization, on Ryzen5600H/12logical cores/15.35GiB RAM/Windows11SSD host; OS cache not cleared. Mean summed initial working sets739.24MiB; shared pages may duplicate and this is not idle/private memory. Required4logical-core/8GB baseline, installed cold-cache launch,500-blockp95,worldFPS,30minute idle/growth remain unverified. Compiler native cycle242-246s reported separately."
+      "remaining": "Actual source fresh-process/workspace launch median2563.92ms across5 after deferred Monaco initialization, on Ryzen5600H/12logical cores/15.35GiB RAM/Windows11SSD host; OS cache not cleared. Mean summed initial working sets739.24MiB; shared pages may duplicate and this is not idle/private memory. Required4logical-core/8GB baseline, installed cold-cache launch,500-blockp95,worldFPS,30minute idle/growth remain unverified. Compiler native cycle242-246s reported separately. Evening R5 copied-app valid compile/recovery took 323563ms without concurrent agent test runners; repeated SDK, uncontrolled OS/cache and different app path. This does not meet the 4-core/8GB baseline."
     },
     {
       "id": "AC15",
@@ -735,10 +765,12 @@
         "evidence/compiler-unicode/after-unit.json",
         "evidence/compiler-unicode/electron-process.json",
         "evidence/package-snapshots/current-source-unicode-20261012/verification.md",
-        "evidence/package-snapshots/current-source-unicode-20261012/summary.json"
+        "evidence/package-snapshots/current-source-unicode-20261012/summary.json",
+        "evidence/evening-20261016/verification.md",
+        "evidence/evening-20261016/source-r9.json"
       ],
-      "remaining": "Source static/build/domain/selectedGUI checks pass; current-source unpacked packagedstartup/all273asset equality/fuses/ASARtamperrejection+restoration pass on Windows11build26200. Packaged worker/serial module checks use external matching Electron diagnostic host, not full installed learner acceptance. Dependency audit zero known advisories. Full release gate, human content review, complete packaged/offline/compilerGUI, cleaninstaller lifecycle, Windows10,physicalhardware/liveprovider not complete; intermittent SDKfingerprint failure unresolved. Publishedinstaller unchanged."
+      "remaining": "Clean R9 static/build/domain/133 selected GUI checks and five additional current GUI cases passed. R5 packaged startup/278 assets/fuses/tamper/UI, actual good/bad compiler/recovery, copied Cyrillic-path repeat and Defender EXE+installer scan passed. One real Railway/OpenAI answer and fresh HTTPS boundaries passed; cloud operational qualification remains incomplete. Full release gate, independent content review, all compiler examples, signed installer lifecycle, Windows10 and physical hardware remain unverified."
     }
   ],
-  "updated": "2026-10-11T20:18:27.797Z"
+  "updated": "2026-10-16T19:53:04.991Z"
 }

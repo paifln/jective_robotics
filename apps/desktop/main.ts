@@ -86,7 +86,7 @@ if(primaryInstance)app.whenReady().then(async()=>{
   session.defaultSession.setPermissionRequestHandler((_wc,_permission,callback)=>callback(false));
   session.defaultSession.setPermissionCheckHandler(()=>false);
   session.defaultSession.setDevicePermissionHandler(()=>false);
-  service=new ToolchainService(app.isPackaged?join(process.resourcesPath,'tools','arduino-cli.exe'):join(app.getAppPath(),'.toolchain','bin','arduino-cli.exe'),process.env.JECTIVE_TOOLCHAIN_ROOT??join(app.getPath('userData'),'toolchain'),snapshotEnvironmentInThread,event=>{if(win&&!win.isDestroyed()&&!win.webContents.isDestroyed())win.webContents.send('build:stage',event);});
+  service=new ToolchainService(app.isPackaged?join(process.resourcesPath,'tools','arduino-cli.exe'):join(app.getAppPath(),'.toolchain','bin','arduino-cli.exe'),process.env.JECTIVE_TOOLCHAIN_ROOT??join(app.getPath('userData'),'toolchain'),(executable,root,coreVersion,cancelled,progress)=>snapshotEnvironmentInThread(executable,root,coreVersion,cancelled,undefined,undefined,progress),event=>{if(win&&!win.isDestroyed()&&!win.webContents.isDestroyed())win.webContents.send('build:stage',event);});
   const placementPath=join(app.getPath('userData'),'window-placement.json');
   const primaryDisplay=screen.getPrimaryDisplay();
   const placement=restoreWindowPlacement(await readWindowPlacement(placementPath),[primaryDisplay.workArea,...screen.getAllDisplays().filter(display=>display.id!==primaryDisplay.id).map(display=>display.workArea)]);

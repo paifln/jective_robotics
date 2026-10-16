@@ -7,6 +7,7 @@ import {randomUUID} from 'node:crypto';
 import {ToolchainService} from '../packages/toolchain';
 import type {Project} from '../packages/contracts';
 import {BuildStageEventSchema,type BuildStageEvent} from '../packages/contracts/build-stage';
+import {snapshotEnvironment} from '../packages/toolchain/environment';
 type Reply={code:number|null;log:string;stdout:string;stderr:string;interrupted:boolean};
 // Explicit software fixture: no Arduino executable or serial port is invoked.
 class FixtureToolchain extends ToolchainService {
@@ -14,14 +15,34 @@ class FixtureToolchain extends ToolchainService {
  override async run(args:string[],_timeout?:number,rawLogPath?:string):Promise<Reply>{this.calls.push(args);if(rawLogPath)await writeFile(rawLogPath,'explicit fixture raw output',{flag:'wx'});if(args[0]==='version')return {code:0,log:this.version+this.versionWarning,stdout:this.version,stderr:this.versionWarning,interrupted:false};if(args[0]==='core')return this.cores;if(args[0]==='compile'){await this.duringCompile?.();const output=args[args.indexOf('--build-path')+1]!;for(const file of this.files)await writeFile(join(output,file),'fixture artifact '+file);return this.compileReply;}if(args[0]==='upload')return this.uploadReply;throw new Error('Unexpected fixture command');}
 }
 const project=():Project=>({schemaVersion:1,id:randomUUID(),name:'Build lifecycle fixture',profileId:'esp32-devkit-reference',mode:'code',source:'void setup(){}\nvoid loop(){}',workspace:{},revision:0});
+it('a build input changed during the long environment scan cannot reach the uploader',async()=>fixture(async(s,p)=>{
+ for(const target of ['artifact','source']){
+  const hooks:{mutate?:()=>Promise<void>}={};
+  const service=new FixtureToolchain(s.executable,s.root,async(...args)=>{const snapshot=await snapshotEnvironment(...args);await hooks.mutate?.();return snapshot;});
+  const value={...p,sourceFiles:{'helper.h':'// original helper\n'}},build=await service.compile(value),folder=join(s.root,'builds',build.operationId);
+  hooks.mutate=()=>writeFile(join(folder,target==='artifact'?'output/sketch.ino.bin':'sketch/helper.h'),target==='artifact'?'changed binary':'// modified helper\n');
+  await expect(service.upload(value,build.operationId,'COM3')).rejects.toThrow(target==='artifact'?'ARTIFACT_CHANGED':'SOURCE_FILE_CHANGED');
+  expect(service.calls.some(args=>args[0]==='upload')).toBe(false);
+ }
+}));
+it('project compiler-control headers cannot reach any CLI command',async()=>fixture(async(s,p)=>{
+ for(const name of ['build_opt.h','BUILD_OPT.h'])await expect(s.compile({...p,sourceFiles:{[name]:'-DJECTIVE_UNTRUSTED_PROJECT_FLAG'}})).rejects.toThrow('RESERVED_BUILD_CONTROL_FILE');
+ expect(s.calls).toEqual([]);
+}));
+it('oversized and invalid UTF-8 build manifests cannot invoke upload',async()=>fixture(async(s,p)=>{
+ const build=await s.compile(p),path=join(s.root,'builds',build.operationId,'manifest.json');
+ for(const bytes of [Buffer.alloc(4*1024*1024+1,32),Buffer.from([0xc3,0x28])]){await writeFile(path,bytes);await expect(s.upload(p,build.operationId,'COM3')).rejects.toThrow('BUILD_MANIFEST_INVALID');}
+ expect(s.calls.some(args=>args[0]==='upload')).toBe(false);
+}));
 it('reports actual build boundaries and never represents a failed compile as post-build integrity success',async()=>fixture(async(s,p)=>{
  const events:BuildStageEvent[]=[],service=new FixtureToolchain(s.executable,s.root,undefined,event=>events.push(event));
  expect((await service.compile(p)).state).toBe('succeeded');
- expect(events.map(e=>e.stage)).toEqual(['toolchain','environment-before','compile','environment-after','artifacts']);
+ expect(events.filter(e=>!e.progress).map(e=>e.stage)).toEqual(['toolchain','environment-before','compile','environment-after','artifacts']);
+ expect(events.filter(e=>e.progress).at(-1)?.progress).toMatchObject({files:2});
  expect(events.every(e=>e.projectId===p.id&&BuildStageEventSchema.safeParse(e).success)).toBe(true);
  events.length=0;service.compileReply={code:1,log:'explicit invalid fixture',stdout:'explicit invalid fixture',stderr:'',interrupted:false};
  expect((await service.compile(p)).state).toBe('failed');
- expect(events.map(e=>e.stage)).toEqual(['toolchain','environment-before','compile','artifacts']);
+ expect(events.filter(e=>!e.progress).map(e=>e.stage)).toEqual(['toolchain','environment-before','compile','artifacts']);
  expect(BuildStageEventSchema.safeParse({projectId:p.id,stage:'succeeded'}).success).toBe(false);
  expect(BuildStageEventSchema.safeParse({projectId:'other',stage:'compile'}).success).toBe(false);
 }));

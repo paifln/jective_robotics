@@ -23,6 +23,7 @@
     "test:integration": "vitest run tests/integration.test.ts",
     "test:e2e": "npm run build -- --production && playwright test",
     "firmware:check": "node scripts/compiler-check.mjs",
+    "compiler:ui:check": "node scripts/verify-real-compiler-ui.mjs",
     "functions:check": "node scripts/functions-lesson-check.mjs",
     "pwm:check": "node scripts/pwm-check.mjs",
     "distance:check": "node scripts/distance-check.mjs",

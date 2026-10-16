@@ -1,0 +1,10 @@
+{
+  "checkedAt": "2026-10-16T17:48:10.1821343Z",
+  "origin": "https://jective-assistant-production.up.railway.app",
+  "httpStatus": 200,
+  "finishedAt": "2026-10-16T17:48:13.5438813Z",
+  "finishReason": "stop",
+  "answer": "Привет! Я Джекси, дружелюбный помощник по робототехнике и программированию.",
+  "scope": "One real pilot request through JECTIVE Railway to configured provider. No student source, history or files. Provider key never loaded by this verifier.",
+  "status": "PASS"
+}

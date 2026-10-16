@@ -1,0 +1,91 @@
+{
+  "checkedAt": "2026-10-16T19:50:06.985Z",
+  "status": "PASS",
+  "snapshot": "current-source-evening-r5-20261017",
+  "sha256": {
+    "exe": "dc005ef6ec1d46032675d80da1e9dc5a2a712691eacf2209e31ee456a831a41d",
+    "asar": "d7ccd9c931f72f7b224d2b28f5ca13100b7d2728552f415f6adbd17a52836ec1"
+  },
+  "scope": "Actual unchanged production EXE/ASAR under paths with spaces and Cyrillic, temporary loopback Chromium diagnostics and isolated profile/reused ordinary approved SDK copy. No main inspector/fuse changes or hardware access.",
+  "measurementScope": "One valid build with no concurrent agent test runner, repeated SDK and a fresh copied app/profile path. Background OS activity and cache state are not controlled; not an A/B speed proof.",
+  "build": {
+    "operationId": "20e18d0c-7f16-40e5-9a29-cbef6295d585",
+    "state": "succeeded",
+    "exitCode": 0,
+    "elapsedMs": 323563,
+    "environment": "05d780d8394605ad310a76c978d1015bd0b80fcc80305f8c4d3852b23cfb5533",
+    "stages": [
+      {
+        "stage": "toolchain",
+        "at": 1792179641940
+      },
+      {
+        "stage": "environment-before",
+        "at": 1792179644075
+      },
+      {
+        "stage": "compile",
+        "at": 1792179781483
+      },
+      {
+        "stage": "environment-after",
+        "at": 1792179839349
+      },
+      {
+        "stage": "artifacts",
+        "at": 1792179964826
+      }
+    ],
+    "rawLogBytes": 207,
+    "rawLogHash": "8addab64ba370635795da41ca8c8f87a046c7394eae8408b89206f4feaf5630d",
+    "journalTextEqual": true,
+    "artifacts": [
+      "boot_app0.bin",
+      "sketch.ino.bin",
+      "sketch.ino.bootloader.bin",
+      "sketch.ino.elf",
+      "sketch.ino.merged.bin",
+      "sketch.ino.partitions.bin"
+    ],
+    "boundaryIntervals": [
+      {
+        "stage": "toolchain",
+        "elapsedMs": 2135
+      },
+      {
+        "stage": "environment-before",
+        "elapsedMs": 137408
+      },
+      {
+        "stage": "compile",
+        "elapsedMs": 57866
+      },
+      {
+        "stage": "environment-after",
+        "elapsedMs": 125477
+      }
+    ]
+  },
+  "environment": {
+    "scope": "cli-selected-core-installed-tools-user-libraries-v2",
+    "sha256": "05d780d8394605ad310a76c978d1015bd0b80fcc80305f8c4d3852b23cfb5533",
+    "files": 59748,
+    "bytes": 6852176031
+  },
+  "recovery": true,
+  "unchanged": {
+    "exe": true,
+    "asar": true
+  },
+  "rendererHttpRequests": [],
+  "host": {
+    "Caption": "Майкрософт Windows 11 Pro",
+    "Version": "10.0.26300",
+    "MemoryGiB": 15.3
+  },
+  "cpu": {
+    "Name": "AMD Ryzen 5 5600H with Radeon Graphics         ",
+    "NumberOfLogicalProcessors": 12
+  },
+  "limits": "One repeated valid build, not a cold-cache or target 4-core/8GB baseline. Different application path and uncontrolled background OS activity prevent a controlled A/B speed claim. No physical upload, paid provider call or installer execution."
+}

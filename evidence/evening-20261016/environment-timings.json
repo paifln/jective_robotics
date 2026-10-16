@@ -1,0 +1,120 @@
+{
+  "scope": "Read-only SDK snapshots on one Windows host; warm-cache variation prevents general cold-start or full-compile claims",
+  "reports": [
+    {
+      "variant": "baseline",
+      "checkedAt": "2026-10-16T17:45:19.863Z",
+      "status": "PASS",
+      "scope": "Readonly full content hash of ordinary isolated SDK; instrumented lstat/readdir/stream duration. Aggregate concurrent durations overlap.",
+      "elapsedMs": 23035.0098,
+      "snapshot": {
+        "scope": "cli-selected-core-installed-tools-user-libraries-v2",
+        "sha256": "05d780d8394605ad310a76c978d1015bd0b80fcc80305f8c4d3852b23cfb5533",
+        "files": 59748,
+        "bytes": 6852176031
+      },
+      "counts": {
+        "stats": 132815,
+        "statMs": 24583.475500000604,
+        "directories": 13294,
+        "readdirMs": 3849.1800000000294,
+        "streams": 59748,
+        "active": 0,
+        "peak": 8,
+        "streamMs": 117969.54770000056
+      }
+    },
+    {
+      "variant": "baseline-repeat",
+      "checkedAt": "2026-10-16T17:45:57.787Z",
+      "status": "PASS",
+      "scope": "Readonly full content hash of ordinary isolated SDK; instrumented lstat/readdir/stream duration. Aggregate concurrent durations overlap.",
+      "elapsedMs": 21482.9259,
+      "snapshot": {
+        "scope": "cli-selected-core-installed-tools-user-libraries-v2",
+        "sha256": "05d780d8394605ad310a76c978d1015bd0b80fcc80305f8c4d3852b23cfb5533",
+        "files": 59748,
+        "bytes": 6852176031
+      },
+      "counts": {
+        "stats": 132815,
+        "statMs": 23015.70109999998,
+        "directories": 13294,
+        "readdirMs": 3493.1729000000896,
+        "streams": 59748,
+        "active": 0,
+        "peak": 8,
+        "streamMs": 112853.64679999981
+      }
+    },
+    {
+      "variant": "bounded",
+      "checkedAt": "2026-10-16T17:46:37.951Z",
+      "status": "PASS",
+      "scope": "Readonly full content hash of ordinary isolated SDK; instrumented lstat/readdir/stream duration. Aggregate concurrent durations overlap.",
+      "elapsedMs": 18195.228,
+      "snapshot": {
+        "scope": "cli-selected-core-installed-tools-user-libraries-v2",
+        "sha256": "05d780d8394605ad310a76c978d1015bd0b80fcc80305f8c4d3852b23cfb5533",
+        "files": 59748,
+        "bytes": 6852176031
+      },
+      "counts": {
+        "stats": 132815,
+        "statMs": 20520.308300000474,
+        "directories": 13294,
+        "readdirMs": 3090.239200000025,
+        "streams": 59748,
+        "active": 0,
+        "peak": 8,
+        "streamMs": 91262.1979000007
+      }
+    },
+    {
+      "variant": "baseline-after",
+      "checkedAt": "2026-10-16T17:47:07.524Z",
+      "status": "PASS",
+      "scope": "Readonly full content hash of ordinary isolated SDK; instrumented lstat/readdir/stream duration. Aggregate concurrent durations overlap.",
+      "elapsedMs": 18143.3017,
+      "snapshot": {
+        "scope": "cli-selected-core-installed-tools-user-libraries-v2",
+        "sha256": "05d780d8394605ad310a76c978d1015bd0b80fcc80305f8c4d3852b23cfb5533",
+        "files": 59748,
+        "bytes": 6852176031
+      },
+      "counts": {
+        "stats": 132815,
+        "statMs": 20019.647000000103,
+        "directories": 13294,
+        "readdirMs": 2862.539400000034,
+        "streams": 59748,
+        "active": 0,
+        "peak": 8,
+        "streamMs": 93780.55719999986
+      }
+    },
+    {
+      "variant": "bounded-repeat",
+      "checkedAt": "2026-10-16T17:47:23.725Z",
+      "status": "PASS",
+      "scope": "Readonly full content hash of ordinary isolated SDK; instrumented lstat/readdir/stream duration. Aggregate concurrent durations overlap.",
+      "elapsedMs": 16097.6764,
+      "snapshot": {
+        "scope": "cli-selected-core-installed-tools-user-libraries-v2",
+        "sha256": "05d780d8394605ad310a76c978d1015bd0b80fcc80305f8c4d3852b23cfb5533",
+        "files": 59748,
+        "bytes": 6852176031
+      },
+      "counts": {
+        "stats": 132815,
+        "statMs": 18549.60049999996,
+        "directories": 13294,
+        "readdirMs": 2601.277899999917,
+        "streams": 59748,
+        "active": 0,
+        "peak": 8,
+        "streamMs": 79948.31210000036
+      }
+    }
+  ]
+}

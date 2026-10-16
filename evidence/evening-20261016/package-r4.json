@@ -1,0 +1,161 @@
+{
+  "snapshot": "current-source-evening-r4-20261017",
+  "checkedAt": "2026-10-16T19:09:43.459Z",
+  "scope": "Isolated Windows_NT 10.0.26300 packaged startup, duplicate instance and intentional ASAR tamper; no physical upload; no installer installation",
+  "host": {
+    "os": "Windows_NT",
+    "release": "10.0.26300",
+    "node": "v24.21.0"
+  },
+  "packagedAssets": 278,
+  "fuses": {
+    "0": 48,
+    "1": 49,
+    "2": 48,
+    "3": 48,
+    "4": 49,
+    "5": 49,
+    "6": 48,
+    "7": 48,
+    "8": 49,
+    "version": "1"
+  },
+  "startup": {
+    "rendererInitialized": true,
+    "elapsedMs": 1728
+  },
+  "singleInstance": {
+    "secondExitCode": 0,
+    "firstStillRunning": true
+  },
+  "tamper": {
+    "exitCode": 1,
+    "signalCode": null,
+    "integrityDiagnostic": "\r\nASAR Integrity Violation: got a hash mismatch (918643d4dd7628c81c1dfa9eb833f7a87865138866eb9252916895b8ed501e89 vs f0a31217d9e3cf5807e4ccd2c0dee4d093cb54941080752700ac83879cf0e10c)\n",
+    "mutation": "One whitespace byte in packed main.cjs; integrity header unchanged"
+  },
+  "archiveRestored": true,
+  "sha256": {
+    "exe": "b47854fe70ab79c765cac9ebfc4609f875c06eecc8d9bc9caa7bbbffe9af33c3",
+    "asar": "1440be7814a71cacd8928814c0ee9bfcb9230474642c35d8300f4972c1f5108a"
+  },
+  "ui": {
+    "startedAt": "2026-10-16T19:06:17.314Z",
+    "scope": "Actual unchanged Jexi production EXE and isolated profile; startup timing/animation excluded; temporary loopback Chrome diagnostics, no main inspector, no handler overrides, two local gateway fixture requests, no live provider/toolchain/hardware requests.",
+    "status": "PASS",
+    "pageUrl": "jective://studio/index.html",
+    "windowChrome": {
+      "maximize": true,
+      "restore": true,
+      "closeControl": true
+    },
+    "readingControls": {
+      "iconOnly": true,
+      "optionSizePx": 24,
+      "recordedAudioDecoded": true,
+      "pause": true,
+      "settingsEscapeDismissed": true
+    },
+    "lessonVisuals": {
+      "genericIllustrationRemoved": true,
+      "adcInteractive": true,
+      "adcAtMaximum": 4095
+    },
+    "jexi": {
+      "name": true,
+      "packagedRasterDecoded": true
+    },
+    "assistant": {
+      "provisioned": true,
+      "credentialEncrypted": true,
+      "studentConfigurationDenied": true,
+      "immediateChat": true,
+      "localGatewayRequests": 2,
+      "liveProvider": "NOT RUN"
+    },
+    "chatLayout": [
+      {
+        "width": 1200,
+        "height": 800,
+        "pageHeight": 800,
+        "pageWidth": 1200,
+        "composerBottom": 618.671875,
+        "logHeight": 232,
+        "logScrollHeight": 2389
+      },
+      {
+        "width": 800,
+        "height": 700,
+        "pageHeight": 700,
+        "pageWidth": 800,
+        "composerBottom": 462.671875,
+        "logHeight": 92,
+        "logScrollHeight": 2389
+      }
+    ],
+    "sceneControls": {
+      "startY": 1.4,
+      "linePreserved": true,
+      "jsonEditorAbsent": true
+    },
+    "localizedNames": [
+      "ru",
+      "kk"
+    ],
+    "blocklyNavigation": {
+      "width": 800,
+      "height": 700,
+      "locales": [
+        "en",
+        "ru",
+        "kk"
+      ],
+      "ordinaryPointerClicks": true
+    },
+    "codeZoom": {
+      "keyboard": true,
+      "reset": true,
+      "sourceUnchanged": true
+    },
+    "managedManual": {
+      "locales": [
+        "en",
+        "ru",
+        "kk"
+      ],
+      "serverKeyBoundary": true,
+      "conversationHistoryExplained": true,
+      "legacyKeyFormAbsent": true,
+      "eightTopics": true
+    },
+    "compilerJournalPrivacy": {
+      "locales": [
+        "en",
+        "ru",
+        "kk"
+      ],
+      "sourceAndPathsExplained": true
+    },
+    "projectBrowser": {
+      "seeded": 55,
+      "pageSize": 50,
+      "olderProjectSearch": true,
+      "olderProjectRead": true
+    },
+    "sourceFileSafety": {
+      "reservedNamesRejected": 3,
+      "ordinaryHeaderAdded": true
+    },
+    "pageErrors": [],
+    "rendererHttpRequests": [],
+    "after": {
+      "exe": "b47854fe70ab79c765cac9ebfc4609f875c06eecc8d9bc9caa7bbbffe9af33c3",
+      "asar": "1440be7814a71cacd8928814c0ee9bfcb9230474642c35d8300f4972c1f5108a"
+    },
+    "before": {
+      "exe": "b47854fe70ab79c765cac9ebfc4609f875c06eecc8d9bc9caa7bbbffe9af33c3",
+      "asar": "1440be7814a71cacd8928814c0ee9bfcb9230474642c35d8300f4972c1f5108a"
+    },
+    "finishedAt": "2026-10-16T19:06:35.154Z"
+  }
+}

@@ -1,0 +1,130 @@
+{
+  "checkedAt": "2026-10-16T19:13:04.901Z",
+  "status": "PASS",
+  "scope": "Reject the ESP32 build_opt.h response-file name, case-insensitively, as project data before native CLI execution. Harmless flag text was used; no arbitrary host program or plugin was executed.",
+  "sdkReference": "https://raw.githubusercontent.com/espressif/arduino-esp32/3.3.12/platform.txt",
+  "unit": {
+    "startedAt": "2026-10-16T19:09:02.231Z",
+    "tests": 21,
+    "passed": 21,
+    "files": 2,
+    "cases": [
+      {
+        "title": "rejects ESP32 compiler response files at project, archive, export and persistence boundaries",
+        "status": "passed"
+      },
+      {
+        "title": "accepts legacy projects but rejects traversal, Windows devices and case collisions",
+        "status": "passed"
+      },
+      {
+        "title": "bounds per-file, total source and file count, and keeps file editing out of Blocks",
+        "status": "passed"
+      },
+      {
+        "title": "hashes all files canonically and retains legacy single-source fingerprints",
+        "status": "passed"
+      },
+      {
+        "title": "preserves every source through copies, persistence, snapshots, archives and validated backup",
+        "status": "passed"
+      },
+      {
+        "title": "exports a complete Arduino directory and never merges into an existing export",
+        "status": "passed"
+      },
+      {
+        "title": "refuses an existing junction/symlink export target without writing through it",
+        "status": "passed"
+      },
+      {
+        "title": "project compiler-control headers cannot reach any CLI command",
+        "status": "passed"
+      },
+      {
+        "title": "oversized and invalid UTF-8 build manifests cannot invoke upload",
+        "status": "passed"
+      },
+      {
+        "title": "reports actual build boundaries and never represents a failed compile as post-build integrity success",
+        "status": "passed"
+      },
+      {
+        "title": "changed CLI, core or library content and a rewritten environment manifest cannot reach upload",
+        "status": "passed"
+      },
+      {
+        "title": "an environment changed during compilation cannot publish a successful uploadable build",
+        "status": "passed"
+      },
+      {
+        "title": "modified external compiler or SDK content refuses upload and a during-build change invalidates older builds",
+        "status": "passed"
+      },
+      {
+        "title": "compiler refuses provisional wiring and wrong, missing or unreadable toolchain versions before compiling",
+        "status": "passed"
+      },
+      {
+        "title": "successful compilation records artifact hashes; stale source and changed artifacts refuse upload before invoking it",
+        "status": "passed"
+      },
+      {
+        "title": "a failed, incomplete or interrupted rebuild invalidates a previously successful build",
+        "status": "passed"
+      },
+      {
+        "title": "incomplete, duplicate and traversal artifact manifests cannot reach the upload command",
+        "status": "passed"
+      },
+      {
+        "title": "upload uses compiled input without rebuilding and records success, failure and interruption distinctly",
+        "status": "passed"
+      },
+      {
+        "title": "parses core JSON from stdout while retaining stderr warnings separately",
+        "status": "passed"
+      },
+      {
+        "title": "cannot validate a mismatching CLI using a version string printed only to stderr",
+        "status": "passed"
+      },
+      {
+        "title": "exposes only journals belonging to this service and records compiler/upload raw provenance",
+        "status": "passed"
+      }
+    ]
+  },
+  "ui": {
+    "startTime": "2026-10-16T19:04:11.953Z",
+    "duration": 9115.626,
+    "expected": 1,
+    "skipped": 0,
+    "unexpected": 0,
+    "flaky": 0
+  },
+  "files": {
+    "packages/contracts/source-files.ts": "7e4ecc4b1a6c2b3cd75f3531fae408f5c330e2ad263f6d46b76f5a743a0ed6e3",
+    "apps/desktop/renderer/CodeFileTabs.tsx": "e15382147dc26cf4674eebff783468a04388c05e82f2d900414ad69f4fd11551",
+    "tests/source-files.test.ts": "05b673ba7638df282acb33f8a1123072d2facacda20919b311c3aa4cfebddedc",
+    "tests/toolchain-build-lifecycle.test.ts": "893610d1eaffba6214dd132e3592d97f4c38c1a275e210bb1278f4384554ed2d",
+    "tests/e2e/source-file-safety.spec.ts": "f3fc9493cc51e1b7e7ba981d460ba3bf98c7fd8cfdcbd615b7109276c8e5d2f8"
+  },
+  "coveredBoundaries": [
+    "Project schema",
+    "Source entry generation",
+    "Encode portable archive",
+    "Decode forged portable ZIP",
+    "SQLite autosave rejects invalid data",
+    "Arduino export rejects before publication",
+    "Compile refuses before any CLI command",
+    "File-management UI rejects three case variants and permits an ordinary header"
+  ],
+  "history": [
+    "Initial added unit case used the wrong store inspection method; corrected before the final pass.",
+    "Initial GUI fixture tried to park before firstWindow; corrected.",
+    "Next GUI fixture omitted opening Studio settings; corrected.",
+    "Interrupted source R6 was replaced by fresh source R7 after fixture correction."
+  ],
+  "limits": "Not an OS sandbox or a general compiler/toolchain safety proof. R7 freeze predates the extra forged-ZIP assertion only; that assertion passed in this separate current-source run."
+}

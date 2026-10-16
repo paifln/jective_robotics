@@ -1,0 +1,78 @@
+{
+  "checkedAt": "2026-10-16T18:57:15.954Z",
+  "scope": "Five explicit additional source GUI scenarios with isolated profiles and mocked assistant/device/build handlers. No physical device command or paid provider request.",
+  "stats": {
+    "startTime": "2026-10-16T18:56:26.144Z",
+    "duration": 29978.651,
+    "expected": 5,
+    "skipped": 0,
+    "unexpected": 0,
+    "flaky": 0
+  },
+  "cases": [
+    {
+      "title": "assistant file review respects consent, source snapshots and project identity without live AI or device commands",
+      "file": "assistant-file-review.spec.ts",
+      "status": "expected",
+      "results": [
+        {
+          "status": "passed",
+          "durationMs": 6017
+        }
+      ]
+    },
+    {
+      "title": "validated build stages are localized and foreign or malformed events cannot replace the current log",
+      "file": "build-stage-ui.spec.ts",
+      "status": "expected",
+      "results": [
+        {
+          "status": "passed",
+          "durationMs": 6634
+        }
+      ]
+    },
+    {
+      "title": "compiler journal preview pages, keyboard navigation, localized labels and export request",
+      "file": "compiler-journal.spec.ts",
+      "status": "expected",
+      "results": [
+        {
+          "status": "passed",
+          "durationMs": 4914
+        }
+      ]
+    },
+    {
+      "title": "desktop surfaces remain usable in both themes and compact windows",
+      "file": "desktop-design.spec.ts",
+      "status": "expected",
+      "results": [
+        {
+          "status": "passed",
+          "durationMs": 6168
+        }
+      ]
+    },
+    {
+      "title": "invalid port replies are explained safely, stale selections clear and USB controls remain retryable",
+      "file": "device-feedback.spec.ts",
+      "status": "expected",
+      "results": [
+        {
+          "status": "passed",
+          "durationMs": 4007
+        }
+      ]
+    }
+  ],
+  "history": {
+    "initial": {
+      "passed": 4,
+      "failed": 1,
+      "failure": "assistant-file-review timed out waiting five seconds for the launch screen. Recorded in tool output; original full JSON was overwritten by the first single-case retry."
+    },
+    "unmodifiedSingleRetry": "PASS; original startup expectation was still loaded by this retry.",
+    "finalChange": "Only assistant-file-review launch-screen wait increased to twenty seconds; final five-case run passed."
+  }
+}

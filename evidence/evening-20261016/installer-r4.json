@@ -1,0 +1,65 @@
+{
+  "snapshot": "current-source-evening-r4-20261017",
+  "checkedAt": "2026-10-16T19:09:43.466Z",
+  "status": "BUILT_UNSIGNED_NOT_INSTALLED",
+  "scope": "Read-only shell-associated executable icon extraction for visual inspection. No installer launch or installation. NSIS page appearance and install/update/uninstall are not verified.",
+  "files": [
+    {
+      "icon": {
+        "height": 32,
+        "width": 32
+      },
+      "sha256": "d1c2a0c104547f1dfcf05aef692dd2060fa0637c828967bb8e8601c75b84a7bc",
+      "file": "JECTIVE Robotics Studio Setup 0.8.18.exe",
+      "signature": "NotSigned"
+    },
+    {
+      "icon": {
+        "height": 32,
+        "width": 32
+      },
+      "sha256": "b47854fe70ab79c765cac9ebfc4609f875c06eecc8d9bc9caa7bbbffe9af33c3",
+      "file": "JECTIVE Robotics Studio.exe",
+      "signature": "NotSigned"
+    }
+  ],
+  "installerBytes": 222611047,
+  "sourceIconBytes": {
+    "checkedAt": "2026-10-16T19:08:19.753Z",
+    "scope": "Read-only streamed search for the exact source ICO PNG bytes inside both executables, plus SHA-256. Does not execute or install them; not a visual NSIS-page test.",
+    "sourceIconPngSha256": "1ee05bbc308a3bc8e9fdea8cf5f07d6be94fc1105f8e96b3718525a54ef8dccb",
+    "files": [
+      {
+        "file": "JECTIVE Robotics Studio Setup 0.8.18.exe",
+        "bytes": 222611047,
+        "sha256": "d1c2a0c104547f1dfcf05aef692dd2060fa0637c828967bb8e8601c75b84a7bc",
+        "sourceIconPngFound": true,
+        "offset": 36296
+      },
+      {
+        "file": "win-unpacked/JECTIVE Robotics Studio.exe",
+        "bytes": 246302208,
+        "sha256": "b47854fe70ab79c765cac9ebfc4609f875c06eecc8d9bc9caa7bbbffe9af33c3",
+        "sourceIconPngFound": true,
+        "offset": 245038248
+      }
+    ]
+  },
+  "associatedInstallerIconVisualReview": "White JECTIVE symbol on blue; inspected extracted 32px image.",
+  "nsisConfiguration": {
+    "oneClick": false,
+    "perMachine": false,
+    "allowToChangeInstallationDirectory": true,
+    "deleteAppDataOnUninstall": false,
+    "installerIcon": "assets/jective.ico",
+    "uninstallerIcon": "assets/jective.ico",
+    "installerHeader": "assets/installer-header.bmp",
+    "installerSidebar": "assets/installer-sidebar.bmp",
+    "uninstallerSidebar": "assets/installer-sidebar.bmp"
+  },
+  "configurationScope": "Builder input configuration only; not proof of actual install/update/uninstall behavior.",
+  "windows10": "NOT RUN",
+  "installation": "NOT RUN",
+  "update": "NOT RUN",
+  "uninstall": "NOT RUN"
+}
