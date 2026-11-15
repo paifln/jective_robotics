@@ -99,9 +99,6 @@ body[data-theme] .studio-toolbar .action-button:nth-child(3):not(:disabled){colo
 .jexi-mascot-small{overflow:hidden;border-radius:12px;background:#e7f0ff}
 .jexi-mascot-small img{position:absolute;top:0;left:-25%;width:150%;height:auto;max-width:none;transform-origin:50% 40%}
 .jexi-mascot-welcome{width:130px;height:150px;margin:0 auto 12px}
-.assistant-launcher{width:56px;height:56px;border-radius:18px;background:#e6efff!important;border-color:#adcbff;box-shadow:0 5px 20px #16345b25!important;padding:3px}
-.assistant-launcher:hover{background:#d6e7ff!important}
-.assistant-launcher .jexi-mascot{width:50px;height:50px}
 .assistant-popover{width:min(440px,calc(100vw - 32px));border-radius:18px;box-shadow:0 16px 55px #10274630;bottom:88px}
 .assistant-popover-title{padding:12px 16px;background:var(--surface);gap:12px}
 .assistant-popover-title strong{font-size:17px;letter-spacing:-.02em}

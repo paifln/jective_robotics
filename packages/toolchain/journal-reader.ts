@@ -1,8 +1,7 @@
 import {open,lstat,realpath,copyFile} from 'node:fs/promises';
 import {dirname,relative,isAbsolute} from 'node:path';
-import {z} from 'zod';
 
-import {JournalPageSchema,type JournalPage} from '../contracts/compiler-journal';
+import {JournalOffsetSchema,JournalPageSchema,type JournalPage} from '../contracts/compiler-journal';
 async function checkedPath(root:string,path:string){
  const base=await realpath(root),folder=dirname(path);
  for(const entry of [folder,path])if((await lstat(entry)).isSymbolicLink())throw new Error('PROCESS_LOG_UNSAFE');
@@ -13,7 +12,7 @@ async function checkedPath(root:string,path:string){
 }
 /** Read only a small page into IPC. Offsets refer to original bytes, not JS characters. */
 export async function readJournalPage(root:string,path:string,offset:unknown):Promise<JournalPage>{
- const start=z.number().int().min(0).max(64*1024*1024).parse(offset);
+ const start=JournalOffsetSchema.parse(offset);
  const file=await open(await checkedPath(root,path),'r');
  try{
   const size=(await file.stat()).size;if(start>size)throw new Error('PROCESS_LOG_OFFSET');

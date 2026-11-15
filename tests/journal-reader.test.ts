@@ -4,7 +4,20 @@ import {tmpdir} from 'node:os';
 import {join} from 'node:path';
 import {readJournalPage,copyJournal} from '../packages/toolchain/journal-reader';
 import {ToolchainService} from '../packages/toolchain';
-import {JournalPageSchema} from '../packages/contracts/compiler-journal';
+import {JournalPageSchema,JournalPageRequestSchema,journalPageAtOffsetSchema} from '../packages/contracts/compiler-journal';
+it('binds journal responses to the requested offset and bounds the shared request contract',()=>{
+ const id='00000000-0000-4000-8000-000000000000',last={text:'last',offset:65536,nextOffset:70000,totalBytes:70000,complete:true};
+ expect(journalPageAtOffsetSchema(65536).parse(last)).toEqual(last);
+ expect(JournalPageSchema.safeParse(last).success).toBe(true);
+ expect(journalPageAtOffsetSchema(0).safeParse(last).success).toBe(false);
+ expect(journalPageAtOffsetSchema(70000).safeParse(last).success).toBe(false);
+ expect(journalPageAtOffsetSchema(70000).safeParse({text:'',offset:70000,nextOffset:70000,totalBytes:70000,complete:true}).success).toBe(true);
+ expect(journalPageAtOffsetSchema(0).safeParse({text:'',offset:0,nextOffset:0,totalBytes:0,complete:true}).success).toBe(true);
+ expect(JournalPageRequestSchema.parse({operationId:id,offset:64*1024*1024})).toEqual({operationId:id,offset:64*1024*1024});
+ for(const offset of [-1,0.5,NaN,Infinity,64*1024*1024+1,'0']){expect(()=>journalPageAtOffsetSchema(offset)).toThrow();expect(JournalPageRequestSchema.safeParse({operationId:id,offset}).success).toBe(false);}
+ expect(JournalPageRequestSchema.safeParse({operationId:'other',offset:0}).success).toBe(false);
+ expect(JournalPageRequestSchema.safeParse({operationId:id,offset:0,path:'private.log'}).success).toBe(false);
+});
 it('rejects backwards, stalled, oversized and contradictory page responses',()=>{
  const page={text:'sample',offset:0,nextOffset:10,totalBytes:20,complete:false};expect(JournalPageSchema.safeParse(page).success).toBe(true);
  for(const invalid of [{...page,nextOffset:0},{...page,offset:15},{...page,nextOffset:21},{...page,complete:true},{...page,nextOffset:20},{...page,nextOffset:65537,totalBytes:65538}])expect(JournalPageSchema.safeParse(invalid).success).toBe(false);

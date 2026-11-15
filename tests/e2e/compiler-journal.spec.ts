@@ -40,6 +40,14 @@ test('compiler journal preview pages, keyboard navigation, localized labels and 
    await app.evaluate(({ipcMain},value)=>{ipcMain.removeHandler('build:journalPage');ipcMain.handle('build:journalPage',()=>({ok:true,value}));},value);
    expect(await page.evaluate(async id=>{try{await window.jective.journalPage(id,0);return false;}catch{return true;}},id)).toBe(true);
   }
+  await app.evaluate(({ipcMain})=>{ipcMain.removeHandler('build:journalPage');ipcMain.handle('build:journalPage',()=>({ok:true,value:{text:'WRONG PAGE MUST NOT REPLACE THE CURRENT LOG',offset:0,nextOffset:10,totalBytes:20,complete:false}}));});
+  await panel.getByRole('button',{name:'Келесі',exact:true}).click();
+  await expect(panel.getByRole('alert')).toBeVisible();
+  await expect(panel.locator('pre')).toHaveText('FIRST Ж😀');
+  await expect(panel.getByRole('button',{name:'Артқа',exact:true})).toBeDisabled();
+  await app.evaluate(({ipcMain})=>{ipcMain.removeHandler('build:journalPage');ipcMain.handle('build:journalPage',(_event,request)=>({ok:true,value:{text:request.offset===0?'FIRST Ж😀':'RECOVERED LAST',offset:request.offset,nextOffset:request.offset===0?65536:70000,totalBytes:70000,complete:request.offset!==0}}));});
+  await panel.getByRole('button',{name:'Келесі',exact:true}).click();await expect(panel.locator('pre')).toHaveText('RECOVERED LAST');await expect(panel.getByRole('alert')).toHaveCount(0);
+  await expect(panel.getByRole('button',{name:'Келесі',exact:true})).toBeDisabled();await panel.getByRole('button',{name:'Артқа',exact:true}).click();await expect(panel.locator('pre')).toHaveText('FIRST Ж😀');await expect(panel.getByRole('button',{name:'Артқа',exact:true})).toBeDisabled();
  }finally{
   await app.evaluate(({app})=>app.exit(0));if(app.process().exitCode===null&&app.process().signalCode===null)await new Promise<void>(r=>app.process().once('exit',()=>r()));
   if(!resolve(root).startsWith(resolve(tmpdir())+sep)||!basename(root).startsWith('jective-journal-ui-'))throw new Error('UNSAFE_CLEANUP');await rm(root,{recursive:true,force:true,maxRetries:20,retryDelay:100});
