@@ -97,7 +97,9 @@ test('wireless Blocks flow keeps the project, sends commands, reports progress a
   await expect(modal.locator('.wireless-state')).toContainText('Program running');await page.evaluate(()=>window.dispatchEvent(new Event('blur')));await expect(modal.locator('.wireless-state')).toHaveText('HC05_WIRELESS_TEST · Stopped');
   await modal.getByRole('button',{name:'Close',exact:true}).click();await expect.poll(()=>app.evaluate(()=>(globalThis as FixtureGlobal).wirelessFixture.closes)).toBe(1);
   const starter=await openArduinoTemplates(page);await starter.getByRole('button',{name:'New robot program (C++ / Bluetooth)',exact:true}).click();
-  await expect(page.getByRole('button',{name:'Run via Bluetooth',exact:true})).toHaveCount(0);
+  await page.getByRole('button',{name:'Run via Bluetooth',exact:true}).click();
+  await expect(modal.getByRole('status')).toHaveText('Upload the C++ / Bluetooth program by USB, then connect HC-05 in Robot control.');
+  await modal.getByRole('button',{name:'Close',exact:true}).click();
   const audit=await app.evaluate(()=>{const fixture=(globalThis as FixtureGlobal).wirelessFixture;return {stops:fixture.stops,nativeCalls:fixture.nativeCalls,serialCloses:fixture.serialCloses};});
   expect(audit.stops).toBeGreaterThanOrEqual(2);expect(audit.serialCloses).toBe(1);expect(audit.nativeCalls).toBe(0);expect(errors).toEqual([]);
  }finally{await finish(app,root);}

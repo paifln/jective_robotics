@@ -6,8 +6,15 @@ import {build} from 'esbuild';
 import {mkdir,copyFile,cp,readFile} from 'node:fs/promises';
 const version=JSON.parse(await readFile('package.json','utf8')).version;
 const production=process.argv.includes('--production');
+let assistantProvisioning=null;
+try{
+ const value=JSON.parse(await readFile('assistant-build.secret.json','utf8'));
+ const server=new URL(value.server);
+ if(server.protocol!=='https:'||server.username||server.password||server.search||server.hash||server.pathname!=='/'||!/^jt_[A-Za-z0-9_-]{43}$/.test(value.token))throw new Error('Invalid assistant build configuration');
+ assistantProvisioning={server:server.origin,token:value.token};
+}catch(error){if(error.code!=='ENOENT')throw new Error('Cannot load assistant build configuration');}
 await mkdir('dist/renderer',{recursive:true});
-await build({entryPoints:['apps/desktop/main.ts'],outfile:'dist/main.cjs',bundle:true,platform:'node',format:'cjs',external:['electron','serialport'],sourcemap:true});
+await build({entryPoints:['apps/desktop/main.ts'],outfile:'dist/main.cjs',bundle:true,platform:'node',format:'cjs',external:['electron','serialport'],sourcemap:true,define:{__JECTIVE_ASSISTANT_PROVISIONING__:JSON.stringify(assistantProvisioning)}});
 await build({entryPoints:['apps/desktop/environment.worker.ts'],outfile:'dist/environment.worker.cjs',bundle:true,platform:'node',format:'cjs',external:['original-fs']});
 await build({entryPoints:['apps/desktop/preload.ts'],outfile:'dist/preload.cjs',bundle:true,platform:'node',format:'cjs',external:['electron']});
 await build({entryPoints:['apps/desktop/renderer/launch-entry.ts'],outfile:'dist/renderer/launch.js',bundle:true,platform:'browser',format:'iife',minify:production,charset:'utf8'});

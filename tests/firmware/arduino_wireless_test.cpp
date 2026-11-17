@@ -104,6 +104,17 @@ int main(int argc, char** argv) {
   testTime = 350; loop(); stopped(); assert(!manual); send(BT, "!wrongFBLR\n"); stopped();
   send(BT, "F"); send(BT, "S"); stopped();
 
+  // Switch modes over the same Bluetooth link without resetting or flashing the board.
+  resetRuntime();
+  upload(BT, finite, 4); send(BT, "!jr1 run a1b2c3d4\n");
+  assert(running);
+  send(BT, "S"); stopped(); assert(!running && !ready);
+  send(BT, "S"); send(BT, "F"); assert(manual && pwmValues[5] == 200 && pwmValues[9] == 200);
+  send(BT, "S"); stopped(); assert(!manual);
+  send(BT, "?jr1 1234abcd\n"); outputContains(BT, "!jr1 hello 1234abcd 1\n");
+  upload(BT, finite, 4); send(BT, "!jr1 run a1b2c3d4\n"); assert(running);
+  send(BT, "S"); stopped();
+
   resetRuntime(); const Step tightLoop[] = {{'l', 1, 0}}; upload(BT, tightLoop, 1, 0); send(BT, "!jr1 run a1b2c3d4\n"); assert(running); send(BT, "S"); stopped(); assert(!running);
   resetRuntime(); Step maximum[96]; for (int i = 0; i < 96; ++i) maximum[i] = {'l', i % 2, 0}; upload(BT, maximum, 96); send(BT, "!jr1 run a1b2c3d4\n"); assert(running && pc == 8); for (int i = 0; i < 20; ++i) loop(); assert(!running && digitalValues[13] == 1); stopped();
   resetRuntime(); testTime = 0xfffffff0UL; upload(BT, finite, 4); send(BT, "!jr1 run a1b2c3d4\n"); testTime += 100; loop(); assert(!running); stopped();

@@ -100,7 +100,7 @@ export function ArduinoRobotControl({active,connectionChange,ports,selected,sele
  return <section className="arduino-robot-control" aria-label={w('Arduino robot control','Управление роботом Arduino','Arduino роботын басқару')}>
   <div className="arduino-robot-connection">
    <select aria-label={portLabel} title={portLabel} value={connection?.port??selected} disabled={!!connection||busy||scanning||!active} onChange={event=>selectPort(event.target.value)}>
-    <option value="">{portLabel}</option>
+    <option value="">{words(locale,'Bluetooth · HC-05 COM port','Bluetooth · COM-порт HC-05','Bluetooth · HC-05 COM порты')}</option>
     {connection&&!ports.some(port=>port.path===connection.port)&&<option value={connection.port}>{connection.port}</option>}
     {ports.map(port=><option key={port.path} value={port.path}>{devicePortLabel(port,locale)}</option>)}
    </select>
@@ -120,6 +120,6 @@ export function ArduinoRobotControl({active,connectionChange,ports,selected,sele
   <p className="arduino-drive-status" role="status" data-connected={!!connection}><span aria-hidden="true"/>{connection?connection.port+' · '+names[command]:w('Disconnected','Не подключён','Қосылмаған')}</p>
   <p className="arduino-drive-hint">{connection
    ?w('Arrows / WASD · Space / Esc to stop','Стрелки / WASD · Пробел / Esc для остановки','Бағыт пернелері / WASD · Тоқтату үшін бос орын / Esc')
-   :w('Pair HC-05 in Windows and upload the C++ / Bluetooth project.','Сопрягите HC-05 в Windows и загрузите проект «C++ / Bluetooth».','HC-05 құрылғысын Windows жүйесінде жұптастырып, «C++ / Bluetooth» жобасын жүктеңіз.')}</p>
+   :w('Pair HC-05 in Windows. If you installed the Bluetooth firmware in Studio, select its HC-05 port and connect.','Сопрягите HC-05 в Windows. Если прошивка Bluetooth уже установлена из Студии, выберите порт HC-05 и подключитесь.','HC-05 құрылғысын Windows жүйесінде жұптастырыңыз. Bluetooth микробағдарламасы Студиядан орнатылған болса, HC-05 портын таңдап, қосылыңыз.')}</p>
  </section>;
 }

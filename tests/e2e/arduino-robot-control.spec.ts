@@ -46,7 +46,7 @@ test('Arduino starter and control stop on pointer release, key release, emergenc
   await expect(page.getByRole('combobox',{name:'USB port',exact:true})).toHaveValue('USB_TEST_ONLY');
   await page.getByRole('button',{name:'Run on board',exact:true}).click();
   await expect(page.locator('.robot-board-status')).toContainText('Uploaded to USB_TEST_ONLY');
-  const control=page.locator('.arduino-robot-control');await expect(control).toContainText('C++ / Bluetooth');await control.getByLabel('HC-05 COM port',{exact:true}).selectOption('HC05_TEST_ONLY');await control.getByRole('button',{name:'Connect · 9600',exact:true}).click();await expect(control.locator('.arduino-drive-status')).toHaveText('HC05_TEST_ONLY · Stopped');
+  const control=page.locator('.arduino-robot-control');await expect(control).toContainText('If you installed the Bluetooth firmware in Studio, select its HC-05 port and connect.');await control.getByLabel('HC-05 COM port',{exact:true}).selectOption('HC05_TEST_ONLY');await control.getByRole('button',{name:'Connect · 9600',exact:true}).click();await expect(control.locator('.arduino-drive-status')).toHaveText('HC05_TEST_ONLY · Stopped');
   const forward=control.getByRole('button',{name:'Forward',exact:true});
   const right=control.getByRole('button',{name:'Right',exact:true});
   const preview=control.locator('.arduino-drive-preview canvas');

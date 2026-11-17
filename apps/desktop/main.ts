@@ -1,7 +1,7 @@
 import {WirelessOpenSchema,WirelessRunSchema,WirelessSessionSchema} from '../../packages/contracts/arduino-wireless';
 import {ArduinoOpenSchema,ArduinoCommandRequestSchema,ArduinoCloseSchema} from '../../packages/contracts/arduino-robot';
 import {rendererRecovery} from './infrastructure/renderer-recovery';
-import {takeAssistantProvisioning,type AssistantProvisioning} from './infrastructure/assistant-provisioning';
+import {takeAssistantProvisioning,bundledAssistantProvisioning,type AssistantProvisioning} from './infrastructure/assistant-provisioning';
 import {restoreWindowPlacement} from '../../packages/contracts/window-placement';
 import {readWindowPlacement,trackWindowPlacement} from './infrastructure/window-placement';
 import {controlWindow,windowState} from './infrastructure/window-controls';
@@ -70,7 +70,10 @@ if(primaryInstance)app.whenReady().then(async()=>{
   await mkdir(app.getPath('userData'),{recursive:true});operationLog=new OperationLog(join(app.getPath('userData'),'logs','operations.jsonl'));operationLog.record('application','STARTED');store=new WorkspaceStore(join(app.getPath('userData'),'workspace.sqlite'));
   const assistant=new AssistantService(join(app.getPath('userData'),'assistant.json'),true);
   // Provision only a revocable learner credential, never the provider key.
-  const provisioning=pendingAssistantProvisioning;pendingAssistantProvisioning=null;
+  const explicitProvisioning=pendingAssistantProvisioning;pendingAssistantProvisioning=null;
+  const bundledProvisioning=app.isPackaged?bundledAssistantProvisioning():null;
+  const provisioning=explicitProvisioning?.server||explicitProvisioning?.token?explicitProvisioning:
+    bundledProvisioning&&(await assistant.settings().catch(()=>null))?.keyConfigured===false?bundledProvisioning:null;
   if(provisioning?.server&&provisioning.token){
     try{await assistant.configure({enabled:true,endpoint:provisioning.server,model:'jective-managed',apiKey:provisioning.token});}
     catch{operationLog.record('assistant','PROVISION_FAILED');}
