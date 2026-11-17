@@ -21,11 +21,11 @@ export class ProjectCodeEditor {
  sync(project:Project,requested:string){
   this.syncing=true;try{
    const fresh=this.projectId!==project.id;if(fresh){this.editor.setModel(null);for(const state of this.models.values())state.model.dispose();this.models.clear();this.projectId=project.id;this.active='sketch.ino';}
-   const entries:[string,string][]=[['sketch.ino',project.source],...sortedSourceFiles(project.sourceFiles)],names=new Set(entries.map(([name])=>name));
-   for(const [name,text]of entries){let state=this.models.get(name);if(!state){state={model:monaco.editor.createModel(text,'cpp',monaco.Uri.parse('jective-project://'+project.id+'/'+name)),view:null};this.models.set(name,state);}else if(state.model.getValue()!==text){state.model.pushStackElement();state.model.pushEditOperations([],[{range:state.model.getFullModelRange(),text}],()=>null);state.model.pushStackElement();}}
-   const file=fresh||!names.has(requested)?'sketch.ino':requested;this.activate(file);
+   const entries:[string,string][]=[['sketch.ino',project.source],...(project.pythonSource===undefined?sortedSourceFiles(project.sourceFiles):[['main.py',project.pythonSource] as [string,string]])],names=new Set(entries.map(([name])=>name));
+   for(const [name,text]of entries){let state=this.models.get(name);if(!state){state={model:monaco.editor.createModel(text,name==='main.py'?'python':'cpp',monaco.Uri.parse('jective-project://'+project.id+'/'+name)),view:null};this.models.set(name,state);}else if(state.model.getValue()!==text){state.model.pushStackElement();state.model.pushEditOperations([],[{range:state.model.getFullModelRange(),text}],()=>null);state.model.pushStackElement();}}
+   const file=fresh||!names.has(requested)?(project.pythonSource===undefined?'sketch.ino':'main.py'):requested;this.activate(file);
    for(const [name,state]of this.models){if(!names.has(name)){state.model.dispose();this.models.delete(name);}}
-   this.editor.updateOptions({readOnly:project.mode==='blocks'});
+   this.editor.updateOptions({ariaLabel:file==='main.py'?'Python source':'Arduino C++ source',readOnly:project.mode==='blocks'||(project.pythonSource!==undefined&&file!=='main.py')});
    if(fresh&&project.mode==='code'){const line=project.source.split('\n').findIndex(text=>text.includes('// STUDENT TASK'))+1;if(line>0){this.editor.setPosition({lineNumber:line,column:1});requestAnimationFrame(()=>{if(this.projectId===project.id&&this.active==='sketch.ino'){this.editor.layout();this.editor.revealLineInCenter(line);}});}}
    return file;
   }finally{this.syncing=false;}

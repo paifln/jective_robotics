@@ -13,9 +13,9 @@ test('isolated challenge panel evaluates declared rules and rejects an untouched
   const page=await app.firstWindow();await app.evaluate(({BrowserWindow})=>BrowserWindow.getAllWindows().forEach(w=>{w.setFocusable(false);w.webContents.setBackgroundThrottling(false);w.setPosition(-12000,-12000);w.on('show',()=>w.setPosition(-12000,-12000));w.showInactive();}));await expect(page.locator('#launch-screen')).toHaveCount(0);
   await page.evaluate(name=>import(new URL('./'+name,location.href).href),name);
   const panel=page.locator('.challenge-test-lab'),run=panel.getByRole('button',{name:'Проверить обе программы',exact:true});await run.click();await expect(panel.locator('tbody tr')).toHaveCount(2);await expect(panel.locator('tbody tr').first().locator('td').first()).toHaveText('Зачёт');await expect(panel.locator('tbody tr').last().locator('td').first()).toHaveText('Не зачтено');
-  await panel.getByLabel('Срок, мс',{exact:true}).fill('20');await expect(panel.locator('table')).toHaveCount(0);await run.click();for(const row of await panel.locator('tbody tr').all())await expect(row.locator('td').first()).toHaveText('Не зачтено');
+  await panel.getByLabel('Срок, с',{exact:true}).fill('0.02');await expect(panel.locator('table')).toHaveCount(0);await run.click();for(const row of await panel.locator('tbody tr').all())await expect(row.locator('td').first()).toHaveText('Не зачтено');
   await panel.getByLabel('Требовать достижения цели',{exact:true}).uncheck();await run.click();for(const row of await panel.locator('tbody tr').all())await expect(row.locator('td').first()).toHaveText('Зачёт');
-  await panel.getByLabel('Срок, мс',{exact:true}).fill('21');await run.click();await expect(panel.getByRole('alert')).toBeVisible();await expect(panel.locator('table')).toHaveCount(0);
+  await panel.getByLabel('Срок, с',{exact:true}).fill('0.021');await run.click();await expect(panel.getByRole('alert')).toBeVisible();await expect(panel.locator('table')).toHaveCount(0);
   await panel.getByRole('button',{name:'Проверить',exact:true}).click();await expect.poll(async()=>{const r=await page.evaluate(()=>window.jective.learningLoad('L47'));return r.ok?r.value?.state:null;}).toBe('needs-practice');
   await page.setViewportSize({width:480,height:800});expect(await panel.evaluate(node=>node.scrollWidth<=node.clientWidth)).toBe(true);
 

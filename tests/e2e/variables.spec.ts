@@ -20,11 +20,11 @@ test('L07 loads actual parameter blocks and runs its sensor reference in the rob
   await expect(page.locator('.output')).toContainText('SENSOR_DRIVER_REQUIRED');
   await page.getByRole('button',{name:'Simulator',exact:true}).click();await openSimulationTools(page);
   await page.getByRole('button',{name:'Reset',exact:true}).click();
-  await expect(page.locator('.simulator-workspace pre')).toContainText('"timeMs": 0');
+  await expect(page.locator('.simulator-workspace pre')).toContainText('"timeSeconds": 0');
   for(let step=1;step<=13;step++){
-   await page.getByRole('button',{name:'Step 20 ms',exact:true}).click();
-   await expect(page.locator('.simulator-workspace pre')).toContainText(`"timeMs": ${step*20}`);
+   await page.getByRole('button',{name:'Step 0.02 s',exact:true}).click();
+   await expect(page.locator('.simulator-workspace pre')).toContainText(`"timeSeconds": ${step*0.02}`);
   }
-  await expect(page.locator('.simulator-workspace')).toContainText('240 ms: CLEAR');
+  await expect(page.locator('.simulator-workspace')).toContainText('0.24 s: CLEAR');
  }finally{await app.evaluate(({app})=>app.exit(0));await rm(root,{recursive:true,force:true,maxRetries:30,retryDelay:100});}
 });

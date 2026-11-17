@@ -8,12 +8,23 @@ export function StudentProjects({project,load,canLoad}:{project:Project;load:(p:
  const {locale}=useLocale();const w=(en:string,ru:string,kk:string)=>words(locale,en,ru,kk);const [label,setLabel]=useState(''),[status,setStatus]=useState(''),[query,setQuery]=useState('');
  const {data,versions,refresh,refreshing,items,total,loadMore}=useProjectBrowser(project.id,locale,setStatus,query);
  const {busy,run}=useWorkspaceAction(project.id,locale,setStatus);
+ const recovery=data?.recovery;
  const date=(value:string)=>new Date(value).toLocaleString(locale==='kk'?'kk-KZ':locale==='ru'?'ru-RU':'en-US');
  const searchLabel=w('Find a project','Найти проект','Жобаны табу'),savedLabel=w('Last saved','Последнее сохранение','Соңғы сақталу');
  const refreshLabel=w('Refresh','Обновить','Жаңарту');
  const filtered=items;
  const stateName=(state:string)=>state==='knowledge-check-passed'?w('✓ Quiz passed','✓ Тест пройден','✓ Тесттен өтті'):state==='self-reported-complete'?w('Marked as worked through','Отмечено как изученное','Оқылды деп белгіленді'):state==='simulation-complete'?w('Experiment completed','Опыт выполнен','Тәжірибе орындалды'):state==='teacher-reviewed'?w('Work reviewed','Работа проверена','Жұмыс тексерілді'):w('In progress','В процессе','Орындалуда');
  return <section className="feature student-projects"><h2>{w('My projects','Мои проекты','Менің жобаларым')}</h2>
+ {recovery&&recovery.id!==project.id&&<div className="toolbar">
+  <button type="button" disabled={busy} onClick={()=>{
+   if(!canLoad())return;
+   void run(()=>window.jective.workspaceOpenProject(recovery.id),async candidate=>{
+    if(candidate)await load(candidate);
+    else{setStatus(w('The autosave is no longer available.','Автосохранение больше недоступно.','Автосақтау енді қолжетімді емес.'));await refresh();}
+   });
+  }}>{w('Continue last project','Продолжить последний проект','Соңғы жобаны жалғастыру')}</button>
+  <span>{recovery.name}</span>
+ </div>}
  <div className="project-browser-toolbar">
   <label className="project-search">{searchLabel}<input value={query} onChange={e=>setQuery(e.target.value)} type="search" maxLength={100}/></label>
   <button type="button" className="icon-button project-refresh" title={refreshLabel} aria-label={refreshLabel} disabled={refreshing||busy} onClick={()=>{setStatus('');void refresh();}}>

@@ -11,6 +11,6 @@ test('L10 actual reference blocks finish bounded work and continue the event-loo
  try{
   const page=await app.firstWindow();await parkVerificationWindow(app);await prepareProgrammingWorkspace(page,true,true);page.on('dialog',d=>d.accept());await expect(page.locator('.monaco-editor').first()).toHaveAttribute('data-source',new RegExp('digitalWrite'.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')));
   await page.getByRole('button',{name:'Learn',exact:true}).click();await page.getByRole('button',{name:/^L10 ·/}).click();await startLessonProject(page,true);await expect(page.getByLabel('Project name')).toHaveValue('L10 · My experiment');
-  await runIndicatorExperiment(page);await expect(page.locator('.output')).toContainText('600 ms | print: DONE');await expect(page.locator('.output')).toContainText('700 ms | print: IDLE');
+  await runIndicatorExperiment(page);await expect(page.locator('.output')).toContainText('0.6 s | print: DONE');await expect(page.locator('.output')).toContainText('0.7 s | print: IDLE');
  }finally{await app.evaluate(({app})=>app.exit(0));await rm(root,{recursive:true,force:true,maxRetries:30,retryDelay:100});}
 });

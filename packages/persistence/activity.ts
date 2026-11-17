@@ -10,7 +10,7 @@ function semanticBlocks(value:unknown):unknown{
  if(value&&typeof value==='object')return Object.fromEntries(Object.entries(value).filter(([key])=>!['id','x','y','collapsed','comment','editable','deletable','movable'].includes(key)).sort(([a],[b])=>a.localeCompare(b)).map(([key,item])=>[key,semanticBlocks(item)]));
  return value;
 }
-export function programFingerprint(project:Project){const files=sortedSourceFiles(project.sourceFiles);return createHash('sha256').update(JSON.stringify(project.mode==='code'?{mode:project.mode,source:project.source,...(files.length?{sourceFiles:files}:{})}:{mode:project.mode,workspace:semanticBlocks(project.workspace)})).digest('hex');}
+export function programFingerprint(project:Project){const files=sortedSourceFiles(project.sourceFiles);return createHash('sha256').update(JSON.stringify(project.mode==='code'?{mode:project.mode,source:project.pythonSource??project.source,...(project.pythonSource===undefined?{}:{language:'python'}),...(files.length?{sourceFiles:files}:{})}:{mode:project.mode,workspace:semanticBlocks(project.workspace)})).digest('hex');}
 export function recordActivity(activity:Activity,project:Project,date=new Date()):Activity{
  if(activity.fingerprints[project.id]===undefined)return seedActivity(activity,project);
  const hash=programFingerprint(project);if(activity.fingerprints[project.id]===hash)return activity;

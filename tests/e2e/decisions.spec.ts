@@ -14,7 +14,7 @@ test('L09 reference loads Boolean blocks and changes its lamp decision for real 
   await page.getByRole('button',{name:'Learn',exact:true}).click();await page.getByRole('button',{name:/^L09 ·/}).click();await expect(page.locator('.content .library-layout>article')).toContainText('eight');
   await startLessonProject(page,true);await expect(page.getByLabel('Project name',{exact:true})).toHaveValue('L09 · My experiment');
   await page.getByRole('button',{name:'Simulator',exact:true}).click();await openSimulationTools(page);
-  const trial=async(label:string)=>{await page.getByRole('button',{name:'Reset',exact:true}).click();await expect(page.locator('.simulator-workspace pre')).toContainText('"timeMs": 0');await page.getByRole('button',{name:'Step 20 ms',exact:true}).click();await expect(page.locator('.simulator-workspace')).toContainText('0 ms: '+label);};
+  const trial=async(label:string)=>{await page.getByRole('button',{name:'Reset',exact:true}).click();await expect(page.locator('.simulator-workspace pre')).toContainText('"timeSeconds": 0');await page.getByRole('button',{name:'Step 0.02 s',exact:true}).click();await expect(page.locator('.simulator-workspace')).toContainText('0 s: '+label);};
   await trial('NOTICE_OFF');await page.getByRole('checkbox',{name:'Simulated button pressed',exact:true}).check();await trial('NOTICE_ON');
   await expect(page.getByLabel('Scenario JSON',{exact:true})).toHaveCount(0);await expect(page.getByLabel('Scenario JSON',{exact:true})).toHaveCount(0);
   const scene=await readPracticeArea(app,page,join(root,'active-practice-area.json'));scene.obstacles=[{x:1,y:1,width:.2,height:1}];

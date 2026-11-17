@@ -120,6 +120,6 @@ export function ArduinoRobotControl({active,connectionChange,ports,selected,sele
   <p className="arduino-drive-status" role="status" data-connected={!!connection}><span aria-hidden="true"/>{connection?connection.port+' · '+names[command]:w('Disconnected','Не подключён','Қосылмаған')}</p>
   <p className="arduino-drive-hint">{connection
    ?w('Arrows / WASD · Space / Esc to stop','Стрелки / WASD · Пробел / Esc для остановки','Бағыт пернелері / WASD · Тоқтату үшін бос орын / Esc')
-   :w('Pair HC-05 in Windows. If you installed the Bluetooth firmware in Studio, select its HC-05 port and connect.','Сопрягите HC-05 в Windows. Если прошивка Bluetooth уже установлена из Студии, выберите порт HC-05 и подключитесь.','HC-05 құрылғысын Windows жүйесінде жұптастырыңыз. Bluetooth микробағдарламасы Студиядан орнатылған болса, HC-05 портын таңдап, қосылыңыз.')}</p>
+   :w('Pair HC-05 in Windows. Install the controller firmware via USB, then select the HC-05 port and connect.','Сопрягите HC-05 в Windows. Установите прошивку пульта по USB, затем выберите порт HC-05 и подключитесь.','HC-05 құрылғысын Windows жүйесінде жұптастырыңыз. Пульт микробағдарламасын USB арқылы орнатып, HC-05 портын таңдап қосылыңыз.')}</p>
  </section>;
 }

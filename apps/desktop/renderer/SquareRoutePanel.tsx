@@ -1,13 +1,14 @@
+import {toMilliseconds} from './time-units';
 import React,{useState} from 'react';
 import {compareSquareRevision,squareRouteDefaults} from '../../../packages/content/square-route';
 
 export function SquareRoutePanel({locale}:{locale:'en'|'ru'|'kk'}){
  const i=locale==='en'?0:locale==='ru'?1:2;
  const t=(en:string,ru:string,kk:string)=>[en,ru,kk][i]!;
- const [turn,setTurn]=useState('1180'),[track,setTrack]=useState('0.18'),[offset,setOffset]=useState('0'),[reason,setReason]=useState('');
+ const [turn,setTurn]=useState('1.18'),[track,setTrack]=useState('0.18'),[offset,setOffset]=useState('0'),[reason,setReason]=useState('');
  const [result,setResult]=useState<ReturnType<typeof compareSquareRevision>|null>(null),[error,setError]=useState('');
  const invalidate=()=>{setResult(null);setError('');};
- const fields=[{label:t('Revised turn (ms)','Новый поворот (мс)','Жаңа бұрылу (мс)'),value:turn,set:setTurn,min:400,max:2000,step:20},{label:t('Track (m)','Колея (м)','Жолтабан (м)'),value:track,set:setTrack,min:.15,max:.25,step:.01},{label:t('Right command offset (%)','Разница правой команды (%)','Оң команда айырмасы (%)'),value:offset,set:setOffset,min:-5,max:5,step:1}];
+ const fields=[{label:t('Revised turn (s)','Новый поворот (с)','Жаңа бұрылу (с)'),value:turn,set:setTurn,min:0.4,max:2,step:0.02},{label:t('Track (m)','Колея (м)','Жолтабан (м)'),value:track,set:setTrack,min:.15,max:.25,step:.01},{label:t('Right command offset (%)','Разница правой команды (%)','Оң команда айырмасы (%)'),value:offset,set:setOffset,min:-5,max:5,step:1}];
  const poses=result?[...result.baseline.rows[0]!.trace,...result.revision.rows[0]!.trace].map(state=>state.pose):[];
  const minX=poses.length?Math.min(...poses.map(pose=>pose.x)):0,minY=poses.length?Math.min(...poses.map(pose=>pose.y)):0;
  const width=poses.length?Math.max(...poses.map(pose=>pose.x))-minX:1,height=poses.length?Math.max(...poses.map(pose=>pose.y))-minY:1;
@@ -15,13 +16,13 @@ export function SquareRoutePanel({locale}:{locale:'en'|'ru'|'kk'}){
  const coordinates=(x:number,y:number)=>[25+(x-minX)*scale,275-(y-minY)*scale];
  const point=(x:number,y:number)=>coordinates(x,y).join(',');
  return <details className="square-route-panel"><summary>{t('Square route calibration lab','Лаборатория квадратного маршрута','Шаршы жолды калибрлеу зертханасы')}</summary>
-  <p>{t('Compare four-sided paths. Baseline turn: 1000 ms; straight time: 1000 ms; three identical repeats. Track changes geometry. Command offset explicitly changes motor commands. These are simulations, not measured motors.','Сравните четырёхсторонние маршруты. Исходный поворот: 1000 мс; прямая: 1000 мс; три одинаковых повтора. Колея меняет геометрию, разница команды явно меняет управление. Это симуляция, а не измерения моторов.','Төрт қабырғалы жолды салыстырыңыз. Бастапқы бұрылу: 1000 мс; түзу: 1000 мс; үш бірдей қайталау. Жолтабан геометрияны, команда айырмасы басқаруды өзгертеді. Бұл симуляция, мотор өлшемдері емес.')}</p>
+  <p>{t('Compare four-sided paths. Baseline turn: 1 s; straight time: 1 s; three identical repeats. Track changes geometry. Command offset explicitly changes motor commands. These are simulations, not measured motors.','Сравните четырёхсторонние маршруты. Исходный поворот: 1 с; прямая: 1 с; три одинаковых повтора. Колея меняет геометрию, разница команды явно меняет управление. Это симуляция, а не измерения моторов.','Төрт қабырғалы жолды салыстырыңыз. Бастапқы бұрылу: 1 с; түзу: 1 с; үш бірдей қайталау. Жолтабан геометрияны, команда айырмасы басқаруды өзгертеді. Бұл симуляция, мотор өлшемдері емес.')}</p>
   <div className="toolbar">{fields.map(field=><label key={field.label}>{field.label}<input aria-label={field.label} type="number" min={field.min} max={field.max} step={field.step} value={field.value} onChange={e=>{field.set(e.target.value);invalidate();}}/></label>)}</div>
   <label>{t('Explain your revision (10–2000 characters)','Объясните корректировку (10–2000 символов)','Өзгерісті түсіндіріңіз (10–2000 таңба)')}<textarea aria-label={t('Revision explanation','Объяснение корректировки','Өзгеріс түсіндірмесі')} maxLength={2000} value={reason} onChange={e=>{setReason(e.target.value);invalidate();}}/></label>
   <button onClick={()=>{try{
    if([turn,track,offset].some(value=>value.trim()===''))throw new Error('SQUARE_ROUTE_CONFIG');
    const baseline={...squareRouteDefaults,trackMeters:Number(track),rightCommandOffset:Number(offset)};
-   setResult(compareSquareRevision(baseline,{...baseline,turnMs:Number(turn)},reason));setError('');
+   setResult(compareSquareRevision(baseline,{...baseline,turnMs:toMilliseconds(Number(turn))},reason));setError('');
   }catch{setResult(null);setError(t('Check the numeric limits and write an explanation of at least 10 characters.','Проверьте пределы чисел и напишите объяснение длиной минимум 10 символов.','Сан шектерін тексеріп, кемінде 10 таңбалық түсіндірме жазыңыз.'));}}}>{t('Compare square routes','Сравнить квадратные маршруты','Шаршы жолдарды салыстыру')}</button>
   {error&&<p role="alert">{error}</p>}
   {result&&<>

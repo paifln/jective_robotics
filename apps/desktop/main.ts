@@ -9,6 +9,7 @@ import {ProjectListRequestSchema} from '../../packages/contracts/project-browser
 import {assessKnowledge} from '../../packages/content/assess-knowledge';
 import {snapshotEnvironmentInThread} from './infrastructure/environment-thread';
 import {isStudioMedia,studioMediaResponse} from './infrastructure/media';
+import {pythonSketch,updatePythonSketch} from '../../packages/codegen/python';
 import {exportArduinoProject} from '../../packages/persistence/arduino-export';
 import {createProjectCopy} from '../../packages/contracts/project-copy';
 import {ReviewArchiveSchema} from '../../packages/contracts/review';
@@ -47,7 +48,12 @@ let activeOperations=0;let restoringWorkspace=false;
 function clearCurrentDocument(){documents.clear();}
 function currentLocale(){try{return store?.state().locale??'ru';}catch{return 'ru' as const;}}
 function brandedMessage(options:Electron.MessageBoxOptions){const locale=currentLocale();return {...options,message:nativeText(options.message,locale),buttons:options.buttons?.map(label=>nativeText(label,locale)),title:options.title?'JECTIVE — '+nativeText(options.title,locale):'JECTIVE Robotics Studio',icon:nativeImage.createFromPath(join(__dirname,'renderer','jective-icon.png')).resize({width:64,height:64})};}
-function resolveProject(value:unknown){const p=ProjectSchema.parse(value);const {profile,hash}=verifyProjectProfile(p);return {...p,profileVersion:profile.version,profileHash:hash};}
+function resolveProject(value:unknown,forBoard=false){
+ const input=ProjectSchema.parse(value);
+ const {profile,hash}=verifyProjectProfile(input);
+ const project={...input,profileVersion:profile.version,profileHash:hash};
+ return forBoard?{...project,source:pythonSketch(project)}:updatePythonSketch(project);
+}
 async function chooseExport(extension:string,name:string,bytes:Uint8Array|string){const selected=await dialog.showSaveDialog(win,{defaultPath:name+'.'+extension,filters:[{name:extension,extensions:[extension]}]});if(selected.canceled||!selected.filePath)return false;await writeFile(selected.filePath,bytes);return true;}
 async function chooseArchive(){const selected=await dialog.showOpenDialog(win,{filters:[{name:'JECTIVE portable file',extensions:['jective']}],properties:['openFile']});if(selected.canceled||!selected.filePaths[0])return null;const path=selected.filePaths[0];return decodeArchive(await readBoundedFile(path,{maxBytes:MAX_PORTABLE_ARCHIVE,tooLarge:'ARCHIVE_TOO_LARGE',invalid:'ARCHIVE_UNSAFE',changed:'ARCHIVE_CHANGED'}));}
 function handler(channel:string,fn:(value:unknown)=>Promise<unknown>){ipcMain.handle(channel,async(event,value:unknown)=>{
@@ -133,7 +139,7 @@ if(primaryInstance)app.whenReady().then(async()=>{
   });
   handler('project:open',async()=>{if(projectBusy)throw new Error('PROJECT_BUSY');projectBusy=true;try{const selected=await dialog.showOpenDialog(win,{filters:[{name:'JECTIVE project',extensions:['json']}],properties:['openFile']});if(selected.canceled)return null;const path=selected.filePaths[0];if(!path) return null;const snapshot=await readProjectSnapshot(path),p=snapshot.project;return documents.prepare(p,{path,revision:p.revision,fingerprint:snapshot.fingerprint});}finally{projectBusy=false;}});
   handler('project:save',async value=>{if(projectBusy)throw new Error('PROJECT_BUSY');projectBusy=true;try{const requestedEpoch=documents.version;const p=resolveProject(value);const storedBefore=JSON.stringify(store.project(p.id));const binding=documents.binding;let target=binding?.path??null;let expected=binding?.revision??null,expectedFingerprint=binding?.fingerprint??null;if(!target){const selected=await dialog.showSaveDialog(win,{defaultPath:p.name+'.jective.json',filters:[{name:'JECTIVE project',extensions:['json']}]});if(selected.canceled||!selected.filePath)throw new Error('SAVE_CANCELLED');target=selected.filePath;expected=null;expectedFingerprint=null;}const saved=await writeProject(target,p,expected,expectedFingerprint);const stillCurrent=documents.adoptSaved({path:target,revision:saved.revision,fingerprint:projectFileFingerprint(JSON.stringify(saved,null,2))},requestedEpoch);store.completedSave(saved,stillCurrent,JSON.stringify(store.project(p.id))===storedBefore);return saved;}finally{projectBusy=false;}});
-  handler('build:compile',async value=>{if(buildBusy)throw new Error('TOOLCHAIN_BUSY');buildBusy=true;try{return await service.compile(resolveProject(value));}finally{buildBusy=false;}});
+  handler('build:compile',async value=>{if(buildBusy)throw new Error('TOOLCHAIN_BUSY');buildBusy=true;try{return await service.compile(resolveProject(value,true));}finally{buildBusy=false;}});
   handler('build:journalPage',async value=>{const request=JournalPageRequestSchema.parse(value);return service.journalPage(request.operationId,request.offset);});
   handler('build:journalExport',async value=>{const id=z.uuid().parse(value);await service.journalPage(id,0);const selected=await dialog.showSaveDialog(win,{defaultPath:'jective-compiler-'+id+'.log',filters:[{name:'Log',extensions:['log']}]});if(selected.canceled||!selected.filePath)return false;await service.exportJournal(id,selected.filePath);return true;});
   handler('build:cancel',async()=>service.cancel());
@@ -152,7 +158,7 @@ if(primaryInstance)app.whenReady().then(async()=>{
   handler('project:export',async value=>{const p=resolveProject(value);return chooseExport('jective',p.name,encodeArchive('project',p));});
   handler('project:import',async()=>{if(projectBusy)throw new Error('PROJECT_BUSY');projectBusy=true;try{const archive=await chooseArchive();if(!archive)return null;if(archive.kind!=='project')throw new Error('ARCHIVE_KIND');return documents.prepare(archive.value,null,true);}finally{projectBusy=false;}});
   handler('project:acceptOpen',async value=>{return documents.accept(value,p=>store.autosave(resolveProject(p)));});
-  handler('project:arduino',async value=>{const p=resolveProject(value);const selected=await dialog.showOpenDialog(win,{properties:['openDirectory','createDirectory']});if(selected.canceled||!selected.filePaths[0])return false;await exportArduinoProject(p,selected.filePaths[0]);return true;});
+  handler('project:arduino',async value=>{const p=resolveProject(value,true);const selected=await dialog.showOpenDialog(win,{properties:['openDirectory','createDirectory']});if(selected.canceled||!selected.filePaths[0])return false;await exportArduinoProject(p,selected.filePaths[0]);return true;});
   handler('wireless:open',async value=>{const request=WirelessOpenSchema.parse(value);if(buildBusy)throw new Error('DEVICE_BUSY');return devices.openWireless(request.path);});
   handler('wireless:run',async value=>{const request=WirelessRunSchema.parse(value);if(buildBusy||win.isDestroyed()||!win.isFocused()||win.isMinimized()){await devices.stopWirelessActive();throw new Error('WIRELESS_CONTROL_INACTIVE');}return devices.runWireless(request);});
   handler('wireless:keepalive',async value=>{const request=WirelessSessionSchema.parse(value);if(win.isDestroyed()||!win.isFocused()||win.isMinimized())await devices.stopWirelessActive();return devices.keepaliveWireless(request.sessionId);});
@@ -179,7 +185,7 @@ if(primaryInstance)app.whenReady().then(async()=>{
      if(!(await port()))throw new Error('PORT_NOT_FOUND');
     }
     await devices.close();
-    return await service.upload(resolveProject(p.project),p.operationId,p.port);
+    return await service.upload(resolveProject(p.project,true),p.operationId,p.port);
    }finally{buildBusy=false;}
   });
   handler('review:open',async()=>{const selected=await chooseArchive();if(!selected)return null;return verifyReviewArchive(selected);});

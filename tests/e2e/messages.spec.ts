@@ -17,7 +17,7 @@ test('L05 message evidence exports real timestamps and simulation origin',async(
   await startLessonProject(page,true);
   await expect(page.getByLabel('Project name')).toHaveValue('L05 · My experiment');
   await runIndicatorExperiment(page);
-  await expect(page.locator('.output')).toContainText('1250 ms | print: PHASE_B');
+  await expect(page.locator('.output')).toContainText('1.25 s | print: PHASE_B');
   const destination=join(root,'messages.json');
   await app.evaluate(({session},path)=>{session.defaultSession.once('will-download',(_event,item)=>item.setSavePath(path));},destination);
   await page.getByRole('button',{name:'Export simulation trace',exact:true}).click();

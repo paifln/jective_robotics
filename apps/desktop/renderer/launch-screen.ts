@@ -1,5 +1,6 @@
 import {launchMotivations,selectLaunchMotivation,type MotivationLocale} from '../../../packages/engagement/launch-motivation';
 let finishing=false;
+const minimumLaunchTimeMs=3500;
 let previous:string|null=null;
 try{previous=localStorage.getItem('jective-launch-motivation');}catch{/* Optional rotation persistence. */}
 // The tiny boot entry runs before the editor bundle. Reuse its selected item
@@ -20,5 +21,5 @@ export function localizeLaunchMotivation(locale:MotivationLocale){
 localizeLaunchMotivation('ru');
 export function finishLaunchScreen(){
  if(finishing)return;finishing=true;
- setTimeout(()=>{document.getElementById('launch-screen')?.classList.add('launch-complete');setTimeout(()=>document.getElementById('launch-screen')?.remove(),450);},Math.max(0,1500-performance.now()));
+ setTimeout(()=>{document.getElementById('launch-screen')?.classList.add('launch-complete');setTimeout(()=>document.getElementById('launch-screen')?.remove(),450);},Math.max(0,minimumLaunchTimeMs-performance.now()));
 }

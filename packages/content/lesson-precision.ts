@@ -10,7 +10,7 @@ Two encoder adapters observe quantized left and right wheel travel in the actual
 
 Forward correction grows with remaining distance, is limited to 25 percent and slows near the target with a five-percent minimum while moving. Differential steering uses the wheel-derived heading, with correction bounded to eight percentage points. Each final wheel command stays within zero through 30 percent. The controller requests stop when estimated distance is within three millimetres of the target. Quantization, sampling and remaining wheel momentum mean the final truth error can differ from that threshold. It is not proof of physical millimetre accuracy.
 
-The timed comparison commands both wheels at 25 percent for a duration calculated from fixed nominal maximum speed 0.6 metres per second. For 0.4 metres this is about 2667 milliseconds, rounded to a 20-millisecond step. Its estimate does not adjust for actual speed, but it retains the same feedback-validity and manual-stop diagnostics for this teaching comparison. Both modes use the same geometry and acceleration in each pair. The feedback trial adapts its duration to observations; the timed trial does not use distance to decide normal completion.
+The timed comparison commands both wheels at 25 percent for a duration calculated from fixed nominal maximum speed 0.6 metres per second. For 0.4 metres this is about 2.667 s, rounded to a 0.02-second step. Its estimate does not adjust for actual speed, but it retains the same feedback-validity and manual-stop diagnostics for this teaching comparison. Both modes use the same geometry and acceleration in each pair. The feedback trial adapts its duration to observations; the timed trial does not use distance to decide normal completion.
 
 Three default pairs assume maximum speeds 0.51, 0.60 and 0.69 metres per second. These are explicitly chosen model parameters, not measured motor noise or a statistical sample of real robots. Compare repeated endpoint errors and their mean across the same assumptions. Feedback can be more robust across changed speed while a well-matched timed run can be more accurate at the nominal setting. Preserve that counterexample rather than claiming feedback always wins. If variation is zero, identical deterministic repeats do not prove physical repeatability.
 
@@ -21,7 +21,7 @@ Missing wheel feedback, invalid values, an observed update gap or manual stop la
 
 Команда вперёд зависит от остатка расстояния, ограничена 25% и уменьшается возле цели до минимума 5% во время движения. Коррекция угла по разности колёс ограничена восемью процентными пунктами. Итоговые команды 0–30%. Остановка запрашивается при оценённом остатке не более 3 мм. Квантование, шаг времени и инерция меняют конечную истинную ошибку; это не доказательство миллиметровой точности робота.
 
-Временной вариант даёт 25% на длительность по номинальным 0,6 м/с: около 2667 мс для 0,4 м, округлённо до шага 20 мс. Он не поправляет длительность по расстоянию, но сохраняет проверки данных и остановки. В каждой паре одинаковы геометрия и ускорение. Обратная связь меняет длительность по наблюдениям.
+Временной вариант даёт 25% на длительность по номинальным 0,6 м/с: около 2,667 с для 0,4 м, округлённо до шага 0,02 с. Он не поправляет длительность по расстоянию, но сохраняет проверки данных и остановки. В каждой паре одинаковы геометрия и ускорение. Обратная связь меняет длительность по наблюдениям.
 
 Три пары задают скорости 0,51, 0,60 и 0,69 м/с. Это параметры модели, не реальный шум или статистическая выборка. Сравните ошибки и среднее при одинаковых условиях. Обратная связь может быть устойчивее к изменению скорости, а согласованный временной вариант точнее при номинале. Сохраните этот контрпример. Нулевой разброс одинаковых повторов не доказывает реальную повторяемость.
 
@@ -32,7 +32,7 @@ Missing wheel feedback, invalid values, an observed update gap or manual stop la
 
 Алға пәрмен қалған қашықтыққа тәуелді, 25%-пен шектеліп, нысанаға жақындағанда қозғалыс минимумына 5%-ға азаяды. Дөңгелек айырмасымен бұрыш түзетуі сегіз пайыздық пунктпен шектеледі. Соңғы пәрмен 0–30%. Бағаланған қалдық 3 мм болғанда тоқтау сұралады. Кванттау, уақыт қадамы және инерция соңғы шын қатені өзгертеді; бұл нақты миллиметр дәлдік дәлелі емес.
 
-Уақыт нұсқасы номинал 0.6 м/с бойынша 25% береді: 0.4 м үшін шамамен 2667 мс, 20 мс қадамға дөңгелектеледі. Ұзақтықты қашықтықпен түзетпейді, бірақ дерек пен тоқтау тексеруі сақталады. Әр жұпта геометрия мен үдеу бірдей. Кері байланыс ұзақтықты бақылаумен өзгертеді.
+Уақыт нұсқасы номинал 0.6 м/с бойынша 25% береді: 0.4 м үшін шамамен 2,667 с, 0,02 с қадамға дөңгелектеледі. Ұзақтықты қашықтықпен түзетпейді, бірақ дерек пен тоқтау тексеруі сақталады. Әр жұпта геометрия мен үдеу бірдей. Кері байланыс ұзақтықты бақылаумен өзгертеді.
 
 Үш жұп 0.51, 0.60 және 0.69 м/с жылдамдығын жорамалдайды. Бұл модель параметрі, нақты шу не статистикалық үлгі емес. Бірдей жағдайда қате мен орташаны салыстырыңыз. Кері байланыс жылдамдық өзгерісіне төзімдірек, ал дәл келетін уақыт нұсқасы номиналда дәлірек болуы мүмкін. Осы қарсы мысалды сақтаңыз. Бірдей қайталаудың нөл таралуы нақты қайталануды дәлелдемейді.
 

@@ -14,8 +14,8 @@ test('L08 loads its mapping blocks and computes the midpoint through the robot w
   await expect(page.locator('.content article')).toContainText('saturation');
   await startLessonProject(page,true);await expect(page.getByLabel('Project name')).toHaveValue('L08 · My experiment');
   await expect(page.locator('.monaco-editor').first()).toHaveAttribute('data-source',new RegExp('jv_bounded_input'.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')));
-  await page.getByRole('button',{name:'Simulator',exact:true}).click();await openSimulationTools(page);await page.getByRole('button',{name:'Reset',exact:true}).click();await expect(page.locator('.simulator-workspace pre')).toContainText('"timeMs": 0');
-  await page.getByRole('button',{name:'Step 20 ms',exact:true}).click();await expect(page.locator('.simulator-workspace pre')).toContainText('"output_request_pct": 15');
+  await page.getByRole('button',{name:'Simulator',exact:true}).click();await openSimulationTools(page);await page.getByRole('button',{name:'Reset',exact:true}).click();await expect(page.locator('.simulator-workspace pre')).toContainText('"timeSeconds": 0');
+  await page.getByRole('button',{name:'Step 0.02 s',exact:true}).click();await expect(page.locator('.simulator-workspace pre')).toContainText('"output_request_pct": 15');
   await expect(page.locator('.simulator-workspace pre')).toContainText('"input_value": 50');
  }finally{await app.evaluate(({app})=>app.exit(0));await rm(root,{recursive:true,force:true,maxRetries:30,retryDelay:100});}
 });

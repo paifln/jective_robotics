@@ -2,7 +2,7 @@ import React,{useState,useRef,useEffect} from 'react';
 import {knowledgeChecks,gradeKnowledge} from '../../../packages/content/knowledge-check';
 import {playCue} from './interface-audio';
 type Locale='en'|'ru'|'kk';
-const units:Record<string,{ru:string;kk:string}>={ms:{ru:'мс',kk:'мс'},m:{ru:'м',kk:'м'},cm:{ru:'см',kk:'см'},counts:{ru:'отсчётов',kk:'сан'},'percentage points':{ru:'процентных пунктов',kk:'пайыздық тармақ'},'rad/s':{ru:'рад/с',kk:'рад/с'}};
+const units:Record<string,{ru:string;kk:string}>={s:{ru:'с',kk:'с'},m:{ru:'м',kk:'м'},cm:{ru:'см',kk:'см'},counts:{ru:'отсчётов',kk:'сан'},'percentage points':{ru:'процентных пунктов',kk:'пайыздық тармақ'},'rad/s':{ru:'рад/с',kk:'рад/с'}};
 const copy={en:['Try it yourself','Check answers','Try again','Correct','Review and try again','Knowledge check passed','Next step','This diagram shows logical roles, not physical wiring.'],ru:['Закрепи знания','Проверить ответы','Попробовать снова','Верно','Повтори материал и попробуй снова','Проверка знаний пройдена','Следующий шаг','Схема показывает логические роли, а не физические соединения.'],kk:['Біліміңді бекіт','Жауаптарды тексеру','Қайта көру','Дұрыс','Материалды қайталап, қайта көр','Білім тексеруі өтті','Келесі қадам','Сұлба физикалық сымдарды емес, логикалық рөлдерді көрсетеді.']};
 export function LessonPractice({id,locale,onProgressSaved}:{id:string;locale:Locale;onProgressSaved?:()=>void}){
  const pending=useRef(false),alive=useRef(true);const [checking,setChecking]=useState(false);useEffect(()=>{alive.current=true;return()=>{alive.current=false;};},[]);

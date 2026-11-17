@@ -1,3 +1,4 @@
+import {secondsText} from './time-units';
 import React,{useEffect,useState} from 'react';
 import {avoidanceWorldExperiment} from '../../../packages/content/avoidance-world';
 export function AvoidancePanel({locale}:{locale:'en'|'ru'|'kk'}){
@@ -16,9 +17,9 @@ export function AvoidancePanel({locale}:{locale:'en'|'ru'|'kk'}){
    <circle cx={row.after.x*100} cy={280-row.after.y*100} r={result.world.robot!.radius*100} fill="#211dff" fillOpacity={.3} stroke="#211dff"/>
    <line x1={row.after.x*100} y1={280-row.after.y*100} x2={(row.after.x+.18*Math.cos(row.after.heading))*100} y2={280-(row.after.y+.18*Math.sin(row.after.heading))*100} stroke="#111827" strokeWidth={2}/>
   </svg><label>{t('Replay time','Время просмотра','Қарау уақыты')}<input aria-label={t('Avoidance replay time','Время просмотра обхода','Айналу қарау уақыты')} type="range" min={0} max={result.rows.length-1} step={1} value={frame} onChange={e=>{setPlaying(false);setFrame(Number(e.target.value));}}/></label>
-  <p role="status">{row.input.timeMs} ms · {names[row.control.state]} · {t('Attempts','Попытки','Әрекеттер')}: {row.control.attempts}</p>
-  <ol>{result.rows.filter(step=>step.control.transition).map(step=><li key={step.input.timeMs}>{step.input.timeMs} ms · {names[step.control.state]}</li>)}</ol>
-  <p>{t('The final stop at 3800 ms bounds this experiment. These results describe two declared geometries, not physical navigation safety.','Остановка в 3800 мс ограничивает опыт. Результаты относятся к двум заданным мирам и не подтверждают физическую безопасность навигации.','3800 мс тоқтауы сынақты шектейді. Нәтиже екі берілген әлемге қатысты, нақты жүру қауіпсіздігін растамайды.')}</p>
+  <p role="status">{secondsText(row.input.timeMs)} s · {names[row.control.state]} · {t('Attempts','Попытки','Әрекеттер')}: {row.control.attempts}</p>
+  <ol>{result.rows.filter(step=>step.control.transition).map(step=><li key={step.input.timeMs}>{secondsText(step.input.timeMs)} s · {names[step.control.state]}</li>)}</ol>
+  <p>{t('The final stop at 3.8 s bounds this experiment. These results describe two declared geometries, not physical navigation safety.','Остановка в 3,8 с ограничивает опыт. Результаты относятся к двум заданным мирам и не подтверждают физическую безопасность навигации.','3,8 с тоқтауы сынақты шектейді. Нәтиже екі берілген әлемге қатысты, нақты жүру қауіпсіздігін растамайды.')}</p>
   <button onClick={()=>{const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(result,null,2)],{type:'application/json'}));a.download='L26-avoidance-world.json';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);}}>{t('Export avoidance JSON','Экспортировать обход JSON','Айналуды JSON экспорттау')}</button></>}
  </details>;
 }

@@ -24,10 +24,13 @@ test('Arduino starter and control stop on pointer release, key release, emergenc
    ipcMain.removeHandler('arduino:close');ipcMain.handle('arduino:close',()=>{state.arduinoFixture.closed++;state.arduinoFixture.commands.push('S');return {ok:true,value:true};});
    const build={operationId:'79c3c84b-06ef-4b89-80f2-e25f898605b1',sourceHash:'fixture',state:'succeeded',exitCode:0,log:'Compile fixture',artifacts:[]};
    ipcMain.removeHandler('build:compile');
-   ipcMain.handle('build:compile',()=>({ok:true,value:build}));
+   ipcMain.handle('build:compile',(_event,project)=>{
+    if(project.profileId!=='arduino-uno'||!project.source.includes('COMMAND_TIMEOUT_MS'))throw new Error('EXPECTED_CONTROLLER_FIRMWARE');
+    return {ok:true,value:build};
+   });
    ipcMain.removeHandler('device:upload');
    ipcMain.handle('device:upload',(_event,request)=>{
-    if(request.port!=='USB_TEST_ONLY'||request.operationId!==build.operationId||request.mode!=='run')throw new Error('UNEXPECTED_UPLOAD_TARGET');
+    if(request.project.profileId!=='arduino-uno'||!request.project.source.includes('COMMAND_TIMEOUT_MS')||request.port!=='USB_TEST_ONLY'||request.operationId!==build.operationId||request.mode!=='run')throw new Error('UNEXPECTED_UPLOAD_TARGET');
     return {ok:true,value:{...build,log:'Upload fixture'}};
    });
    for(const channel of ['serial:open','serial:send']){ipcMain.removeHandler(channel);ipcMain.handle(channel,()=>{state.arduinoFixture.nativeCalls++;throw new Error('HARDWARE_ACCESS_FORBIDDEN_IN_UI_FIXTURE');});}
@@ -39,14 +42,14 @@ test('Arduino starter and control stop on pointer release, key release, emergenc
   await navigation.getByRole('button',{name:'Robot control',exact:true}).click();
   await expect(page.getByRole('heading',{name:'Robot control',exact:true})).toBeVisible();
   const starter=await openArduinoTemplates(page);
-  await starter.getByRole('button',{name:'New robot program (C++ / Bluetooth)',exact:true}).click();
-  await expect(page.locator('.studio h1')).toHaveText('My Arduino Uno robot');await expect(page.locator('.monaco-editor')).toHaveAttribute('data-source',/SoftwareSerial/);
+  await starter.getByRole('button',{name:'New robot program (Blocks)',exact:true}).click();
+  await expect(page.getByRole('button',{name:'Run via Bluetooth',exact:true})).toBeEnabled();
   await page.getByRole('combobox',{name:'USB port',exact:true}).selectOption('USB_TEST_ONLY');
   await navigation.getByRole('button',{name:'Robot control',exact:true}).click();
   await expect(page.getByRole('combobox',{name:'USB port',exact:true})).toHaveValue('USB_TEST_ONLY');
-  await page.getByRole('button',{name:'Run on board',exact:true}).click();
+  await page.getByRole('button',{name:'Install controller firmware via USB',exact:true}).click();
   await expect(page.locator('.robot-board-status')).toContainText('Uploaded to USB_TEST_ONLY');
-  const control=page.locator('.arduino-robot-control');await expect(control).toContainText('If you installed the Bluetooth firmware in Studio, select its HC-05 port and connect.');await control.getByLabel('HC-05 COM port',{exact:true}).selectOption('HC05_TEST_ONLY');await control.getByRole('button',{name:'Connect · 9600',exact:true}).click();await expect(control.locator('.arduino-drive-status')).toHaveText('HC05_TEST_ONLY · Stopped');
+  const control=page.locator('.arduino-robot-control');await expect(control).toContainText('Install the controller firmware via USB, then select the HC-05 port and connect.');await control.getByLabel('HC-05 COM port',{exact:true}).selectOption('HC05_TEST_ONLY');await control.getByRole('button',{name:'Connect · 9600',exact:true}).click();await expect(control.locator('.arduino-drive-status')).toHaveText('HC05_TEST_ONLY · Stopped');
   const forward=control.getByRole('button',{name:'Forward',exact:true});
   const right=control.getByRole('button',{name:'Right',exact:true});
   const preview=control.locator('.arduino-drive-preview canvas');

@@ -1,5 +1,5 @@
 import {test,expect,_electron as electron,type ElectronApplication,type Page} from '@playwright/test';
-import {openArduinoTemplates} from './helpers/studio';
+import {openArduinoTemplates,openStudioProgram} from './helpers/studio';
 import {mkdtemp,rm} from 'node:fs/promises';
 import {basename,join,resolve,sep} from 'node:path';
 import {tmpdir} from 'node:os';
@@ -98,10 +98,26 @@ test('wireless Blocks flow keeps the project, sends commands, reports progress a
   await modal.getByRole('button',{name:'Close',exact:true}).click();await expect.poll(()=>app.evaluate(()=>(globalThis as FixtureGlobal).wirelessFixture.closes)).toBe(1);
   const starter=await openArduinoTemplates(page);await starter.getByRole('button',{name:'New robot program (C++ / Bluetooth)',exact:true}).click();
   await page.getByRole('button',{name:'Run via Bluetooth',exact:true}).click();
-  await expect(modal.getByRole('status')).toHaveText('Upload the C++ / Bluetooth program by USB, then connect HC-05 in Robot control.');
+  await expect(modal.getByRole('status')).toHaveText('Upload C++ programs to the board by USB. For manual Bluetooth control, open Robot control.');
+  await expect(modal.getByRole('button',{name:'Send and run',exact:true})).toHaveCount(0);
   await modal.getByRole('button',{name:'Close',exact:true}).click();
   const audit=await app.evaluate(()=>{const fixture=(globalThis as FixtureGlobal).wirelessFixture;return {stops:fixture.stops,nativeCalls:fixture.nativeCalls,serialCloses:fixture.serialCloses};});
   expect(audit.stops).toBeGreaterThanOrEqual(2);expect(audit.serialCloses).toBe(1);expect(audit.nativeCalls).toBe(0);expect(errors).toEqual([]);
+ }finally{await finish(app,root);}
+});
+
+test('an ordinary Blocks project sends over Bluetooth without a robot template',async()=>{
+ const {app,page,root}=await start();
+ try{
+  await openStudioProgram(page);
+  await page.getByRole('button',{name:'Run via Bluetooth',exact:true}).click();
+  const modal=page.locator('#arduino-wireless-dialog');
+  await modal.getByLabel('HC-05 port',{exact:true}).selectOption('HC05_WIRELESS_TEST');
+  await modal.getByRole('button',{name:'Connect · 9600',exact:true}).click();
+  await modal.getByRole('button',{name:'Send and run',exact:true}).click();
+  await expect.poll(()=>app.evaluate(()=>(globalThis as FixtureGlobal).wirelessFixture.programs.length)).toBe(1);
+  await resolveRun(app,'completed');
+  await expect(modal.locator('.wireless-state')).toContainText('Program completed');
  }finally{await finish(app,root);}
 });
 

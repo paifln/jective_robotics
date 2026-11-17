@@ -23,7 +23,7 @@ describe('lesson knowledge checking',()=>{
   expect(()=>gradeKnowledge('L99',0,'0')).toThrow('KNOWLEDGE_CHECK_UNKNOWN');
  });
  it('checks sample intervals, quantization and missing readings rather than common wrong answers',()=>{
-  expect(gradeKnowledge('L13',0,'60').numberCorrect).toBe(false);expect(gradeKnowledge('L13',0,'40').passed).toBe(true);
+  expect(gradeKnowledge('L13',0,'0.06').numberCorrect).toBe(false);expect(gradeKnowledge('L13',0,'0.04').passed).toBe(true);
   expect(gradeKnowledge('L15',0,'127').numberCorrect).toBe(false);expect(gradeKnowledge('L15',0,'128').passed).toBe(true);
   expect(gradeKnowledge('L17',0,'0.333').numberCorrect).toBe(false);
  });

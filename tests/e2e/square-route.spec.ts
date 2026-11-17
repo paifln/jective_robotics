@@ -25,7 +25,7 @@ test('square calibration exports actual repeated traces and requires a learner r
   const report=JSON.parse(await readFile(file,'utf8'));
   expect(report.revision.summary.meanEndpointErrorMeters).toBeLessThan(report.baseline.summary.meanEndpointErrorMeters);
   expect(report.revision.rows[0].trace.at(-1).status).toBe('completed');expect(report.revision.rows[0].sides).toHaveLength(4);await expect(panel.locator('.square-sides tbody tr')).toHaveCount(4);expect(report.revision.physicalVerification).toBe('NOT RUN');expect(report.justification).toContain('under-turn');
-  await panel.getByLabel('Revised turn (ms)',{exact:true}).fill('');await expect(panel.locator('tbody tr')).toHaveCount(0);
+  await panel.getByLabel('Revised turn (s)',{exact:true}).fill('');await expect(panel.locator('tbody tr')).toHaveCount(0);
   await panel.getByRole('button',{name:'Compare square routes',exact:true}).click();await expect(panel.getByRole('alert')).toBeVisible();await expect(panel.getByRole('button',{name:'Export square comparison JSON',exact:true})).toHaveCount(0);
   for(const reference of [false,true]){
    await startLessonProject(page,reference?true:false);

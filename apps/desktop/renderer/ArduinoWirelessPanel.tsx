@@ -4,7 +4,7 @@ import type {WirelessConnection,WirelessProgram,WirelessState} from '../../../pa
 import type {FunctionProgram} from '../../../packages/codegen/functions';
 import type {Program} from '../../../packages/codegen';
 import {compileArduinoWireless} from '../../../packages/codegen/arduino-wireless';
-import {hasArduinoUnoRobotWiring} from '../../../packages/robots/arduino-uno';
+import {parsePythonProgram,PythonSyntaxError} from '../../../packages/codegen/python';
 import {createArduinoWirelessRuntimeProject} from '../../../packages/robots/arduino-wireless';
 import {StudentBoard} from './StudentBoard';
 import {useLocale} from './locale';
@@ -34,11 +34,10 @@ export function ArduinoWirelessPanel({project,getProgram,connectionChange,connec
  };
  let program:WirelessProgram|null=null,programError='';
  try{
-  if(project.mode!=='blocks'||!hasArduinoUnoRobotWiring(project)||project.wiring?.led!==13)throw new Error(w('Choose an Arduino Uno Blocks project with the original robot connections and LED D13.','Выбери проект Arduino Uno с блоками, исходными подключениями робота и индикатором D13.','Роботтың бастапқы қосылымдары мен D13 индикаторы бар Arduino Uno блоктар жобасын таңда.'));
-  program=compileArduinoWireless(getProgram());
+  program=compileArduinoWireless(project.pythonSource===undefined?getProgram():parsePythonProgram(project.pythonSource));
  }catch(cause){
   const issue=cause as {code?:string;instructionKind?:string;message?:string};
-  programError=issue.code?.startsWith('WIRELESS_')?w('This program cannot be sent over Bluetooth. Supported: motors, stop, waits, indicator, fixed repeats and functions with constant arguments.','Эту программу нельзя отправить по Bluetooth. Поддерживаются моторы, стоп, ожидания, индикатор, повторения с заданным числом и функции с постоянными аргументами.','Бұл бағдарламаны Bluetooth арқылы жіберу мүмкін емес. Моторлар, тоқтау, күту, индикатор, тұрақты қайталау және тұрақты аргументтері бар функциялар қолдау табады.')+' '+(issue.instructionKind??'')+' · '+issue.code:(issue.message??String(cause));
+  programError=cause instanceof PythonSyntaxError?w('Check the Python command on line ','Проверь команду Python в строке ','Python пәрменін мына жолда тексер: ')+cause.line+'.':issue.code?.startsWith('WIRELESS_')?w('This program cannot be sent over Bluetooth. Supported: motors, stop, waits, indicator, fixed repeats and functions with constant arguments.','Эту программу нельзя отправить по Bluetooth. Поддерживаются моторы, стоп, ожидания, индикатор, повторения с заданным числом и функции с постоянными аргументами.','Бұл бағдарламаны Bluetooth арқылы жіберу мүмкін емес. Моторлар, тоқтау, күту, индикатор, тұрақты қайталау және тұрақты аргументтері бар функциялар қолдау табады.')+' '+(issue.instructionKind??'')+' · '+issue.code:(issue.message??String(cause));
  }
  useEffect(()=>{mounted.current=true;return()=>{mounted.current=false;transfer.current++;const current=session.current;session.current=null;if(current){notify.current(null);void window.jective.wirelessClose(current.id).catch(()=>undefined);}};},[]);
  useEffect(()=>{
@@ -75,8 +74,9 @@ export function ArduinoWirelessPanel({project,getProgram,connectionChange,connec
  };
  const stateLabel={ready:w('Ready to send','Готов к отправке','Жіберуге дайын'),uploading:w('Sending','Отправка','Жіберілуде'),running:w('Program running','Программа выполняется','Бағдарлама орындалуда'),stopped:w('Stopped','Остановлено','Тоқтатылды'),completed:w('Program completed','Программа завершена','Бағдарлама аяқталды'),error:w('Program stopped after an error','Программа остановлена из-за ошибки','Қатеге байланысты бағдарлама тоқтады')}[state.status];
  return <section className="arduino-wireless-panel">
-  <h2>{w('Run blocks via Bluetooth','Запуск блоков по Bluetooth','Блоктарды Bluetooth арқылы іске қосу')}</h2>
-  <p>{w('Install the firmware by USB once. It supports running blocks and manual Robot control over HC-05.','Установи прошивку по USB один раз. Она работает и для запуска блоков, и для ручного управления через HC-05 в «Пульте робота».','Микробағдарламаны USB арқылы бір рет орнат. Ол HC-05 арқылы блоктарды іске қосуға және «Робот пульті» бөлімінде қолмен басқаруға арналған.')}</p>
+  <h2>{w('Run via Bluetooth','Запуск по Bluetooth','Bluetooth арқылы іске қосу')}</h2>
+  <p>{w('Install the firmware by USB once. If you install the controller firmware afterwards, reinstall this firmware before running programs over HC-05.','Установи прошивку по USB один раз. Если затем установишь прошивку пульта, перед запуском программ через HC-05 установи эту прошивку снова.','Микробағдарламаны USB арқылы бір рет орнат. Пульт микробағдарламасын орнатсаң, HC-05 арқылы бағдарламаларды іске қосу үшін осы микробағдарламаны қайта орнат.')}</p>
+  <p className="note">{w('The Arduino Uno Bluetooth firmware uses the robot wiring shown in the USB installation section.','Прошивка Bluetooth для Arduino Uno использует схему робота, указанную в разделе установки по USB.','Arduino Uno Bluetooth микробағдарламасы USB арқылы орнату бөліміндегі робот сұлбасын қолданады.')}</p>
   <div className="wireless-connect-row"><label>{w('HC-05 port','Порт HC-05','HC-05 порты')}<select aria-label={w('HC-05 port','Порт HC-05','HC-05 порты')} value={selected} disabled={busy||!!connection} onChange={event=>setSelected(event.target.value)}><option value="">{w('Choose outgoing COM port','Выбери исходящий COM-порт','Шығыс COM портын таңда')}</option>{ports.map(port=><option key={port.path} value={port.path} disabled={!canUseWirelessPort(port)}>{devicePortLabel(port,locale)}</option>)}</select></label>
    <button disabled={busy||!!connection} onClick={async()=>{try{const result=await window.jective.devices();if(result.ok){setPorts(result.value);setSelected(value=>preferredWirelessPort(result.value,value));}else setError(message(result.error.message));}catch{setError('PORT_LIST_FAILED');}}}>{w('Refresh ports','Обновить порты','Порттарды жаңарту')}</button>
    <button disabled={busy||compiling||!!connection||!selected} onClick={()=>void connect()}>{busy?w('Connecting…','Подключение…','Қосылуда…'):w('Connect · 9600','Подключить · 9600','Қосу · 9600')}</button>
@@ -90,7 +90,7 @@ export function ArduinoWirelessPanel({project,getProgram,connectionChange,connec
   {(error||state.error)&&<p role="alert">{error||message(state.error!)}</p>}
   <p className="note">{w('Programs are kept in robot memory until power is switched off. Send again after restarting.','Программа хранится в памяти робота до отключения питания. После включения отправь её заново.','Бағдарлама қуат өшкенше робот жадында сақталады. Қайта қосқаннан кейін оны қайта жібер.')}</p>
   <details className="wireless-install" open={installOpen} onToggle={event=>setInstallOpen(event.currentTarget.open)}><summary>{w('Install by USB (once)','Установить по USB (один раз)','USB арқылы орнату (бір рет)')}</summary>
-   <p>{w('This installs the Bluetooth runtime. Your Blocks project stays in the editor. After upload, disconnect USB if the robot has its own power and connect to HC-05 above.','Здесь устанавливается прошивка для Bluetooth. Твои блоки останутся в редакторе. После загрузки отключи USB, если у робота отдельное питание, и подключись к HC-05 выше.','Мұнда Bluetooth микробағдарламасы орнатылады. Блоктарың редакторда қалады. Жүктегеннен кейін роботтың жеке қуаты болса USB кабелін ажыратып, жоғарыда HC-05 құрылғысына қосыл.')}</p>
+   <p>{w('This installs the Bluetooth runtime. After upload, disconnect USB if the robot has its own power and connect to HC-05 above.','Здесь устанавливается прошивка для Bluetooth. После загрузки отключи USB, если у робота отдельное питание, и подключись к HC-05 выше.','Мұнда Bluetooth микробағдарламасы орнатылады. Жүктегеннен кейін роботтың жеке қуаты болса USB кабелін ажыратып, жоғарыда HC-05 құрылғысына қосыл.')}</p>
    {installOpen&&<StudentBoard project={runtime} build={build} compile={compileRuntime} compileLog={compileLog} compiling={compiling||sending} openConnections={()=>setCompileLog('HC-05: D2/D3 · DRV8833: D4/D5/D6/D9/D10')} connectionChange={connectionChange} connectedPort={connectedPort}/>}
   </details>
  </section>;

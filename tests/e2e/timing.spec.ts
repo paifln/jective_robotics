@@ -23,8 +23,8 @@ test('L04 reference runs both channels through the actual indicator worker',asyn
   await expect(page.getByLabel('Project name')).toHaveValue('L04 · My experiment');
   await expect(page.getByRole('button',{name:'Compile — check code for the board',exact:true})).toBeDisabled();
   await runIndicatorExperiment(page);
-  await expect(page.getByText(/300 ms \| led channel 2: true/)).toBeVisible();
-  await expect(page.getByText(/1300 ms \| led channel 2: true/)).toBeVisible();
+  await expect(page.getByText(/0\.3 s \| led channel 2: true/)).toBeVisible();
+  await expect(page.getByText(/1\.3 s \| led channel 2: true/)).toBeVisible();
   const destination=join(root,'trace.json');
   await app.evaluate(({session},path)=>{session.defaultSession.once('will-download',(_event,item)=>item.setSavePath(path));},destination);
   await page.getByRole('button',{name:'Export simulation trace',exact:true}).click();
