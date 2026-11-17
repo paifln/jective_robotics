@@ -16,6 +16,7 @@
     "architecture:check": "node scripts/architecture-check.mjs",
     "architecture:test": "node --test tests/architecture-boundaries.node.mjs",
     "build": "node scripts/build.mjs",
+    "arduino:setup": "node scripts/setup-arduino-local.mjs",
     "start": "npm run build && node scripts/start.mjs",
     "typecheck": "tsc --noEmit",
     "lint": "eslint apps packages services tests scripts",

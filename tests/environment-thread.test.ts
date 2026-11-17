@@ -38,3 +38,14 @@ it('rejects malformed replies, crashes, early exits and cancellation without ret
   await expect(snapshotEnvironmentInThread('fixture',root,'3.3.12',()=>false,worker,0)).rejects.toThrow('TIMEOUT_INVALID');
  }finally{await cleanup(root);}
 });
+
+it('the real worker hashes the selected AVR core without an ESP32 installation',async()=>{
+ const root=await mkdtemp(join(tmpdir(),'jective-env-thread-avr-'));
+ try{
+  const worker=join(root,'worker.cjs');await build({entryPoints:['apps/desktop/environment.worker.ts'],outfile:worker,bundle:true,platform:'node',format:'cjs',external:['original-fs']});
+  const cli=await prepareEnvironmentFixture(root,'arduino:avr','1.8.8');
+  const expected=await snapshotEnvironment(cli,root,'1.8.8',()=>false,undefined,'arduino:avr');
+  expect(await snapshotEnvironmentInThread(cli,root,'1.8.8',()=>false,worker,300000,undefined,'arduino:avr')).toEqual(expected);
+  await expect(snapshotEnvironmentInThread(cli,root,'1.8.8',()=>false,worker)).rejects.toThrow('ENOENT');
+ }finally{await cleanup(root);}
+});

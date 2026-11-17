@@ -4,17 +4,19 @@ import {join} from 'node:path';
 import {createHash} from 'node:crypto';
 import {z} from 'zod';
 import type {EnvironmentProgress} from '../contracts/build-stage';
+import {CoreSchema} from '../profiles';
 
 export const EnvironmentSnapshotSchema=z.object({scope:z.literal('cli-selected-core-installed-tools-user-libraries-v2'),sha256:z.string().regex(/^[a-f0-9]{64}$/),files:z.number().int().min(1).max(100000),bytes:z.number().int().min(0).max(16*1024**3)}).strict();
 export type EnvironmentSnapshot=z.infer<typeof EnvironmentSnapshotSchema>;
 export type EnvironmentIO={createReadStream:typeof createReadStream;lstat:typeof lstat;readdir:typeof readdir};
-export function snapshotEnvironment(executable:string,root:string,coreVersion:string,cancelled:()=>boolean=()=>false,onProgress?:(progress:EnvironmentProgress)=>void):Promise<EnvironmentSnapshot>{
- return snapshotEnvironmentUsing(executable,root,coreVersion,cancelled,{createReadStream,lstat,readdir},onProgress);
+export function snapshotEnvironment(executable:string,root:string,coreVersion:string,cancelled:()=>boolean=()=>false,onProgress?:(progress:EnvironmentProgress)=>void,core:z.infer<typeof CoreSchema>='esp32:esp32'):Promise<EnvironmentSnapshot>{
+ return snapshotEnvironmentUsing(executable,root,coreVersion,cancelled,{createReadStream,lstat,readdir},onProgress,core);
 }
 /** Content hashing, never timestamp-only caching. Includes every installed package's tools, including SDKs. */
-export async function snapshotEnvironmentUsing(executable:string,root:string,coreVersion:string,cancelled:()=>boolean,io:EnvironmentIO,onProgress?:(progress:EnvironmentProgress)=>void):Promise<EnvironmentSnapshot>{
+export async function snapshotEnvironmentUsing(executable:string,root:string,coreVersion:string,cancelled:()=>boolean,io:EnvironmentIO,onProgress?:(progress:EnvironmentProgress)=>void,core:z.infer<typeof CoreSchema>='esp32:esp32'):Promise<EnvironmentSnapshot>{
  const {createReadStream,lstat,readdir}=io;
  if(!/^\d+\.\d+\.\d+$/.test(coreVersion))throw new Error('CORE_VERSION_INVALID');
+ const [vendor,architecture]=CoreSchema.parse(core).split(':') as [string,string];
  const hash=createHash('sha256').update('cli-selected-core-installed-tools-user-libraries-v2'),counts={files:0,bytes:0};
  const started=performance.now(),verified={files:0,bytes:0};let reportedAt=-Infinity;
  const progress=(final=false)=>{if(!onProgress)return;const now=performance.now();if(!final&&now-reportedAt<500)return;reportedAt=now;try{onProgress({...verified,elapsedMs:Math.round(now-started)});}catch{/* A presentation observer cannot invalidate or replace the content digest. */}};
@@ -62,8 +64,8 @@ export async function snapshotEnvironmentUsing(executable:string,root:string,cor
  };
  const directoryChain=async(parts:string[],optional=false)=>{let path=root;for(const part of ['',...parts]){if(part)path=join(path,part);let info;try{info=await lstat(path);}catch(error){if(optional&&(error as NodeJS.ErrnoException).code==='ENOENT')return;throw error;}if(info.isSymbolicLink())throw new Error('ENVIRONMENT_LINK_UNSUPPORTED');if(!info.isDirectory())throw new Error('ENVIRONMENT_FILE_UNSUPPORTED');}};
  try{
- await directoryChain(['data','packages','esp32','hardware','esp32',coreVersion]);await directoryChain(['user','libraries'],true);
- await visit(executable,'cli');await visit(join(root,'data','packages','esp32','hardware','esp32',coreVersion),'core');await visit(join(root,'user','libraries'),'user-libraries',true);
+ await directoryChain(['data','packages',vendor,'hardware',architecture,coreVersion]);await directoryChain(['user','libraries'],true);
+ await visit(executable,'cli');await visit(join(root,'data','packages',vendor,'hardware',architecture,coreVersion),'core');await visit(join(root,'user','libraries'),'user-libraries',true);
  // Do not rely on an editable dependency list to decide which executables are trusted.
  // All installed tools are covered, including packages shared by several board variants.
  for(const packager of (await readdir(join(root,'data','packages'))).sort()){

@@ -53,7 +53,7 @@ export async function snapshotBuildArtifacts(output:string,names:string[]){
  if(names.length>256||new Set(names).size!==names.length)throw new Error('ARTIFACT_CHANGED');
  const hashes:Record<string,string>={},sizes:Record<string,number>={};let bytes=0;
  for(const name of names){
-  if(name.length>200||!/^[a-zA-Z0-9_.-]+\.(bin|elf)$/.test(name))throw new Error('ARTIFACT_CHANGED');
+  if(name.length>200||!/^[a-zA-Z0-9_.-]+\.(bin|hex|elf)$/.test(name))throw new Error('ARTIFACT_CHANGED');
   const file=await hashBuildArtifact(join(output,name),Math.min(maximumArtifactBytes,maximumBuildBytes-bytes));
   bytes+=file.bytes;hashes[name]=file.sha256;sizes[name]=file.bytes;
  }

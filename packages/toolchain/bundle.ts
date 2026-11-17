@@ -6,7 +6,7 @@ import {readBoundedFile} from '../persistence/bounded-file';
 import {verifyBundleFile} from './verified-copy';
 import {parseJsonDocument} from '../contracts/json-document';
 
-const Manifest=z.object({format:z.literal('jective-toolchain'),version:z.literal(1),cli:z.literal('1.5.1'),core:z.literal('esp32:esp32@3.3.12'),files:z.array(z.object({path:z.string().max(500),size:z.number().int().min(0).max(1024*1024*1024),sha256:z.string().regex(/^[a-f0-9]{64}$/)}).strict()).max(100000)}).strict();
+const Manifest=z.object({format:z.literal('jective-toolchain'),version:z.literal(1),cli:z.literal('1.5.1'),core:z.enum(['esp32:esp32@3.3.12','arduino:avr@1.8.8']),files:z.array(z.object({path:z.string().max(500),size:z.number().int().min(0).max(1024*1024*1024),sha256:z.string().regex(/^[a-f0-9]{64}$/)}).strict()).max(100000)}).strict();
 const manifestName='jective-toolchain-manifest.json';
 
 async function loadManifest(source:string){
@@ -19,7 +19,8 @@ async function loadManifest(source:string){
   if(!/^(data|user)\//.test(file.path)||file.path.includes('..')||file.path.includes('\\')||isAbsolute(file.path)||segments.some(segment=>!segment||/[\x00-\x1f<>:"|?*]/.test(segment)||/[. ]$/.test(segment)||/^(con|prn|aux|nul|com[0-9¹²³]|lpt[0-9¹²³])(?:\.|$)/i.test(segment))||seen.has(file.path.toLowerCase()))throw new Error('TOOLCHAIN_PATH_UNSAFE');
   seen.add(file.path.toLowerCase());bytes+=file.size;if(bytes>16*1024*1024*1024)throw new Error('TOOLCHAIN_BUNDLE_TOO_LARGE');
  }
- if(!seen.has('data/packages/esp32/hardware/esp32/3.3.12/platform.txt'))throw new Error('TOOLCHAIN_CORE_MISSING');
+ const [vendor,architecture,version]=manifest.core.split(/[:@]/);
+ if(!seen.has(`data/packages/${vendor}/hardware/${architecture}/${version}/platform.txt`))throw new Error('TOOLCHAIN_CORE_MISSING');
  return {root,raw,manifest,bytes,sha256:createHash('sha256').update(raw).digest('hex')};
 }
 

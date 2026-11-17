@@ -3,6 +3,7 @@ import {join} from 'node:path';
 import {z} from 'zod';
 import {EnvironmentSnapshotSchema,type EnvironmentSnapshot} from '../../../packages/toolchain/environment';
 import {EnvironmentProgressSchema,type EnvironmentProgress} from '../../../packages/contracts/build-stage';
+import type {BoardProfile} from '../../../packages/profiles';
 
 const Reply=z.discriminatedUnion('ok',[
  z.object({ok:z.literal(true),value:EnvironmentSnapshotSchema}).strict(),
@@ -10,12 +11,12 @@ const Reply=z.discriminatedUnion('ok',[
 ]);
 const ProgressReply=z.object({type:z.literal('progress'),value:EnvironmentProgressSchema}).strict();
 /** Only the main process supplies the approved executable/root; no renderer worker-path API. */
-export function snapshotEnvironmentInThread(executable:string,root:string,coreVersion:string,cancelled:()=>boolean=()=>false,workerPath=join(__dirname,'environment.worker.cjs'),timeoutMs=300000,onProgress?:(progress:EnvironmentProgress)=>void):Promise<EnvironmentSnapshot>{
+export function snapshotEnvironmentInThread(executable:string,root:string,coreVersion:string,cancelled:()=>boolean=()=>false,workerPath=join(__dirname,'environment.worker.cjs'),timeoutMs=300000,onProgress?:(progress:EnvironmentProgress)=>void,core:BoardProfile['core']='esp32:esp32'):Promise<EnvironmentSnapshot>{
  if(!Number.isInteger(timeoutMs)||timeoutMs<1||timeoutMs>300000)return Promise.reject(new Error('ENVIRONMENT_WORKER_TIMEOUT_INVALID'));
  if(cancelled())return Promise.reject(new Error('BUILD_INTERRUPTED'));
  return new Promise((resolve,reject)=>{
   const flag=new SharedArrayBuffer(4),signal=new Int32Array(flag);
-  const worker=new Worker(workerPath,{workerData:{executable,root,coreVersion,flag},execArgv:[],resourceLimits:{maxOldGenerationSizeMb:128}});
+  const worker=new Worker(workerPath,{workerData:{executable,root,coreVersion,flag,core},execArgv:[],resourceLimits:{maxOldGenerationSizeMb:128}});
   let settled=false;
   const finish=async(error:Error|null,value?:EnvironmentSnapshot)=>{
    if(settled)return;settled=true;clearInterval(poll);clearTimeout(timeout);

@@ -1,0 +1,12 @@
+.arduino-robot-control{padding:20px;border:1px solid var(--border,#384252);border-radius:14px;margin:16px 0}
+.arduino-robot-control .toolbar{flex-wrap:wrap;align-items:end}
+.arduino-robot-control label{display:flex;flex-direction:column;gap:6px}
+.arduino-drive-pad{display:grid;grid-template-columns:repeat(3,76px);grid-template-rows:repeat(3,64px);gap:8px;margin:20px auto;width:max-content;touch-action:none}
+.arduino-drive-pad button{font-size:28px;user-select:none;touch-action:none}
+.arduino-drive-pad button[aria-pressed="true"]{background:#376cf0;color:#fff}
+.arduino-drive-pad .direction-F{grid-area:1/2}
+.arduino-drive-pad .direction-L{grid-area:2/1}
+.arduino-drive-pad .direction-R{grid-area:2/3}
+.arduino-drive-pad .direction-B{grid-area:3/2}
+.arduino-drive-pad .arduino-stop{grid-area:2/2;background:#bc263b;color:#fff;font-size:15px;font-weight:700}
+.arduino-drive-status{text-align:center;font-weight:600}

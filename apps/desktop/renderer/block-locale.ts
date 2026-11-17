@@ -1,6 +1,7 @@
 import * as Blockly from 'blockly';
 type Locale='en'|'ru'|'kk';
 const labels:Record<string,[string,string]>={
+ 'stop wheels':['остановить колёса','дөңгелектерді тоқтату'],
  'serial label':['подпись сообщения','хабар белгісі'],value:['значение','мән'],
  'distance valid':['расстояние доступно','қашықтық қолжетімді'],
  'Sound event':['звуковое событие','дыбыс оқиғасы'],'Stop sound event':['остановить звуковое событие','дыбыс оқиғасын тоқтату'],'Hz for':['Гц на','Гц ұзақтығы'],
@@ -12,22 +13,24 @@ const labels:Record<string,[string,string]>={
  ON:['ВКЛ','ҚОСУЛЫ'],OFF:['ВЫКЛ','ӨШІРУЛІ'],'2 (simulation)':['2 (симуляция)','2 (симуляция)'],and:['и','және'],or:['или','немесе'],'distance (m)':['расстояние (м)','қашықтық (м)'],'line left':['линия слева','сол сызық'],'line right':['линия справа','оң сызық'],'heading (rad)':['курс (рад)','бағыт (рад)'],'x (m)':['x (м)','x (м)'],'y (m)':['y (м)','y (м)'],button:['кнопка','батырма']
 };
 const originalLabels=new WeakMap<Blockly.Field,string>();
-const appliedLocale=new WeakMap<Blockly.Field,Locale>();
+const appliedLocale=new WeakMap<Blockly.Field,string>();
 const originalMenus=new WeakMap<Blockly.FieldDropdown,ReturnType<Blockly.FieldDropdown['getOptions']>>();
 function translate(text:string,locale:Locale){
  const argument=/^argument ([1-8])$/.exec(text);if(argument)return locale==='en'?text:(locale==='ru'?'аргумент ':'аргумент ')+argument[1];
  return locale==='en'?text:labels[text]?.[locale==='ru'?0:1]??text;
 }
 /** Changes presentation in place: connections, block IDs and undo history survive. */
-export function localizeBlocks(workspace:Blockly.Workspace,locale:Locale){
+export function localizeBlocks(workspace:Blockly.Workspace,locale:Locale,physicalMotors=false){
  Blockly.Events.disable();try{
   for(const block of workspace.getAllBlocks(false))if(block.type.startsWith('jective_'))for(const input of block.inputList)for(const field of input.fieldRow){
-   if(appliedLocale.get(field)===locale)continue;appliedLocale.set(field,locale);
+   const motor=physicalMotors&&(block.type==='jective_drive'||block.type==='jective_stop');
+   const presentation=locale+':'+motor;
+   if(appliedLocale.get(field)===presentation)continue;appliedLocale.set(field,presentation);
    if(field instanceof Blockly.FieldDropdown){
     let menu=originalMenus.get(field);if(!menu){menu=field.getOptions(false);originalMenus.set(field,menu);}
     const selected=field.getValue();field.setOptions(menu.map(option=>typeof option[0]==='string'?[translate(option[0],locale),option[1]]:option));field.setValue(selected);
    }else if(field instanceof Blockly.FieldLabel){
-    let text=originalLabels.get(field);if(text===undefined){text=field.getText();originalLabels.set(field,text);}field.setValue(translate(text,locale));
+    let text=originalLabels.get(field);if(text===undefined){text=field.getText();originalLabels.set(field,text);}field.setValue(translate(motor?text.replace(' (simulation)',''):text,locale));
    }
   }
  }finally{Blockly.Events.enable();}

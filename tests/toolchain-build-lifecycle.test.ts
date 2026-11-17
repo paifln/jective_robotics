@@ -103,3 +103,35 @@ it('exposes only journals belonging to this service and records compiler/upload 
  const upload=await s.upload(p,build.operationId,'COM8');expect((await s.journalPage(upload.operationId,0)).text).toBe('explicit fixture raw output');
  const other=new ToolchainService(s.executable,s.root);expect(()=>other.journalPage(build.operationId,0)).toThrow('PROCESS_LOG_UNAVAILABLE');
 }));
+
+it('AVR builds and uploads verified HEX artifacts without requiring ESP32 binaries or its core',async()=>{
+ const root=await mkdtemp(join(tmpdir(),'jective-avr-build-'));
+ try{
+  const cli=await prepareEnvironmentFixture(root,'arduino:avr','1.8.8'),s=new FixtureToolchain(cli,root);
+  s.cores.log=s.cores.stdout=JSON.stringify({platforms:[{id:'arduino:avr',installed_version:'1.8.8'}]});
+  s.files=['sketch.ino.hex','sketch.ino.with_bootloader.hex','sketch.ino.elf'];
+  for(const profileId of ['arduino-uno','arduino-nano-old']){
+   const p={...project(),profileId},built=await s.compile(p);
+   expect(built.state).toBe('succeeded');expect(built.artifacts).toContain('sketch.ino.hex');expect(built.artifacts).not.toContain('sketch.ino.bin');
+   expect((await s.upload(p,built.operationId,'COM3')).state).toBe('succeeded');
+   expect(s.calls.filter(call=>call[0]==='upload').at(-1)).toContain(profileId==='arduino-uno'?'arduino:avr:uno':'arduino:avr:nano:cpu=atmega328old');
+   await writeFile(join(root,'builds',built.operationId,'output','sketch.ino.hex'),'changed hex');
+   await expect(s.upload(p,built.operationId,'COM3')).rejects.toThrow('ARTIFACT_CHANGED');
+  }
+  s.files=['sketch.ino.bin','sketch.ino.elf'];expect((await s.compile({...project(),profileId:'arduino-uno'})).state).toBe('failed');
+ }finally{await rm(root,{recursive:true,force:true});}
+});
+
+it('board tool preparation skips downloads when AVR is present and only installs the selected pinned core',async()=>fixture(async(s)=>{
+ s.cores.log=s.cores.stdout=JSON.stringify({platforms:[{id:'arduino:avr',installed_version:'1.8.8'}]});
+ expect(await s.status('arduino-uno')).toContain('arduino:avr@1.8.8 ready');
+ expect(await s.prepareCore('arduino-uno')).toContain('arduino:avr@1.8.8 ready');
+ expect(s.calls.some(call=>call.includes('install')||call.includes('update-index'))).toBe(false);
+ s.calls=[];s.cores.log=s.cores.stdout=JSON.stringify({platforms:[]});
+ await expect(s.status('arduino-uno')).rejects.toThrow('CORE_MISSING');
+ await s.prepareCore('arduino-uno');
+ expect(s.calls).toContainEqual(['core','update-index']);
+ expect(s.calls).toContainEqual(['core','install','arduino:avr@1.8.8']);
+ expect(s.calls.flat().some(arg=>arg.includes('esp32'))).toBe(false);
+ s.calls=[];await expect(s.prepareCore('untrusted-custom')).rejects.toThrow('PROFILE_UNKNOWN');expect(s.calls).toEqual([]);
+}));

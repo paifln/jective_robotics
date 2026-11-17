@@ -1,3 +1,5 @@
+import {WirelessOpenSchema,WirelessRunSchema,WirelessSessionSchema} from '../../packages/contracts/arduino-wireless';
+import {ArduinoOpenSchema,ArduinoCommandRequestSchema,ArduinoCloseSchema} from '../../packages/contracts/arduino-robot';
 import {rendererRecovery} from './infrastructure/renderer-recovery';
 import {takeAssistantProvisioning,type AssistantProvisioning} from './infrastructure/assistant-provisioning';
 import {restoreWindowPlacement} from '../../packages/contracts/window-placement';
@@ -87,12 +89,14 @@ if(primaryInstance)app.whenReady().then(async()=>{
   session.defaultSession.setPermissionRequestHandler((_wc,_permission,callback)=>callback(false));
   session.defaultSession.setPermissionCheckHandler(()=>false);
   session.defaultSession.setDevicePermissionHandler(()=>false);
-  service=new ToolchainService(app.isPackaged?join(process.resourcesPath,'tools','arduino-cli.exe'):join(app.getAppPath(),'.toolchain','bin','arduino-cli.exe'),process.env.JECTIVE_TOOLCHAIN_ROOT??join(app.getPath('userData'),'toolchain'),(executable,root,coreVersion,cancelled,progress)=>snapshotEnvironmentInThread(executable,root,coreVersion,cancelled,undefined,undefined,progress),event=>{if(win&&!win.isDestroyed()&&!win.webContents.isDestroyed())win.webContents.send('build:stage',event);});
+  service=new ToolchainService(app.isPackaged?join(process.resourcesPath,'tools','arduino-cli.exe'):join(app.getAppPath(),'.toolchain','bin','arduino-cli.exe'),process.env.JECTIVE_TOOLCHAIN_ROOT??join(app.getPath('userData'),'toolchain'),(executable,root,coreVersion,cancelled,progress,core)=>snapshotEnvironmentInThread(executable,root,coreVersion,cancelled,undefined,undefined,progress,core),event=>{if(win&&!win.isDestroyed()&&!win.webContents.isDestroyed())win.webContents.send('build:stage',event);});
   const placementPath=join(app.getPath('userData'),'window-placement.json');
   const primaryDisplay=screen.getPrimaryDisplay();
   const placement=restoreWindowPlacement(await readWindowPlacement(placementPath),[primaryDisplay.workArea,...screen.getAllDisplays().filter(display=>display.id!==primaryDisplay.id).map(display=>display.workArea)]);
   win=new BrowserWindow({...placement.bounds,minWidth:placement.minWidth,minHeight:placement.minHeight,frame:false,autoHideMenuBar:true,show:false,backgroundColor:'#211dff',icon:join(__dirname,'renderer','jective-icon.png'),webPreferences:{preload:join(__dirname,'preload.cjs'),nodeIntegration:false,contextIsolation:true,sandbox:true,webviewTag:false,devTools:!app.isPackaged}});
   win.setMenu(null);
+  const stopArduino=()=>{void devices.stopRobot().catch(()=>undefined);void devices.stopWirelessActive().catch(()=>undefined);};
+  win.on('blur',stopArduino);win.on('hide',stopArduino);win.on('minimize',stopArduino);win.on('close',stopArduino);win.webContents.on('render-process-gone',stopArduino);win.webContents.on('did-start-loading',stopArduino);
   trackWindowPlacement(win,placementPath,()=>operationLog.record('window','PLACEMENT_SAVE_FAILED'));
   handler('window:state',async()=>windowState(win));
   handler('window:action',async value=>controlWindow(win,value));
@@ -111,7 +115,8 @@ if(primaryInstance)app.whenReady().then(async()=>{
   win.webContents.on('render-process-gone',()=>{void recoverRenderer('PROCESS_GONE');});
   win.webContents.once('did-finish-load',()=>win.webContents.on('did-fail-load',(_event,errorCode,_description,_url,isMainFrame)=>{if(isMainFrame&&errorCode!==-3)void recoverRenderer('LOAD_FAILED');}));
   win.webContents.on('will-prevent-unload',event=>{const choice=dialog.showMessageBoxSync(win,brandedMessage({type:'question',buttons:['Keep editing','Discard unsaved changes and close'],defaultId:0,cancelId:0,title:'Unsaved project',message:'The project has unsaved changes.'}));if(choice===1)event.preventDefault();});
-  handler('toolchain:status',async()=>{if(buildBusy)throw new Error('TOOLCHAIN_BUSY');const r=await service.run(['version']);if(r.code!==0)throw new Error('CLI_UNAVAILABLE: '+r.log);return r.log;});
+  handler('toolchain:status',async value=>{if(buildBusy)throw new Error('TOOLCHAIN_BUSY');const id=z.string().max(80).optional().parse(value);if(id)return service.status(id);const r=await service.run(['version']);if(r.code!==0)throw new Error('CLI_UNAVAILABLE: '+r.log);return r.log;});
+  handler('toolchain:prepare',async value=>{const id=z.string().max(80).parse(value);if(buildBusy)throw new Error('TOOLCHAIN_BUSY');buildBusy=true;try{return await service.prepareCore(id);}finally{buildBusy=false;}});
   handler('toolchain:import',async()=>{
    if(buildBusy)throw new Error('TOOLCHAIN_BUSY');buildBusy=true;
    try{
@@ -145,6 +150,14 @@ if(primaryInstance)app.whenReady().then(async()=>{
   handler('project:import',async()=>{if(projectBusy)throw new Error('PROJECT_BUSY');projectBusy=true;try{const archive=await chooseArchive();if(!archive)return null;if(archive.kind!=='project')throw new Error('ARCHIVE_KIND');return documents.prepare(archive.value,null,true);}finally{projectBusy=false;}});
   handler('project:acceptOpen',async value=>{return documents.accept(value,p=>store.autosave(resolveProject(p)));});
   handler('project:arduino',async value=>{const p=resolveProject(value);const selected=await dialog.showOpenDialog(win,{properties:['openDirectory','createDirectory']});if(selected.canceled||!selected.filePaths[0])return false;await exportArduinoProject(p,selected.filePaths[0]);return true;});
+  handler('wireless:open',async value=>{const request=WirelessOpenSchema.parse(value);if(buildBusy)throw new Error('DEVICE_BUSY');return devices.openWireless(request.path);});
+  handler('wireless:run',async value=>{const request=WirelessRunSchema.parse(value);if(buildBusy||win.isDestroyed()||!win.isFocused()||win.isMinimized()){await devices.stopWirelessActive();throw new Error('WIRELESS_CONTROL_INACTIVE');}return devices.runWireless(request);});
+  handler('wireless:keepalive',async value=>{const request=WirelessSessionSchema.parse(value);if(win.isDestroyed()||!win.isFocused()||win.isMinimized())await devices.stopWirelessActive();return devices.keepaliveWireless(request.sessionId);});
+  handler('wireless:stop',async value=>devices.stopWireless(WirelessSessionSchema.parse(value).sessionId));
+  handler('wireless:close',async value=>devices.closeWireless(WirelessSessionSchema.parse(value).sessionId));
+  handler('arduino:open',async value=>{const request=ArduinoOpenSchema.parse(value);if(buildBusy)throw new Error('DEVICE_BUSY');return devices.openRobot(request.path);});
+  handler('arduino:command',async value=>{const request=ArduinoCommandRequestSchema.parse(value);if(request.command!=='S'&&(buildBusy||win.isDestroyed()||!win.isFocused()||win.isMinimized())){await devices.stopRobot();throw new Error('ROBOT_CONTROL_INACTIVE');}return devices.commandRobot(request);});
+  handler('arduino:close',async value=>devices.closeRobot(ArduinoCloseSchema.parse(value).sessionId));
   handler('devices:list',async()=>devices.list());
   devices.subscribe(event=>{if(win&&!win.isDestroyed())win.webContents.send('serial:event',event);});
   handler('serial:open',async value=>{const p=z.object({path:z.string().max(100),baudRate:z.number().int()}).strict().parse(value);if(buildBusy)throw new Error('DEVICE_BUSY');return devices.open(p.path,p.baudRate);});
@@ -167,6 +180,7 @@ if(primaryInstance)app.whenReady().then(async()=>{
  catch{console.error('JECTIVE startup failed:',code);}
  finally{app.quit();}
 });
-app.on('before-quit',()=>{service?.cancel();void devices.close();store?.close();});app.on('window-all-closed',()=>app.quit());
+let deviceShutdownComplete=false;let deviceShutdownStarted=false;
+app.on('before-quit',event=>{service?.cancel();if(deviceShutdownComplete)return;event.preventDefault();if(deviceShutdownStarted)return;deviceShutdownStarted=true;void Promise.race([devices.close().catch(()=>undefined),new Promise<void>(resolve=>setTimeout(resolve,1000))]).finally(()=>{store?.close();deviceShutdownComplete=true;app.quit();});});app.on('window-all-closed',()=>app.quit());
 
 

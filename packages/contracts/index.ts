@@ -13,7 +13,7 @@ export const ErrorSchema=z.object({code:z.string(),message:z.string()}).strict()
 export const BuildSchema=z.object({operationId:z.uuid(),state:z.enum(['succeeded','failed','interrupted']),log:z.string(),sourceHash:z.string(),artifacts:z.array(z.string()),exitCode:z.number().nullable()}).strict();
 export type BuildResult=z.infer<typeof BuildSchema>;
 export type Result<T>={ok:true;value:T}|{ok:false;error:{code:string;message:string}};
-export const DeviceSchema=z.object({path:z.string(),manufacturer:z.string().optional(),serialNumber:z.string().optional(),vendorId:z.string().optional(),productId:z.string().optional()});
+export const DeviceSchema=z.object({path:z.string(),manufacturer:z.string().optional(),serialNumber:z.string().optional(),vendorId:z.string().optional(),productId:z.string().optional(),friendlyName:z.string().optional(),transport:z.enum(['usb','bluetooth','unknown']).optional(),bluetoothName:z.string().optional(),bluetoothDirection:z.enum(['incoming','outgoing','unknown']).optional()});
 export type Device=z.infer<typeof DeviceSchema>;
 export const SerialConnectionSchema=z.object({id:z.uuid(),port:z.string().min(1).max(256),baud:z.union([z.literal(9600),z.literal(19200),z.literal(38400),z.literal(57600),z.literal(115200),z.literal(230400)])}).strict();
 export const SerialEventSchema=z.object({timestamp:z.string().datetime(),kind:z.enum(['raw','protocol','error','status']),text:z.string().max(16384),connection:SerialConnectionSchema.optional()});
@@ -49,7 +49,8 @@ export interface DesktopAPI {
   journalPage(operationId:string,offset:number):Promise<Result<import('./compiler-journal').JournalPage>>;
   journalExport(operationId:string):Promise<Result<boolean>>;
   cancel():Promise<Result<boolean>>;
-  toolchain():Promise<Result<string>>;
+  toolchain(profileId?:string):Promise<Result<string>>;
+  toolchainPrepare(profileId:string):Promise<Result<string>>;
   toolchainImport():Promise<Result<boolean>>;
   newProject():Promise<Result<boolean>>;
   convertCopy(project:Project):Promise<Result<Project>>;
@@ -71,6 +72,14 @@ export interface DesktopAPI {
   importProject():Promise<Result<Project|null>>;
   exportArduino(project:Project):Promise<Result<boolean>>;
   devices():Promise<Result<Device[]>>;
+  wirelessOpen(path:string):Promise<Result<import('./arduino-wireless').WirelessConnection>>;
+  wirelessRun(request:import('./arduino-wireless').WirelessRunRequest):Promise<Result<import('./arduino-wireless').WirelessState>>;
+  wirelessKeepalive(sessionId:string):Promise<Result<import('./arduino-wireless').WirelessState>>;
+  wirelessStop(sessionId:string):Promise<Result<import('./arduino-wireless').WirelessState>>;
+  wirelessClose(sessionId:string):Promise<Result<boolean>>;
+  arduinoOpen(path:string):Promise<Result<import('./arduino-robot').ArduinoConnection>>;
+  arduinoCommand(request:import('./arduino-robot').ArduinoCommandRequest):Promise<Result<boolean>>;
+  arduinoClose(sessionId:string):Promise<Result<boolean>>;
   serialOpen(path:string,baudRate:number):Promise<Result<boolean>>;
   serialClose():Promise<Result<boolean>>;
   serialSend(text:string):Promise<Result<boolean>>;

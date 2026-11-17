@@ -1,0 +1,5 @@
+.arduino-starter{position:relative;flex-shrink:0;font-size:13px}
+.arduino-starter>summary{cursor:pointer;padding:8px 12px;border:1px solid var(--border,#b9bbc6);border-radius:8px;font-weight:600}
+.arduino-starter[open]>div{position:absolute;right:0;top:100%;z-index:30;width:300px;max-width:80vw;display:grid;gap:10px;padding:16px;border:1px solid var(--border,#b9bbc6);border-radius:10px;background:var(--panel,#fff);box-shadow:0 10px 24px #0002}
+body[data-theme=dark] .arduino-starter[open]>div{background:#20242f}
+.arduino-project-start{display:flex;justify-content:flex-end;margin:12px 24px}
