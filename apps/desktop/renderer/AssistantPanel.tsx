@@ -1,44 +1,165 @@
+import React,{useEffect,useRef,useState} from 'react';
+import type {Project} from '../../../packages/contracts';
+import {captureCodeReview,reviewStillCurrent,sourceContext} from '../../../packages/assistant/code-review';
 import {AssistantConversation,type ChatExchange} from './AssistantConversation';
-import {assistantPrivacy,assistantPrivacyShort,assistantConnectionFailure,assistantNotEnabled} from './assistant-copy';
+import {assistantConnectionFailure,assistantNotEnabled} from './assistant-copy';
 import {assistantErrorText} from './assistant-error-text';
 import {useLocale} from './locale';
 import {words} from './StudentUI';
-import React,{useEffect,useState,useRef,useMemo} from 'react';
-import * as monaco from 'monaco-editor';
-import type {Project} from '../../../packages/contracts';
-import {sortedSourceFiles} from '../../../packages/contracts/source-files';
-import {captureCodeReview,reviewStillCurrent,reviewContext,codeReviewRecord,type CodeReview} from '../../../packages/assistant/code-review';
-export type ApplyCodeReview=(source:string,review:CodeReview)=>Promise<boolean>;
-export function AssistantPanel({project,apply}:{project:Project;apply:ApplyCodeReview}){
- const {t,locale}=useLocale();const w=(en:string,ru:string,kk:string)=>words(locale,en,ru,kk);
- const [enabled,setEnabled]=useState(false),[question,setQuestion]=useState(''),[share,setShare]=useState(false),[answer,setAnswer]=useState(''),[settingsStatus,setSettingsStatus]=useState(''),[status,setStatusText]=useState(''),[requestError,setRequestError]=useState<string|null>(null),[busy,setBusy]=useState(false);
- const setStatus=(message:string)=>{setRequestError(null);setStatusText(message);};
+
+export function AssistantPanel({project,activeFile}:{project:Project;activeFile:string}){
+ const {t,locale}=useLocale();
+ const w=(en:string,ru:string,kk:string)=>words(locale,en,ru,kk);
+ const [enabled,setEnabled]=useState(false);
+ const [question,setQuestion]=useState('');
+ const [share,setShare]=useState(false);
+ const [attachment,setAttachment]=useState<File|null>(null);
  const [conversation,setConversation]=useState<ChatExchange[]>([]);
- const [requestPreview,setRequestPreview]=useState<{question:string;context:string;history:{role:'user'|'assistant';content:string}[]}|null>(null);
- const [selected,setSelected]=useState('sketch.ino'),[proposal,setProposal]=useState(''),[review,setReview]=useState<CodeReview|null>(null),[answerReview,setAnswerReview]=useState<CodeReview|null>(null);
- const file=selected==='sketch.ino'||project.sourceFiles?.[selected]!==undefined?selected:'sketch.ino';
- const sharedText=useMemo(()=>{if(!share)return '';try{return reviewContext(captureCodeReview(project,file),true);}catch{return '';}},[project,file,share]);
- const diff=useRef<HTMLDivElement>(null),epoch=useRef(0),pending=useRef(false),latest=useRef({project,file});latest.current={project,file};
- const diffView=useRef<monaco.editor.IStandaloneDiffEditor|null>(null),diffModels=useRef<{original:monaco.editor.ITextModel;modified:monaco.editor.ITextModel}|null>(null);
- useEffect(()=>{epoch.current++;setProposal('');setReview(null);setAnswer('');setAnswerReview(null);setRequestPreview(null);setShare(false);setBusy(false);setConversation([]);return()=>{epoch.current++;if(pending.current){pending.current=false;void window.jective.assistantCancel();}};},[project.id,file]);
- useEffect(()=>{if(!diff.current)return;if(!proposal||!review){diffView.current?.setModel(null);diffView.current?.dispose();diffModels.current?.original.dispose();diffModels.current?.modified.dispose();diffView.current=null;diffModels.current=null;return;}if(!diffView.current){const old=monaco.editor.createModel(review.original,'cpp'),next=monaco.editor.createModel(proposal,'cpp');const view=monaco.editor.createDiffEditor(diff.current,{readOnly:true,automaticLayout:true,renderSideBySide:true,ariaLabel:w('Reviewed code difference','Сравнение проверяемого кода','Тексерілетін кодты салыстыру'),minimap:{enabled:false}});diffModels.current={original:old,modified:next};diffView.current=view;view.setModel({original:old,modified:next});}else{diffModels.current!.original.setValue(review.original);diffModels.current!.modified.setValue(proposal);}},[proposal,review,locale]);
- useEffect(()=>()=>{diffView.current?.setModel(null);diffView.current?.dispose();diffModels.current?.original.dispose();diffModels.current?.modified.dispose();},[]);
- useEffect(()=>{let alive=true,refreshId=0;const failure=()=>assistantConnectionFailure[locale];const refresh=()=>{const id=++refreshId;setEnabled(false);void window.jective.assistantSettings().then(r=>{if(!alive||id!==refreshId)return;if(r.ok){const ready=r.value.enabled&&r.value.keyConfigured&&(r.value.model==='jective-managed'||r.value.endpoint==='https://api.openai.com/v1');setEnabled(ready);setSettingsStatus(ready?'':assistantNotEnabled[locale]);}else setSettingsStatus(failure());}).catch(()=>{if(alive&&id===refreshId)setSettingsStatus(failure());});};refresh();window.addEventListener('focus',refresh);window.addEventListener('assistant-settings-changed',refresh);return()=>{alive=false;window.removeEventListener('focus',refresh);window.removeEventListener('assistant-settings-changed',refresh);};},[locale]);
- const changed=w('Your program changed. Prepare the review again.','Программа изменилась. Подготовь сравнение заново.','Бағдарлама өзгерді. Салыстыруды қайта дайында.');
- const ask=async()=>{if(pending.current||busy)return;let snapshot:CodeReview;let payload:{question:string;context:string;history:{role:'user'|'assistant';content:string}[]};try{snapshot=captureCodeReview(project,file);payload={question,context:reviewContext(snapshot,share),history:conversation.flatMap(turn=>[{role:'user' as const,content:turn.question.slice(0,2000)},{role:'assistant' as const,content:turn.answer.slice(0,2000)}]).slice(-10)};}catch{setStatus(w('Save a valid program before sharing code.','Сначала сохрани корректную программу.','Алдымен жарамды бағдарламаны сақта.'));return;}const request=++epoch.current;pending.current=true;setRequestPreview(payload);setBusy(true);setAnswer('');setAnswerReview(null);setProposal('');setReview(null);setStatus(w('Thinking…','Думаю…','Ойланып жатырмын…'));try{const r=await window.jective.assistantAsk(payload);if(epoch.current!==request)return;if(latest.current.file!==snapshot.file||!reviewStillCurrent(latest.current.project,snapshot)){setStatus(changed);return;}if(r.ok){setConversation(previous=>[...previous,{id:crypto.randomUUID(),question:payload.question,answer:r.value}].slice(-20));setQuestion('');setAnswer(r.value);setAnswerReview(snapshot);setStatus(w('Check the suggestion before use','Проверь подсказку перед использованием','Кеңесті қолданар алдында тексер'));}else setRequestError(r.error.code);}catch{if(epoch.current===request)setStatus(w('The request failed. Try again.','Запрос не выполнен. Попробуй ещё раз.','Сұрау орындалмады. Қайта байқап көр.'));}finally{if(epoch.current===request){pending.current=false;setRequestPreview(null);setBusy(false);}}};
- return <section className="feature learner-chat"><div className="chat-heading"><h2>{w('Ask Jexi','Спроси Jexi','Jexi-ден сұра')}</h2><button aria-label={w('New conversation','Новый диалог','Жаңа әңгіме')} title={w('New conversation','Новый диалог','Жаңа әңгіме')} disabled={busy||!conversation.length} onClick={()=>{setConversation([]);setQuestion('');setAnswer('');setAnswerReview(null);setProposal('');setReview(null);setStatus('');}}>{w('New conversation','\u041d\u043e\u0432\u044b\u0439 \u0434\u0438\u0430\u043b\u043e\u0433','\u0416\u0430\u04a3\u0430 \u04d9\u04a3\u0433\u0456\u043c\u0435')}</button></div><p className="chat-caption" hidden={conversation.length>0}>{w('Ask about your task. Check suggestions before using them.','Спроси о своём задании. Проверяй подсказки перед использованием.','Тапсырмаң туралы сұра. Кеңесті қолданар алдында тексер.')}</p>
-{settingsStatus&&<p className="assistant-settings-status" role="status">{settingsStatus}</p>}
-<AssistantConversation conversation={conversation} answer={answer} pendingQuestion={busy?requestPreview?.question??null:null}/>
-<div className="chat-composer">
- {Object.keys(project.sourceFiles??{}).length>0&&<label>{w('File to discuss','Файл для обсуждения','Талқыланатын файл')}<select aria-label={w('File to discuss','Файл для обсуждения','Талқыланатын файл')} value={file} disabled={busy} onChange={e=>setSelected(e.target.value)}><option>sketch.ino</option>{sortedSourceFiles(project.sourceFiles).map(([name])=><option key={name}>{name}</option>)}</select></label>}
- <label>{t('Question')}<textarea aria-label={t('Question')} placeholder={w('Message Jexi…','Напиши Jexi…','Jexi-ге жаз…')} disabled={busy} value={question} maxLength={8000} onKeyDown={event=>{if(event.key==='Enter'&&!event.shiftKey&&!event.nativeEvent.isComposing){event.preventDefault();event.stopPropagation();if(enabled&&question.trim())void ask();}}} onChange={e=>setQuestion(e.target.value)}/></label><button className="chat-send" data-busy={busy} aria-label={t('Request hint')} title={t('Request hint')+' (Enter · Shift+Enter ↵)'} disabled={!enabled||!question.trim()||busy} onClick={()=>void ask()}><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m3 3 18 9-18 9 4-9Zm4 9h14"/></svg></button><label><input type="checkbox" disabled={busy} checked={share} onChange={e=>setShare(e.target.checked)}/>{w('Include my code','Добавить мой код','Кодымды қосу')} · {file}</label><p className="note">{assistantPrivacyShort[locale]}</p>
- <details className="shared-source-preview"><summary>{w('Check the text being shared','Проверить отправляемый текст','Жіберілетін мәтінді тексеру')}</summary><p>{assistantPrivacy[locale]}</p><p>{w('Your question and the optional selected source below are sent when you request a hint. Inspect them for private information.','При запросе отправляются твой вопрос и выбранный код ниже, если включён флажок. Проверь их на личные сведения.','Кеңес сұрағанда сұрағың және белгі қосылса төмендегі код жіберіледі. Жеке мәлімет бар-жоғын тексер.')}</p><pre>{requestPreview?.question??question}</pre><pre className="shared-context">{requestPreview?.context??sharedText}</pre><pre>{JSON.stringify(requestPreview?.history??conversation.flatMap(turn=>[{role:'user',content:turn.question.slice(0,2000)},{role:'assistant',content:turn.answer.slice(0,2000)}]).slice(-10),null,2)}</pre></details>
- <button className="chat-cancel" aria-label={t('Cancel request')} title={t('Cancel request')} disabled={!busy} onClick={()=>{epoch.current++;pending.current=false;setRequestPreview(null);setBusy(false);setStatus(w('Request cancelled','Запрос отменён','Сұрау тоқтатылды'));void window.jective.assistantCancel();}}><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="6" y="6" width="12" height="12" rx="2"/></svg></button><p className="assistant-request-status" role="status">{requestError?assistantErrorText({code:requestError},locale):t(status)}</p>
-</div>
- <details className="chat-review"><summary>{t('Review proposed code')}</summary><p>{w('Changes apply only to','Изменения применяются только к','Өзгерістер тек мына файлға қолданылады')}: <strong>{file}</strong></p><button disabled={busy||!answer} onClick={()=>{const code=answer.match(/```(?:cpp|c\+\+|arduino)?\s*\n([\s\S]*?)```/);if(!code){setStatus(w('No C++ code found. Paste a candidate below to compare it.','Код C++ не найден. Вставь вариант ниже для сравнения.','C++ коды табылмады. Салыстыру үшін нұсқаны төменге енгіз.'));return;}if(!answerReview||!reviewStillCurrent(project,answerReview)){setStatus(changed);return;}setReview(answerReview);setProposal(code[1]!);}}>{t('Prepare code review')}</button>
- <label>{t('Proposed source')}<textarea aria-label={t('Proposed source')} value={proposal} maxLength={file==='sketch.ino'?500000:100000} onChange={e=>{if(!proposal){try{setReview(captureCodeReview(project,file));}catch{setStatus(changed);return;}}setProposal(e.target.value);}}/></label><div ref={diff} style={{height:proposal?320:0}}/>
- <button disabled={!proposal||!review||busy} onClick={()=>{if(!review)return;try{const record=codeReviewRecord(review,proposal,'inspect'),url=URL.createObjectURL(new Blob([JSON.stringify(record,null,2)],{type:'application/json'})),link=document.createElement('a');link.href=url;link.download='jective-source-review.json';link.click();setTimeout(()=>URL.revokeObjectURL(url),1000);setStatus(w('Review saved. Compile the applied source separately; this record does not prove compilation.','Сравнение сохранено. Применённый код проверь отдельной компиляцией; этот файл её не подтверждает.','Салыстыру сақталды. Қолданылған кодты бөлек құрастыр; бұл файл құрастыруды дәлелдемейді.'));}catch{setStatus(changed);}}}>{w('Save source comparison','Скачать сравнение кода','Код салыстыруын сақтау')}</button>
- <button disabled={!proposal||busy} onClick={()=>{setProposal('');setReview(null);setStatus(w('Suggestion rejected. Your program was not changed.','Подсказка отклонена. Программа не изменена.','Кеңес қабылданбады. Бағдарлама өзгерген жоқ.'));}}>{w('Reject suggestion','Отклонить подсказку','Кеңесті қабылдамау')}</button>
- {review&&!reviewStillCurrent(project,review)&&<p role="status">{changed}</p>}<button disabled={!proposal||!review||busy||!reviewStillCurrent(project,review)} onClick={async()=>{if(!review)return;setBusy(true);try{const applied=await apply(proposal,review);setStatus(applied?w('Applied to the selected file. Check it before running.','Применено к выбранному файлу. Проверь перед запуском.','Таңдалған файлға қолданылды. Іске қоспас бұрын тексер.'):changed);if(applied){setProposal('');setReview(null);}}catch{setStatus(w('This code exceeds project limits or is invalid.','Этот код превышает ограничения проекта или недопустим.','Бұл код жоба шектеулерінен асады немесе жарамсыз.'));}finally{setBusy(false);}}}>{t('Apply reviewed source')}</button></details>
- <p className="chat-review-note">{w('Review suggested changes in a copy of your program before running them.','Проверяй предложенные изменения в копии программы перед запуском.','Ұсынылған өзгерістерді іске қоспас бұрын бағдарлама көшірмесінде тексер.')}</p></section>;
+ const [pendingQuestion,setPendingQuestion]=useState<string|null>(null);
+ const [settingsStatus,setSettingsStatus]=useState('');
+ const [status,setStatus]=useState('');
+ const [requestError,setRequestError]=useState<string|null>(null);
+ const picker=useRef<HTMLInputElement>(null);
+ const epoch=useRef(0);
+ const pending=useRef(false);
+ const file=project.mode==='code'&&Object.hasOwn(project.sourceFiles??{},activeFile)?activeFile:'sketch.ino';
+ const latest=useRef({project,file});
+ latest.current={project,file};
+ const busy=pendingQuestion!==null;
+ const clearStatus=()=>{setStatus('');setRequestError(null);};
+ const cancel=()=>{
+  epoch.current++;
+  pending.current=false;
+  setPendingQuestion(null);
+  setRequestError(null);
+  setStatus(w('Request cancelled','Запрос отменён','Сұрау тоқтатылды'));
+  void window.jective.assistantCancel();
+ };
+
+ useEffect(()=>()=>{epoch.current++;if(pending.current)void window.jective.assistantCancel();},[]);
+ useEffect(()=>{
+  let alive=true,refreshId=0;
+  const refresh=()=>{
+   const id=++refreshId;
+   setEnabled(false);
+   void window.jective.assistantSettings().then(result=>{
+    if(!alive||id!==refreshId)return;
+    if(!result.ok){setSettingsStatus(assistantConnectionFailure[locale]);return;}
+    const settings=result.value;
+    const ready=settings.enabled&&settings.keyConfigured&&(settings.model==='jective-managed'||settings.endpoint==='https://api.openai.com/v1');
+    setEnabled(ready);
+    setSettingsStatus(ready?'':assistantNotEnabled[locale]);
+   }).catch(()=>{if(alive&&id===refreshId)setSettingsStatus(assistantConnectionFailure[locale]);});
+  };
+  refresh();
+  window.addEventListener('focus',refresh);
+  window.addEventListener('assistant-settings-changed',refresh);
+  return()=>{
+   alive=false;
+   window.removeEventListener('focus',refresh);
+   window.removeEventListener('assistant-settings-changed',refresh);
+  };
+ },[locale]);
+
+ const chooseFile=()=>{
+  if(!picker.current)return;
+  picker.current.value='';
+  picker.current.click();
+ };
+ const ask=async()=>{
+  if(pending.current||!enabled||!question.trim())return;
+  const request=++epoch.current;
+  pending.current=true;
+  setPendingQuestion(question);
+  setRequestError(null);
+  setStatus(w('Thinking…','Думаю…','Ойланып жатырмын…'));
+  try{
+   const snapshot=share&&!attachment?captureCodeReview(project,file):null;
+   let context=snapshot?sourceContext(snapshot.file,snapshot.original):'';
+   if(share&&attachment){
+    try{
+     const source=await attachment.slice(0,140000).text();
+     context=sourceContext(attachment.name.replace(/[\r\n]/g,' '),source);
+    }catch{
+     if(epoch.current===request)setStatus(w('Could not read the selected file.','Не удалось прочитать выбранный файл.','Таңдалған файлды оқу мүмкін болмады.'));
+     return;
+    }
+   }
+   if(epoch.current!==request)return;
+   const history=conversation.flatMap(turn=>[
+    {role:'user' as const,content:turn.question.slice(0,2000)},
+    {role:'assistant' as const,content:turn.answer.slice(0,2000)}
+   ]).slice(-10);
+   const result=await window.jective.assistantAsk({question,context,history});
+   if(epoch.current!==request)return;
+   if(snapshot&&(latest.current.file!==snapshot.file||!reviewStillCurrent(latest.current.project,snapshot))){
+    setStatus(w('Your code changed. Send the question again.','Код изменился. Отправь вопрос ещё раз.','Код өзгерді. Сұрақты қайта жібер.'));
+    return;
+   }
+   if(result.ok){
+    setConversation(previous=>[...previous,{id:crypto.randomUUID(),question,answer:result.value}].slice(-20));
+    setQuestion('');
+    setStatus('');
+   }else{
+    setStatus('');
+    setRequestError(result.error.code);
+   }
+  }catch{
+   if(epoch.current===request)setStatus(w('The request failed. Try again.','Запрос не выполнился. Попробуй ещё раз.','Сұрау орындалмады. Қайта байқап көр.'));
+  }finally{
+   if(epoch.current===request){
+    pending.current=false;
+    setPendingQuestion(null);
+   }
+  }
+ };
+
+ const newConversation=w('New conversation','Новый диалог','Жаңа әңгіме');
+ const codeLabel=w('Add code from a file','Добавить код из файла','Файлдан код қосу');
+ return <section className="feature student-help">
+  <section className="feature learner-chat">
+   <div className="chat-heading">
+    <h2>{w('Ask Jexi','Спроси Jexi','Jexi-ден сұра')}</h2>
+    <button disabled={busy||!conversation.length} onClick={()=>{setConversation([]);setQuestion('');clearStatus();}}>{newConversation}</button>
+   </div>
+   <p className="chat-caption" hidden={conversation.length>0}>{w('Ask about your task. Check suggestions before using them.','Спроси о своём задании. Проверяй подсказки перед использованием.','Тапсырмаң туралы сұра. Кеңесті қолданар алдында тексер.')}</p>
+   {settingsStatus&&<p className="assistant-settings-status" role="status">{settingsStatus}</p>}
+   <AssistantConversation conversation={conversation} answer={conversation.at(-1)?.answer??''} pendingQuestion={pendingQuestion}/>
+   <div className="chat-composer">
+    <label>{t('Question')}<textarea aria-label={t('Question')} placeholder={w('Message Jexi…','Напиши Jexi…','Jexi-ге жаз…')} disabled={busy} value={question} maxLength={8000} onKeyDown={event=>{
+     if(event.key==='Enter'&&!event.shiftKey&&!event.nativeEvent.isComposing){
+      event.preventDefault();
+      event.stopPropagation();
+      void ask();
+     }
+    }} onChange={event=>setQuestion(event.target.value)}/></label>
+    <button className="chat-send" data-busy={busy} aria-label={t('Request hint')} title={t('Request hint')+' (Enter · Shift+Enter ↵)'} disabled={!enabled||!question.trim()||busy} onClick={()=>void ask()}><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m3 3 18 9-18 9 4-9Zm4 9h14"/></svg></button>
+    <button className="chat-cancel" aria-label={t('Cancel request')} title={t('Cancel request')} disabled={!busy} onClick={cancel}><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="6" y="6" width="12" height="12" rx="2"/></svg></button>
+    <div className="chat-code-source">
+     <label className="chat-code-toggle">
+      <input type="checkbox" disabled={busy} checked={share} onChange={event=>setShare(event.target.checked)}/>
+      <span className="chat-code-check" aria-hidden="true"/>
+      {codeLabel}:
+     </label>
+     <select aria-label={w('Code source','Источник кода','Код көзі')} disabled={!share||busy} value={attachment?'file':'current'} onChange={event=>{
+      if(event.currentTarget.value==='file'){
+       event.currentTarget.value=attachment?'file':'current';
+       chooseFile();
+      }else setAttachment(null);
+     }}>
+      <option value="current">{w('Current','Текущий','Ағымдағы')}</option>
+      <option value="file">{w('From file','Из файла','Файлдан')}</option>
+     </select>
+     <input type="file" hidden ref={picker} accept=".ino,.pde,.h,.hpp,.hh,.c,.cc,.cpp,.cxx,.txt,text/plain" onChange={event=>{
+      const selected=event.target.files?.[0];
+      if(selected)setAttachment(selected);
+     }}/>
+     {share&&(attachment
+      ?<button className="chat-code-file" type="button" disabled={busy} title={attachment.name} onClick={chooseFile}>{attachment.name}</button>
+      :<span className="chat-code-file" title={file}>{file}</span>)}
+    </div>
+    <p className="assistant-request-status" role="status">{requestError?assistantErrorText({code:requestError},locale):t(status)}</p>
+   </div>
+  </section>
+ </section>;
 }

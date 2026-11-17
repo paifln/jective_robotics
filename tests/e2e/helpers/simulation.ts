@@ -2,8 +2,10 @@ import type {Page} from '@playwright/test';
 import {expect,type ElectronApplication} from '@playwright/test';
 import {readFile} from 'node:fs/promises';
 import type {World} from '../../../packages/simulator';
-export async function openSimulationTools(page:Page){
- const tools=page.locator('.simulation-controls');if(await tools.getAttribute('open')===null)await tools.locator(':scope>summary').click();
+export async function openSimulationTools(page:Page,section:'Edit field'|'New field'|'Diagnostics'='Diagnostics'){
+ const tools=page.locator('.simulation-tools');
+ if(await tools.getAttribute('open')===null)await tools.locator(':scope>summary').click();
+ await tools.getByRole('button',{name:section,exact:true}).click();
 }
 export async function runIndicatorExperiment(page:Page){
  const tools=page.locator('.trace-tools');if(await tools.getAttribute('open')===null)await tools.locator(':scope>summary').click();
@@ -16,7 +18,11 @@ export async function importPracticeArea(page:Page,world:unknown){
 }
 export async function readPracticeArea(app:ElectronApplication,page:Page,path:string):Promise<World>{
  await app.evaluate(({session},file)=>{session.defaultSession.once('will-download',(_event,item)=>item.setSavePath(file));},path);
+ const active=page.locator('.simulation-tool-switch button[aria-pressed=true]');
+ const previous=await active.textContent();
+ await openSimulationTools(page,'Edit field');
  await page.getByRole('button',{name:'Save practice area',exact:true}).click();
+ if(previous==='Diagnostics'||previous==='New field')await openSimulationTools(page,previous);
  await expect.poll(async()=>{try{return JSON.parse(await readFile(path,'utf8')).format;}catch{return '';}}).toBe('jective-world');
  return JSON.parse(await readFile(path,'utf8')).world;
 }

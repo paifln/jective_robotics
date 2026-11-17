@@ -1,5 +1,40 @@
 import * as Blockly from 'blockly';
+import * as englishBlockly from 'blockly/msg/en';
+import * as russianBlockly from 'blockly/msg/ru';
 type Locale='en'|'ru'|'kk';
+
+const kazakhBlockly = {
+ ...englishBlockly,
+ UNDO: 'Болдырмау',
+ REDO: 'Қайталау',
+ CLEAN_UP: 'Блоктарды реттеу',
+ COLLAPSE_ALL: 'Барлық блокты жинау',
+ EXPAND_ALL: 'Барлық блокты ашу',
+ DELETE_BLOCK: 'Блокты жою',
+ DELETE_X_BLOCKS: '%1 блокты жою',
+ DELETE_ALL_BLOCKS: '%1 блоктың бәрі жойылсын ба?',
+ DUPLICATE_BLOCK: 'Көшірмесін жасау',
+ ADD_COMMENT: 'Түсініктеме қосу',
+ REMOVE_COMMENT: 'Түсініктемені жою',
+ DUPLICATE_COMMENT: 'Түсініктемені көшіру',
+ EXTERNAL_INPUTS: 'Сыртқы кірістер',
+ INLINE_INPUTS: 'Кірістерді бір жолға қою',
+ EXPAND_BLOCK: 'Блокты ашу',
+ COLLAPSE_BLOCK: 'Блокты жинау',
+ ENABLE_BLOCK: 'Блокты қосу',
+ DISABLE_BLOCK: 'Блокты өшіру',
+ HELP: 'Анықтама',
+};
+const blocklyMessages: Record<Locale, Omit<typeof englishBlockly, 'default'>> = {
+ en: englishBlockly,
+ ru: russianBlockly,
+ kk: kazakhBlockly,
+};
+
+export function setBlocklyLocale(locale: Locale) {
+ Blockly.ContextMenu.hide();
+ Blockly.setLocale(blocklyMessages[locale]);
+}
 const labels:Record<string,[string,string]>={
  'stop wheels':['остановить колёса','дөңгелектерді тоқтату'],
  'serial label':['подпись сообщения','хабар белгісі'],value:['значение','мән'],

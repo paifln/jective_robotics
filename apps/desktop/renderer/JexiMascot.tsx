@@ -12,5 +12,5 @@ export function JexiMascot({size='small'}:{size?:'small'|'welcome'}){
   document.addEventListener('visibilitychange',refresh);
   return()=>{observer.disconnect();windowObserver.disconnect();document.removeEventListener('visibilitychange',refresh);};
  },[]);
- return <span ref={element} className={'jexi-mascot jexi-mascot-'+size} data-active={active} aria-hidden="true"><img src="jexi.png" alt="" draggable={false}/></span>;
+ return <span ref={element} className={'jexi-mascot jexi-mascot-'+size} data-active={active} aria-hidden="true"><img src={size==='welcome'?'jexi.png':'jexi-avatar.png'} alt="" draggable={false}/></span>;
 }

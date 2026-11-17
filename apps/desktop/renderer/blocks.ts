@@ -3,28 +3,28 @@ import 'blockly/blocks';
 import type {Program,Expression} from '../../../packages/codegen';
 import {validateFunctions,type FunctionProgram,type FunctionInstruction} from '../../../packages/codegen/functions';
 Blockly.defineBlocksWithJsonArray([
- {type:'jective_print_value',message0:'serial label %1 value %2',args0:[{type:'field_input',name:'LABEL',text:'value: '},{type:'input_value',name:'VALUE',check:'Number'}],previousStatement:null,nextStatement:null,colour:260},
+ {type:'jective_print_value',inputsInline:true,message0:'serial label %1 value %2',args0:[{type:'field_input',name:'LABEL',text:'value: '},{type:'input_value',name:'VALUE',check:'Number'}],previousStatement:null,nextStatement:null,colour:260},
  {type:'jective_sound',message0:'Sound event %1 Hz for %2 ms',args0:[{type:'field_number',name:'HZ',value:440,min:20,max:20000,precision:1},{type:'field_number',name:'MS',value:200,min:1,max:60000,precision:1}],previousStatement:null,nextStatement:null,colour:145},
  {type:'jective_sound_stop',message0:'Stop sound event',previousStatement:null,nextStatement:null,colour:145},
- {type:'jective_pwm',message0:'PWM duty %1 %% channel %2',args0:[{type:'input_value',name:'VALUE',check:'Number'},{type:'field_dropdown',name:'CHANNEL',options:[['1','1'],['2 (simulation)','2']]}],previousStatement:null,nextStatement:null,colour:145},
+ {type:'jective_pwm',inputsInline:true,message0:'PWM duty %1 %% channel %2',args0:[{type:'input_value',name:'VALUE',check:'Number'},{type:'field_dropdown',name:'CHANNEL',options:[['1','1'],['2 (simulation)','2']]}],previousStatement:null,nextStatement:null,colour:145},
   {type:'jective_function',message0:'function %1 parameters %2 body %3',args0:[{type:'field_input',name:'NAME',text:'pulse'},{type:'field_input',name:'PARAMETERS',text:'ms'},{type:'input_statement',name:'DO'}],colour:290},
   ...Array.from({length:9},(_,count)=>({type:'jective_call_'+count,message0:'call %1'+Array.from({length:count},(_,index)=>' argument '+(index+1)+' %'+(index+2)).join(''),args0:[{type:'field_input',name:'NAME',text:'pulse'},...Array.from({length:count},(_,index)=>({type:'input_value',name:'ARG_'+index,check:'Number'}))],previousStatement:null,nextStatement:null,colour:290})),
-  {type:'jective_setup',message0:'setup %1',args0:[{type:'input_statement',name:'DO'}],colour:210},
-  {type:'jective_loop',message0:'loop %1',args0:[{type:'input_statement',name:'DO'}],colour:210},
+  {type:'jective_setup',hat:'cap',message0:'setup %1',args0:[{type:'input_statement',name:'DO'}],colour:210},
+  {type:'jective_loop',hat:'cap',message0:'loop %1',args0:[{type:'input_statement',name:'DO'}],colour:210},
   {type:'jective_led',message0:'indicator %1 channel %2',args0:[{type:'field_dropdown',name:'STATE',options:[['ON','ON'],['OFF','OFF']]},{type:'field_dropdown',name:'CHANNEL',options:[['1','1'],['2 (simulation)','2']]}],previousStatement:null,nextStatement:null,colour:145},
   {type:'jective_wait',message0:'wait %1 ms',args0:[{type:'field_number',name:'MS',value:500,min:0,max:60000,precision:1}],previousStatement:null,nextStatement:null,colour:45},
-  {type:'jective_wait_value',message0:'wait expression %1 ms',args0:[{type:'input_value',name:'VALUE',check:'Number'}],previousStatement:null,nextStatement:null,colour:45},
+  {type:'jective_wait_value',inputsInline:true,message0:'wait expression %1 ms',args0:[{type:'input_value',name:'VALUE',check:'Number'}],previousStatement:null,nextStatement:null,colour:45},
   {type:'jective_print',message0:'serial %1',args0:[{type:'field_input',name:'TEXT',text:'Hello JECTIVE'}],previousStatement:null,nextStatement:null,colour:260},
   {type:'jective_drive',message0:'wheels left %1 right %2 %% (simulation)',args0:[{type:'field_number',name:'LEFT',value:40,min:-100,max:100},{type:'field_number',name:'RIGHT',value:40,min:-100,max:100}],previousStatement:null,nextStatement:null,colour:180},
   {type:'jective_stop',message0:'stop wheels (simulation)',previousStatement:null,nextStatement:null,colour:180},
   {type:'jective_repeat',message0:'repeat %1 times %2',args0:[{type:'field_number',name:'COUNT',value:4,min:0,max:1000,precision:1},{type:'input_statement',name:'DO'}],previousStatement:null,nextStatement:null,colour:45},
-  {type:'jective_while',message0:'while %1 budget %2 iterations %3',args0:[{type:'input_value',name:'CONDITION',check:'Number'},{type:'field_number',name:'BUDGET',value:10,min:1,max:1000,precision:1},{type:'input_statement',name:'DO'}],previousStatement:null,nextStatement:null,colour:45},
-  {type:'jective_if',message0:'if %1 then %2 otherwise %3',args0:[{type:'input_value',name:'CONDITION',check:'Number'},{type:'input_statement',name:'THEN'},{type:'input_statement',name:'ELSE'}],previousStatement:null,nextStatement:null,colour:210},
-  {type:'jective_set',message0:'set %1 to %2',args0:[{type:'field_input',name:'NAME',text:'count'},{type:'input_value',name:'VALUE',check:'Number'}],previousStatement:null,nextStatement:null,colour:300},
+  {type:'jective_while',inputsInline:true,message0:'while %1 budget %2 iterations %3',args0:[{type:'input_value',name:'CONDITION',check:'Number'},{type:'field_number',name:'BUDGET',value:10,min:1,max:1000,precision:1},{type:'input_statement',name:'DO'}],previousStatement:null,nextStatement:null,colour:45},
+  {type:'jective_if',inputsInline:true,message0:'if %1 then %2 otherwise %3',args0:[{type:'input_value',name:'CONDITION',check:'Number'},{type:'input_statement',name:'THEN'},{type:'input_statement',name:'ELSE'}],previousStatement:null,nextStatement:null,colour:210},
+  {type:'jective_set',inputsInline:true,message0:'set %1 to %2',args0:[{type:'field_input',name:'NAME',text:'count'},{type:'input_value',name:'VALUE',check:'Number'}],previousStatement:null,nextStatement:null,colour:300},
   {type:'jective_number',message0:'%1',args0:[{type:'field_number',name:'VALUE',value:1}],output:'Number',colour:230},
   {type:'jective_variable',message0:'variable %1',args0:[{type:'field_input',name:'NAME',text:'count'}],output:'Number',colour:300},
-  {type:'jective_not',message0:'not %1',args0:[{type:'input_value',name:'VALUE',check:'Number'}],output:'Number',colour:210},
-  {type:'jective_binary',message0:'%1 %2 %3',args0:[{type:'input_value',name:'LEFT',check:'Number'},{type:'field_dropdown',name:'OP',options:[['+','+'],['−','-'],['×','*'],['÷','/'],['<','<'],['>','>'],['=','=='],['and','&&'],['or','||']]},{type:'input_value',name:'RIGHT',check:'Number'}],output:'Number',colour:230},
+  {type:'jective_not',inputsInline:true,message0:'not %1',args0:[{type:'input_value',name:'VALUE',check:'Number'}],output:'Number',colour:210},
+  {type:'jective_binary',inputsInline:true,message0:'%1 %2 %3',args0:[{type:'input_value',name:'LEFT',check:'Number'},{type:'field_dropdown',name:'OP',options:[['+','+'],['−','-'],['×','*'],['÷','/'],['<','<'],['>','>'],['=','=='],['and','&&'],['or','||']]},{type:'input_value',name:'RIGHT',check:'Number'}],output:'Number',colour:230},
   {type:'jective_sensor',message0:'sensor %1 (simulation)',args0:[{type:'field_dropdown',name:'SENSOR',options:[['distance valid','distanceValid'],['distance (m)','distance'],['line left','lineLeft'],['line right','lineRight'],['heading (rad)','heading'],['x (m)','x'],['y (m)','y'],['button','button'],['analog (counts)','analogCounts'],['analog (V)','analogVolts'],['simulation clock (ms)','timeMs']]}],output:'Number',colour:160}
 ]);
 export function toolboxForLocale(locale:'en'|'ru'|'kk'){
@@ -37,7 +37,7 @@ export function toolboxForLocale(locale:'en'|'ru'|'kk'){
  ['Variables','Переменные','Айнымалылар','#a55da2',['jective_set','jective_variable']],
  ['Sensors','Датчики','Сенсорлар','#3d9c98',['jective_sensor']],
  ['Functions','Функции','Функциялар','#9262b1',['jective_function',...Array.from({length:9},(_,count)=>'jective_call_'+count)]]];
- return {kind:'categoryToolbox',contents:groups.map(([en,ru,kk,colour,types])=>({kind:'category',name:locale==='ru'?ru:locale==='kk'?kk:en,colour,contents:types.map(type=>({kind:'block',type}))}))};
+ return {kind:'categoryToolbox',contents:groups.map(([en,ru,kk,colour,types])=>({kind:'category',cssconfig:{icon:'blocklyToolboxCategoryIcon toolbox-shape toolbox-shape-'+en.toLowerCase()},name:locale==='ru'?ru:locale==='kk'?kk:en,colour,contents:types.map(type=>({kind:'block',type}))}))};
 }
 export const toolbox=toolboxForLocale('en');
 const secondWait={type:'jective_wait',fields:{MS:500}};

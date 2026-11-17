@@ -12,7 +12,7 @@ test('desktop surfaces remain usable in both themes and compact windows',async()
   await page.setViewportSize({width:1366,height:900});
   for(const theme of ['light','dark']){
    if(await page.locator('body').getAttribute('data-theme')!==theme)await page.getByRole('button',{name:'Color theme',exact:true}).click();
-   for(const section of ['Learn','My projects','Simulator','My board','Studio']){
+   for(const section of ['Learn','My projects','Simulator','Serial Monitor','Studio']){
     await page.locator('main>nav').getByRole('button',{name:section,exact:true}).click();
     if(section==='Studio'){
      await page.getByRole('button',{name:'Blocks + code',exact:true}).click();
@@ -23,7 +23,7 @@ test('desktop surfaces remain usable in both themes and compact windows',async()
     await page.screenshot({path:`test-results/design-review/${section.replaceAll(' ','-')}-${theme}.png`,animations:'disabled'});
    }
   }
-  const menu=page.getByRole('button',{name:'Toggle menu',exact:true});await menu.click();await expect(menu).toHaveAttribute('title','Expand menu');await expect(page.locator('main')).toHaveClass(/rail-collapsed/);await expect(page.locator('main>nav .rail-text').first()).toBeHidden();
+  const menu=page.getByRole('button',{name:'Toggle menu',exact:true});await menu.click();await expect(menu).toHaveAttribute('title','Expand menu');await expect(page.locator('main')).toHaveClass(/rail-collapsed/);await expect(page.locator('main>nav .rail-text').first()).toBeVisible();
   await page.locator('main>nav').getByRole('button',{name:'Learn',exact:true}).click();await expect(page.getByRole('heading',{name:'Learn and try',exact:true})).toBeVisible();await page.locator('main>nav').getByRole('button',{name:'Studio',exact:true}).click();await menu.click();await expect(menu).toHaveAttribute('title','Collapse menu');
   const compile=page.locator('.studio-actions').getByRole('button',{name:'Compile — check code for the board',exact:true});await compile.hover();const tip=compile.getByRole('tooltip');await expect(tip).toBeVisible();const tipBounds=await tip.boundingBox();expect(tipBounds!.x).toBeGreaterThanOrEqual(0);expect(tipBounds!.x+tipBounds!.width).toBeLessThanOrEqual(1366);await menu.hover();
   const normal=await page.locator('.studio>.layout').boundingBox();await page.getByRole('button',{name:'Expand editor',exact:true}).click();const expanded=await page.locator('.studio>.layout').boundingBox();expect(expanded!.height).toBeGreaterThan(normal!.height+60);await expect(page.locator('.studio>.components-dock')).toBeHidden();await page.getByRole('button',{name:'Expand editor',exact:true}).click();await expect(page.locator('.studio>.components-dock')).toBeVisible();

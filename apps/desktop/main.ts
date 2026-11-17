@@ -162,7 +162,23 @@ if(primaryInstance)app.whenReady().then(async()=>{
   devices.subscribe(event=>{if(win&&!win.isDestroyed())win.webContents.send('serial:event',event);});
   handler('serial:open',async value=>{const p=z.object({path:z.string().max(100),baudRate:z.number().int()}).strict().parse(value);if(buildBusy)throw new Error('DEVICE_BUSY');return devices.open(p.path,p.baudRate);});
   handler('serial:close',async()=>devices.close());handler('serial:send',async value=>devices.send(z.string().max(4096).parse(value)));
-  handler('device:upload',async value=>{if(buildBusy)throw new Error('DEVICE_BUSY');buildBusy=true;try{const p=z.object({project:ProjectSchema,operationId:z.uuid(),port:z.string().max(100)}).strict().parse(value);if(!(await devices.list()).some(d=>d.path===p.port))throw new Error('PORT_NOT_FOUND');const confirmed=await dialog.showMessageBox(win,brandedMessage({type:'warning',buttons:['Cancel','Upload selected firmware'],defaultId:0,cancelId:0,message:'Upload to '+p.port+'? Verify the physical board model, wiring and power. Upload does not verify safe physical behavior.'}));if(confirmed.response!==1)throw new Error('UPLOAD_CANCELLED');if(!(await devices.list()).some(d=>d.path===p.port))throw new Error('PORT_NOT_FOUND');await devices.close();return await service.upload(resolveProject(p.project),p.operationId,p.port);}finally{buildBusy=false;}});
+  handler('device:upload',async value=>{
+   if(buildBusy)throw new Error('DEVICE_BUSY');
+   buildBusy=true;
+   try{
+    const p=z.object({project:ProjectSchema,operationId:z.uuid(),port:z.string().max(100),mode:z.literal('run').optional()}).strict().parse(value);
+    const port=async()=>(await devices.list()).find(device=>device.path===p.port);
+    const selected=await port();
+    if(!selected||(p.mode==='run'&&selected.transport==='bluetooth'))throw new Error('PORT_NOT_FOUND');
+    if(p.mode!=='run'){
+     const confirmed=await dialog.showMessageBox(win,brandedMessage({type:'warning',buttons:['Cancel','Upload selected firmware'],defaultId:0,cancelId:0,message:'Upload to '+p.port+'? Verify the physical board model, wiring and power. Upload does not verify safe physical behavior.'}));
+     if(confirmed.response!==1)throw new Error('UPLOAD_CANCELLED');
+     if(!(await port()))throw new Error('PORT_NOT_FOUND');
+    }
+    await devices.close();
+    return await service.upload(resolveProject(p.project),p.operationId,p.port);
+   }finally{buildBusy=false;}
+  });
   handler('review:open',async()=>{const selected=await chooseArchive();if(!selected)return null;return verifyReviewArchive(selected);});
   handler('review:accept',async value=>{const archive=ReviewArchiveSchema.parse(value);return archive.kind==='assignment'?importReviewAssignment(store,archive.value):archive.kind==='review-work'?importReviewWork(store,archive.value):importReviewFeedback(store,archive.value);});
   handler('review:report',async value=>{const format=z.enum(['csv','html']).parse(value);return chooseExport(format,'jective-review-report',reviewReport(store.classroom(),store.state().locale,format));});

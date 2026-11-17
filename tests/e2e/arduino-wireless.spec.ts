@@ -1,4 +1,5 @@
 import {test,expect,_electron as electron,type ElectronApplication,type Page} from '@playwright/test';
+import {openArduinoTemplates} from './helpers/studio';
 import {mkdtemp,rm} from 'node:fs/promises';
 import {basename,join,resolve,sep} from 'node:path';
 import {tmpdir} from 'node:os';
@@ -55,8 +56,7 @@ async function finish(app:ElectronApplication,root:string){
 }
 
 async function createBlocks(page:Page){
- await page.locator('main>nav').getByRole('button',{name:'Studio',exact:true}).click();
- const starter=page.locator('.studio .arduino-starter');if(await starter.getAttribute('open')===null)await starter.locator('summary').click();
+ const starter=await openArduinoTemplates(page);
  await starter.getByRole('button',{name:'New robot program (Blocks)',exact:true}).click();
  await page.getByRole('button',{name:'Run via Bluetooth',exact:true}).click();
  await expect(page.locator('#arduino-wireless-dialog')).toBeVisible();
@@ -96,7 +96,7 @@ test('wireless Blocks flow keeps the project, sends commands, reports progress a
   await modal.getByRole('button',{name:'Send and run',exact:true}).click();await expect.poll(()=>app.evaluate(()=>(globalThis as FixtureGlobal).wirelessFixture.programs.length)).toBe(3);await resolveRun(app);
   await expect(modal.locator('.wireless-state')).toContainText('Program running');await page.evaluate(()=>window.dispatchEvent(new Event('blur')));await expect(modal.locator('.wireless-state')).toHaveText('HC05_WIRELESS_TEST · Stopped');
   await modal.getByRole('button',{name:'Close',exact:true}).click();await expect.poll(()=>app.evaluate(()=>(globalThis as FixtureGlobal).wirelessFixture.closes)).toBe(1);
-  const starter=page.locator('.studio .arduino-starter');if(await starter.getAttribute('open')===null)await starter.locator('summary').click();await starter.getByRole('button',{name:'New robot program (C++ / Bluetooth)',exact:true}).click();
+  const starter=await openArduinoTemplates(page);await starter.getByRole('button',{name:'New robot program (C++ / Bluetooth)',exact:true}).click();
   await expect(page.getByRole('button',{name:'Run via Bluetooth',exact:true})).toHaveCount(0);
   const audit=await app.evaluate(()=>{const fixture=(globalThis as FixtureGlobal).wirelessFixture;return {stops:fixture.stops,nativeCalls:fixture.nativeCalls,serialCloses:fixture.serialCloses};});
   expect(audit.stops).toBeGreaterThanOrEqual(2);expect(audit.serialCloses).toBe(1);expect(audit.nativeCalls).toBe(0);expect(errors).toEqual([]);

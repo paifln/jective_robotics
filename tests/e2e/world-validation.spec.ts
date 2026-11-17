@@ -11,7 +11,7 @@ test('scenario editor rejects out-of-world goals and exports the accepted custom
  const app=await electron.launch({executablePath:process.env.JECTIVE_EXECUTABLE,args:process.env.JECTIVE_EXECUTABLE?[]:['.'],env});
  try{
   const page=await app.firstWindow();await parkVerificationWindow(app);await prepareProgrammingWorkspace(page,true,false);await expect(page.locator('.monaco-editor').first()).toHaveAttribute('data-source',new RegExp('digitalWrite'.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')));
-  await page.getByRole('button',{name:'Simulator',exact:true}).click();await openSimulationTools(page);
+  await page.getByRole('button',{name:'Simulator',exact:true}).click();await openSimulationTools(page,'Edit field');
   await expect(page.getByLabel('Scenario JSON',{exact:true})).toHaveCount(0);await expect(page.getByLabel('Scenario JSON',{exact:true})).toHaveCount(0);
   const scenario=await readPracticeArea(app,page,join(root,'active-practice-area.json'));
   await importPracticeArea(page,{...scenario,goal:{...scenario.goal,x:4.1}});await expect(page.getByLabel('Scenario JSON',{exact:true})).toHaveCount(0);
@@ -19,6 +19,7 @@ test('scenario editor rejects out-of-world goals and exports the accepted custom
   await importPracticeArea(page,{...scenario,analog:{referenceVolts:3.3,bits:12,inputVolts:5}});await expect(page.getByLabel('Scenario JSON',{exact:true})).toHaveCount(0);await expect(page.locator('.world-files').getByRole('alert')).toContainText('Your current area is unchanged');await expect(page.getByLabel('World',{exact:true})).toHaveValue('open-test-area');
   const accepted={...scenario,analog:{referenceVolts:3.3,bits:12,inputVolts:1.65,noiseVolts:.1,seed:42,events:[]},id:'teacher-custom-area',start:{...scenario.start,x:.6},buttonEvents:[{timeMs:20,pressed:true},{timeMs:80,pressed:false}]};await importPracticeArea(page,accepted);await expect(page.getByLabel('Scenario JSON',{exact:true})).toHaveCount(0);
   await expect(page.getByLabel('World',{exact:true})).toHaveValue('teacher-custom-area');await expect(page.locator('.simulator-workspace')).toContainText('This scenario changes the button during the run. The checkbox sets its starting value.');await page.getByRole('button',{name:'Reset',exact:true}).click();await expect(page.locator('.simulator-workspace pre')).toContainText('ready');
+  await openSimulationTools(page);
   await page.getByRole('checkbox',{name:'Simulated button pressed',exact:true}).check();
   await expect(page.locator('.simulator-workspace pre')).not.toContainText('ready');
   await page.getByRole('button',{name:'Reset',exact:true}).click();await expect(page.locator('.simulator-workspace pre')).toContainText('ready');

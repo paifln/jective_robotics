@@ -29,6 +29,7 @@ await copyFile('apps/desktop/renderer/jective-header.svg','dist/renderer/jective
 
 await copyFile('assets/jective-icon.png','dist/renderer/jective-icon.png');
 await copyFile('assets/assistant/jexi.png','dist/renderer/jexi.png');
+await copyFile('assets/assistant/jexi-avatar.png','dist/renderer/jexi-avatar.png');
 
 await cp('assets/fonts','dist/renderer/fonts',{recursive:true});
 await cp('assets/learning','dist/renderer/learning',{recursive:true});

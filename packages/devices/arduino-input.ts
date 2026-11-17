@@ -10,6 +10,7 @@ export class ArduinoInput {
  keyDown(key:string,repeat=false){const command=arduinoKeys[key];if(command&&(!repeat||this.keys.has(key)))this.keys.set(key,command);}
  keyUp(key:string){this.keys.delete(key);this.unlock();}
  pointerDown(id:number,command:ArduinoCommand){this.pointers.set(id,command);}
+ pointerMove(id:number,command:ArduinoCommand){if(this.pointers.has(id))this.pointers.set(id,command);}
  pointerUp(id:number){this.pointers.delete(id);this.unlock();}
  stop(){this.locked=true;this.unlock();}
  clear(){this.keys.clear();this.pointers.clear();this.locked=false;}

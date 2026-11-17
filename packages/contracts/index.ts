@@ -85,7 +85,7 @@ export interface DesktopAPI {
   serialSend(text:string):Promise<Result<boolean>>;
   onSerial(listener:(event:SerialEvent)=>void):()=>void;
   onBuildStage(listener:(event:import('./build-stage').BuildStageEvent)=>void):()=>void;
-  upload(project:Project,operationId:string,port:string):Promise<Result<BuildResult>>;
+  upload(project:Project,operationId:string,port:string,mode?:'run'):Promise<Result<BuildResult>>;
   assignmentSave(assignment:Assignment):Promise<Result<boolean>>;
   reviewOpen():Promise<Result<import('./review').ReviewArchive|null>>;
   reviewAccept(archive:import('./review').ReviewArchive):Promise<Result<'imported'|'duplicate'>>;

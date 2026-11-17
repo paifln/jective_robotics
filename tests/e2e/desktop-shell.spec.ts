@@ -13,8 +13,13 @@ test('Windows chrome and a retained floating assistant leave the workspace usabl
   await app.evaluate(({BrowserWindow})=>{const window=BrowserWindow.getAllWindows()[0]!;window.setFocusable(false);window.setPosition(-12000,-12000);window.webContents.setBackgroundThrottling(false);window.showInactive();});
   await expect(page.locator('#launch-screen')).toHaveCount(0);await page.locator('main>header>label>select').selectOption('en');
   await expect(page.getByRole('button',{name:'Close window',exact:true})).toBeVisible();
+  await page.setViewportSize({width:1366,height:768});
+  const header=page.locator('main>.window-chrome'),nav=page.locator('main>nav.student-navigation');
+  await expect(header).toHaveCSS('height','48px');
+  await expect(nav).toHaveCSS('top','48px');
+  await expect(header.getByLabel('Language',{exact:true})).toBeInViewport();
   const native=await app.evaluate(({BrowserWindow})=>{const window=BrowserWindow.getAllWindows()[0]!;return {menu:window.isMenuBarVisible(),bounds:window.getBounds()};});expect(native.menu).toBe(false);
-  await expect(page.locator('main>nav button[data-section]')).toHaveCount(5);
+  await expect(page.locator('main>nav button[data-section]')).toHaveCount(6);
   await page.getByRole('button',{name:'Ask for help',exact:true}).click();const chat=page.getByRole('dialog',{name:'JECTIVE assistant',exact:true});await expect(chat).toBeVisible();await expect(chat).toHaveAttribute('aria-modal','false');
   await chat.getByLabel('Question',{exact:true}).fill('Keep this question while I work');
   await page.locator('main>nav').getByRole('button',{name:'Studio',exact:true}).click();await expect(page.locator('.studio')).toBeVisible();await expect(chat).toBeVisible();

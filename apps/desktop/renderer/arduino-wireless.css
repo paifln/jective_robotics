@@ -11,5 +11,4 @@ body[data-theme=dark] .arduino-wireless-dialog{background:#20242f;color:#f3f4fa}
 .wireless-install{margin-top:20px;border-top:1px solid var(--border,#ccd0dc);padding-top:16px}
 .wireless-install>summary{cursor:pointer;font-weight:600}
 .wireless-install .board-wizard{padding:12px 0;border:0}
-.wireless-install .serial-tools{display:none}
 .bluetooth-run-launch{white-space:nowrap}

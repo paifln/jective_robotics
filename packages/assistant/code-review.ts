@@ -20,9 +20,11 @@ export function replaceReviewedFile(project:Project,file:string,source:string):P
  return ProjectSchema.parse(file==='sketch.ino'?{...project,mode:'code',source}:{...project,sourceFiles:{...project.sourceFiles,[file]:source}});
 }
 export function reviewContext(review:CodeReview,share:boolean):string {
- if(!share)return '';
- const header='Selected source file: '+review.file+'\n';
- return header+review.original.slice(0,35000-header.length);
+ return share?sourceContext(review.file,review.original):'';
+}
+export function sourceContext(file:string,source:string):string {
+ const header='Selected source file: '+file+'\n';
+ return header+source.slice(0,35000-header.length);
 }
 
 /** A review record is source inspection, never compiler or physical evidence. */

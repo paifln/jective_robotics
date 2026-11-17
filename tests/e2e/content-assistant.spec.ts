@@ -5,7 +5,7 @@ import {tmpdir} from 'node:os';
 import {join,resolve,sep,basename} from 'node:path';
 import {createServer} from 'node:http';
 
-test('lesson, saved version and reviewed hint use actual persistence and a labeled local JECTIVE gateway fixture',async()=>{
+test('lesson, saved version and Jexi hint use actual persistence and a labeled local JECTIVE gateway fixture',async()=>{
  const root=await mkdtemp(join(tmpdir(),'jective-learning-'));
  const learnerToken='jt_'+'t'.repeat(43);const requests:{model?:string;question:string;context:string;history:unknown[]}[]=[];const authorizations:(string|undefined)[]=[];
  let truncated=true;
@@ -34,14 +34,12 @@ test('lesson, saved version and reviewed hint use actual persistence and a label
   // Administrator provisioning is real; student credential configuration stays denied.
   expect(await page.evaluate(()=>window.jective.assistantConfigure({enabled:true,endpoint:'https://api.openai.com/v1',model:'student-attempt',apiKey:'NOT_A_REAL_SECRET'}))).toMatchObject({ok:false,error:{code:'AI_ADMIN_CONFIGURATION_REQUIRED'}});
   await openAssistant(page);await expect(page.locator('.learner-chat')).toBeVisible();const chat=page.locator('.learner-chat');
-  await chat.getByLabel('Question',{exact:true}).fill('Give a hint without modifying my project');await expect(chat.getByRole('checkbox',{name:/Include my code/})).not.toBeChecked();
+  await chat.getByLabel('Question',{exact:true}).fill('Give a hint without modifying my project');await expect(chat.getByRole('checkbox',{name:/Add code from a file/})).not.toBeChecked();
   const request=chat.getByRole('button',{name:'Request hint',exact:true});await request.click();await expect(chat.locator('.assistant-request-status')).toContainText('The answer stopped at the response limit');await expect(chat.locator('.assistant-answer')).toHaveText('');await expect(request).toBeEnabled();expect(requests).toHaveLength(1);
   truncated=false;await request.click();await expect(chat.locator('.assistant-answer')).toContainText('TEST FIXTURE: preserve evidence');
   expect(requests).toHaveLength(2);expect(requests[0]!.model).toBeUndefined();for(const r of requests){expect(r.question).toBe('Give a hint without modifying my project');expect(r.context).toBe('');expect(r.history).toEqual([]);}expect(authorizations).toEqual(['Bearer '+learnerToken,'Bearer '+learnerToken]);
   expect(await readFile(join(root,'assistant.json'),'utf8')).not.toContain(learnerToken);expect(JSON.stringify(await page.evaluate(()=>window.jective.workspace()))).not.toContain(learnerToken);
-  await chat.getByText('Review proposed code',{exact:true}).click();await chat.getByRole('button',{name:'Prepare code review',exact:true}).click();await expect(chat.getByRole('button',{name:'Apply reviewed source',exact:true})).toBeEnabled();
-  await chat.getByRole('button',{name:'Apply reviewed source',exact:true}).click();await page.getByRole('button',{name:'Minimize chat',exact:true}).click();await nav.getByRole('button',{name:'Studio',exact:true}).click();await page.getByRole('button',{name:'Blocks + code',exact:true}).click();
-  await expect(page.getByText('Blocks • preserved original',{exact:true})).toBeVisible();await expect(page.locator('.studio .monaco-editor')).toHaveAttribute('data-source','void setup(){}\nvoid loop(){}\n');
+  await expect(chat.locator('.chat-review, .shared-source-preview, .offline-help')).toHaveCount(0);
   const preserved=await page.evaluate(id=>window.jective.workspaceProject(id),original.id);expect(preserved.ok&&preserved.value?.source).toBe(original.source);expect(preserved.ok&&preserved.value?.workspace).toEqual(original.workspace);expect(errors).toEqual([]);
  }finally{
   if(app.process().exitCode===null&&app.process().signalCode===null)await app.evaluate(({app})=>app.exit(0)).catch(()=>{});

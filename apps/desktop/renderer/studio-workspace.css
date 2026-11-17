@@ -1,10 +1,31 @@
 /* Working surfaces: give the editor space and keep secondary controls quiet. */
 .studio{height:auto;min-height:calc(100vh - 68px)}
 .studio .workspace-heading{gap:12px;padding-bottom:10px}
-.studio .workspace-heading h1{margin:0;overflow-wrap:anywhere}
+.studio .studio-project-heading{position:absolute;width:1px;height:1px;margin:0;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+.studio-project-fields{display:flex;flex:1 1 360px;align-items:end;gap:10px;min-width:0;max-width:530px}
+.studio-project-fields label{display:grid;gap:4px;min-width:0;margin:0;font-size:12px;color:var(--muted)}
+.studio-project-name{flex:3 1 0}
+.studio-project-fields input,.studio-project-fields select{width:100%;min-width:0;min-height:34px;padding-block:6px;font-size:14px}
+.studio .student-settings{position:relative;flex:none;align-self:start;margin:0 20px 8px;padding:0;border:0;background:transparent;font-size:13px}
+.student-settings>summary{padding:5px 0}
+.student-settings>aside{
+ position:absolute;z-index:10;top:100%;left:0;width:min(390px,calc(100vw - 42px));
+ max-height:min(440px,55dvh);overflow:auto;display:grid;justify-items:start;gap:10px;
+ padding:12px;border:1px solid var(--line);border-radius:8px;color:var(--ink);
+ background:var(--surface);box-shadow:0 8px 24px #0003;
+}
+.student-settings aside p,.student-settings aside details{margin:0}
+.student-settings aside details{width:100%;min-width:0}
+@media(max-width:1000px){.studio .workspace-heading{flex-wrap:wrap}}
+@media(max-width:800px){.studio .student-settings{margin-inline:12px}}
 .studio-toolbar{display:flex;align-items:center;flex-wrap:wrap;gap:12px;margin:0 24px 8px;border-bottom:1px solid var(--line)}
 .studio-toolbar>.studio-panes{position:static;flex:0 0 auto;margin:0;padding:4px 0;background:transparent;gap:8px}
 .studio-toolbar>.studio-panes button{border-radius:10px}
+.workspace-return{position:sticky;top:0;z-index:4;padding:8px 20px;background:var(--page)}
+.workspace-back{display:inline-flex;align-items:center;gap:8px;min-height:36px;text-align:left}
+.workspace-back svg{flex:none}
+.studio[data-pane=circuit]{height:auto;overflow:visible}
+@media(max-width:800px){.workspace-return{padding-inline:12px}}
 .studio-toolbar>.studio-actions{flex:1 1 340px;min-width:0;min-height:42px;position:static;flex-wrap:wrap;padding:4px 0;gap:8px;background:transparent}
 .studio-toolbar .studio-actions span[role=status]{width:auto;margin-left:4px;font-size:11px}
 .studio .code-files{display:flex;flex-wrap:wrap;align-items:flex-start;gap:8px;padding:6px 10px}
@@ -24,19 +45,30 @@
 .compiler-journal{scroll-margin-block:84px;padding-block:8px 12px}
 .compiler-journal>.toolbar{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
 .studio-actions .board-run-launch{display:inline-flex;align-items:center;gap:8px;border-radius:11px}
-.board-run-dialog>.brand{margin:0 42px 12px 12px;max-width:calc(100% - 54px)}
-.board-run-dialog>.dialog-close{position:absolute;top:16px;right:16px}
-.activity-week{display:flex;gap:3px;align-items:center}
-.activity-week b,.activity-legend b{display:block;width:9px;height:9px;border:1px solid var(--line);border-radius:2px;background:var(--field)}
-.activity-week b[data-level="1"],.activity-legend b[data-level="1"]{background:#75bf7e}
-.activity-week b[data-level="2"],.activity-legend b[data-level="2"]{background:#329b52}
-.activity-week b[data-level="3"],.activity-legend b[data-level="3"]{background:#18783c}
+.usb-target{display:inline-flex;align-items:center;gap:4px;min-width:0}
+.usb-target select{width:clamp(92px,14vw,180px);max-width:100%;min-height:34px;font-size:13px}
+.usb-target .usb-refresh{min-width:34px;min-height:34px;padding:0;font-size:18px}
+.board-run-spinner{box-sizing:border-box;width:14px;height:14px;flex:none;border:2px solid currentColor;border-right-color:transparent;border-radius:50%;animation:board-run-spin .75s linear infinite}
+@keyframes board-run-spin{to{transform:rotate(360deg)}}
+@media(prefers-reduced-motion:reduce){.board-run-spinner{animation:none}}
+.activity-legend b{display:block;width:9px;height:9px;border:1px solid var(--line);border-radius:2px;background:var(--field)}
+.activity-legend b[data-level="1"]{background:#75bf7e}
+.activity-legend b[data-level="2"]{background:#329b52}
+.activity-legend b[data-level="3"]{background:#18783c}
 .activity-legend{display:flex;gap:5px;align-items:center;justify-content:flex-end;margin-top:10px}
 .simulation-context{font-size:14px;line-height:1.7;color:var(--muted);max-width:85ch}
 .simulation-context strong{color:var(--ink)}
 .simulator-workspace>details{margin:12px 0;padding:12px 16px;border:1px solid var(--line);border-radius:12px}
 .simulator-workspace>details>summary{cursor:pointer;font-weight:600}
-@media(max-width:1050px){.activity-week{display:none}.studio-toolbar{margin-inline:16px}}
-@media(max-width:800px){.studio-toolbar{gap:8px}.studio-toolbar>.studio-panes button{min-width:0;flex:none}.studio>.layout{height:560px;min-height:560px}.board-run-dialog>.brand .brand-product{display:none}.activity-calendar>summary{padding:6px}.studio-actions .board-run-launch{white-space:normal;text-align:left;min-height:42px}}
+@media(max-width:1050px){.studio-toolbar{margin-inline:16px}}
+@media(max-width:800px){.studio-toolbar{gap:8px}.studio-toolbar>.studio-panes button{min-width:0;flex:none}.studio>.layout{height:560px;min-height:560px}.activity-calendar>summary{padding:6px}.studio-actions .board-run-launch{white-space:normal;text-align:left;min-height:42px}}
 
 .studio .studio-editor{isolation:isolate;z-index:0}
+
+.feature.serial-workspace{margin:0;border:0;border-radius:0;box-shadow:none;padding:22px 28px;min-height:calc(100dvh - var(--chrome-height));background:var(--surface)}
+.serial-workspace h1{font-size:24px}
+.serial-workspace .board-monitor>p:first-child{max-width:70ch;color:var(--muted)}
+.serial-workspace .board-monitor>.toolbar{padding-inline:0}
+.serial-workspace .board-monitor>.toolbar>label{width:auto}
+.serial-workspace .board-monitor>pre{min-height:180px;max-height:52dvh;overflow:auto}
+@media(max-width:800px){.feature.serial-workspace{padding:18px}}

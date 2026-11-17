@@ -17,7 +17,17 @@ test('import updates the current Studio board list, malformed replies recover an
   await page.getByText('Board definitions (advanced)',{exact:true}).click();await page.getByText('Board profile exchange',{exact:true}).click();const exchange=page.locator('.studio .connections details').filter({has:page.locator(':scope>summary').getByText('Board profile exchange',{exact:true})});
   const custom={...profiles[0]!,id:'custom-live-list',name:'Explicit profile import fixture',ledPin:4};await exchange.getByLabel('Profile JSON',{exact:true}).fill(encodeProfile(custom));await exchange.getByRole('button',{name:'Validate and import profile',exact:true}).click();await expect(exchange.locator('pre')).toHaveText('Profile imported');
   // The app remains in Studio throughout: no section-change refresh can hide a missing import event.
-  await openStudioProgram(page,true);const board=page.getByRole('combobox',{name:'Board',exact:true});await expect(board.locator(`option[value="${custom.id}@${custom.version}"]`)).toHaveCount(1);await board.selectOption(custom.id+'@'+custom.version);await expect(page.locator('.studio .monaco-editor')).toHaveAttribute('data-source',/digitalWrite\(4, HIGH\)/);
+  await openStudioProgram(page);const settings=page.locator('.student-settings');await expect(settings).not.toHaveAttribute('open');const board=page.getByRole('combobox',{name:'Board',exact:true});await expect(board.locator(`option[value="${custom.id}@${custom.version}"]`)).toHaveCount(1);await board.selectOption(custom.id+'@'+custom.version);await expect(page.locator('.studio .monaco-editor')).toHaveAttribute('data-source',/digitalWrite\(4, HIGH\)/);
+  const name=page.getByRole('textbox',{name:'Project name',exact:true});
+  await expect(name).toBeVisible();
+  await name.fill('Board profile test project');
+  await expect(page.locator('.workspace-heading h1')).toHaveText('Board profile test project');
+  const workspace=page.locator('.studio .blocklySvg');
+  await expect(workspace).toBeVisible();
+  const workspaceHeight=await workspace.evaluate(node=>node.getBoundingClientRect().height);
+  await settings.locator('summary').first().click();
+  await expect(settings.getByText('Verification',{exact:true})).toBeVisible();
+  expect(await workspace.evaluate(node=>node.getBoundingClientRect().height)).toBe(workspaceHeight);
   const valid=await page.evaluate(()=>window.jective.boardProfiles());if(!valid.ok)throw new Error('VALID_LIST_FIXTURE_UNAVAILABLE');
   await app.evaluate(({ipcMain})=>{ipcMain.removeHandler('profiles:list');ipcMain.handle('profiles:list',()=>({ok:true,value:[{id:'UNTRUSTED_PROFILE_PAYLOAD'}]}));});await page.evaluate(()=>window.dispatchEvent(new Event('jective-board-profiles-changed')));
   await expect(page.locator('.student-settings [role=alert]')).toContainText('Could not refresh the board list');await expect(page.locator('.student-settings')).not.toContainText('UNTRUSTED_PROFILE_PAYLOAD');await expect(board).toHaveValue(custom.id+'@'+custom.version);

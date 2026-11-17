@@ -1,3 +1,4 @@
+import {openSimulationTools} from './helpers/simulation';
 import {test,expect,_electron as electron} from '@playwright/test';
 import {mkdtemp,rm} from 'node:fs/promises';
 import {tmpdir} from 'node:os';
@@ -11,7 +12,7 @@ test('visual scene adjustments preserve the lesson model, reject invalid geometr
   await app.evaluate(({BrowserWindow})=>BrowserWindow.getAllWindows().forEach(win=>{win.setFocusable(false);win.setPosition(-12000,-12000);win.webContents.setBackgroundThrottling(false);win.on('show',()=>win.setPosition(-12000,-12000));win.showInactive();}));
   const page=await app.firstWindow();await expect(page.locator('#launch-screen')).toHaveCount(0);await page.locator('header>label>select').selectOption('en');
   await page.locator('.content>.toolbar').getByRole('button',{name:'Programming',exact:true}).click();await page.getByRole('button',{name:/^L28 ·/}).click();await page.getByRole('button',{name:'Start the task in Studio',exact:true}).click();
-  await page.locator('main>nav').getByRole('button',{name:'Simulator',exact:true}).click();const controls=page.locator('.scene-controls');await controls.locator(':scope>summary').click();
+  await page.locator('main>nav').getByRole('button',{name:'Simulator',exact:true}).click();const controls=page.locator('.scene-controls');await openSimulationTools(page,'Edit field');
   const readWorld=()=>page.evaluate(async()=>{const result=await window.jective.workspace();if(!result.ok)throw new Error('WORKSPACE_UNAVAILABLE');return result.value.recovery?.simulationWorld;});
   await controls.getByRole('button',{name:'Apply area changes',exact:true}).click();await expect.poll(readWorld).toBeTruthy();const original=(await readWorld())!;
   await controls.getByLabel('Robot y, m',{exact:true}).fill('0.988');await controls.getByRole('button',{name:'Apply area changes',exact:true}).click();await expect.poll(async()=>(await readWorld())?.start.y).toBe(.988);

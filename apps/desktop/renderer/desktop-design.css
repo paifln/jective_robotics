@@ -17,7 +17,6 @@ body[data-theme] main>nav.student-navigation button[aria-pressed=true]{backgroun
 main>nav.student-navigation button svg{width:20px;height:20px}
 .feature.content,.feature.student-projects{margin:0;background:var(--surface);padding:22px 28px;min-height:calc(100dvh - 84px)}
 .feature.content>h2,.feature.student-projects>h2{font-size:21px;font-weight:750;letter-spacing:-.035em;margin:0 0 12px}
-.content .library-info{font-size:11px;color:var(--muted);margin-bottom:12px}
 .content>.toolbar{gap:4px;margin:0 0 14px;padding:0;border-bottom:1px solid var(--line)}
 body[data-theme] .content>.toolbar>button{background:transparent!important;color:var(--muted)!important;border:0;border-bottom:2px solid transparent;border-radius:0;padding:12px 14px;font-size:12px}
 body[data-theme] .content>.toolbar>button[aria-pressed=true]{background:transparent!important;color:var(--accent)!important;border-bottom-color:var(--accent);font-weight:750}
@@ -49,7 +48,7 @@ body[data-theme] .content>.toolbar>button[aria-pressed=true]{background:transpar
 .studio .view-switch{gap:2px;padding:3px;background:var(--field);border-radius:7px}
 body[data-theme] .studio .view-switch button{font-size:13px;min-height:29px;padding:6px 10px;border:0;border-radius:5px;background:transparent!important;color:var(--muted)!important}
 body[data-theme] .studio .view-switch button[aria-pressed=true]{background:var(--surface)!important;color:var(--ink)!important}
-.studio .student-settings{margin:0 20px 8px;border:0;border-radius:0;background:transparent;font-size:13px}
+
 .studio-toolbar{margin:0 20px 10px;gap:12px;min-height:46px}
 .studio-toolbar .studio-panes{gap:2px}
 body[data-theme] .studio-toolbar .studio-panes button{font-size:12px;padding:9px 11px;border:0;border-radius:5px;background:transparent!important;color:var(--muted)!important}
@@ -81,8 +80,6 @@ body[data-theme] .studio-toolbar .studio-panes button[aria-pressed=true]{backgro
  .studio .editors{min-height:0;height:100%}
  .studio .panel{min-height:0;overflow:hidden}
  .studio>.output:has(.compiler-journal[open]){max-height:240px;overflow:auto}
- .studio:has(.student-settings[open]){height:auto;overflow:visible}
- .studio:has(.student-settings[open])>.layout{min-height:400px}
 }
 @media(max-width:1000px){.feature.content,.feature.student-projects{padding:18px}.studio-toolbar,.studio .workspace-heading,.studio .components-dock,.studio>.output{margin-inline:12px}.studio .workspace-heading{padding-inline:0}.studio-toolbar .studio-actions{flex-basis:260px}.content>.toolbar>label{margin-left:0}}
 @media(max-width:800px){
@@ -98,15 +95,15 @@ body[data-theme] .studio-toolbar .studio-panes button[aria-pressed=true]{backgro
 }
 @media(prefers-reduced-motion:reduce){button{transition:none}}
 
-body[data-theme="dark"] .studio .blocklyToolboxDiv{background:#22262f!important;color:#bec5d2!important}body[data-theme="dark"] .studio .blocklySvg pattern line{stroke:#363c48}body[data-theme="dark"] .studio .blocklyTreeSelected{background:#383951!important}
+body[data-theme="dark"] .studio .blocklyToolboxDiv{background:#22262f!important;color:#bec5d2!important}body[data-theme="dark"] .studio .blocklySvg pattern line{stroke:#363c48}
 
-@media(max-width:800px) and (min-height:650px){.studio{height:calc(100dvh - 142px);min-height:0;overflow:hidden}.studio>.layout,.studio[data-pane=program][data-expanded=true]>.layout{height:auto;min-height:180px;flex:1;margin:0 12px 8px;border-radius:7px}.studio .studio-editor{min-height:100px}.studio .editors{min-height:0;height:100%}.studio .panel{min-height:0;overflow:hidden}.studio .components-dock{margin-bottom:8px;padding:8px}.studio:has(.student-settings[open]){height:auto;overflow:visible}.studio:has(.student-settings[open])>.layout{min-height:400px}}
+@media(max-width:800px) and (min-height:650px){.studio{height:calc(100dvh - 142px);min-height:0;overflow:hidden}.studio>.layout,.studio[data-pane=program][data-expanded=true]>.layout{height:auto;min-height:180px;flex:1;margin:0 12px 8px;border-radius:7px}.studio .studio-editor{min-height:100px}.studio .editors{min-height:0;height:100%}.studio .panel{min-height:0;overflow:hidden}.studio .components-dock{margin-bottom:8px;padding:8px}}
 
 body[data-theme="dark"] .studio .blocklySvg{background:#191c22!important}body[data-theme="dark"] .studio .blocklyToolbox{background:#22262f!important;color:#bec5d2!important}body[data-theme="light"] .studio .blocklySvg{background:#fafbfc!important}body[data-theme="light"] .studio .blocklyToolbox{background:#f1f2f5!important}
 
 .studio[data-expanded=true]>.components-dock,.studio[data-expanded=true] .student-settings{display:none}
 
-.feature.simulator-workspace,.feature.board-wizard{margin:0;border:0;border-radius:0;box-shadow:none;background:var(--surface);padding:22px 28px;min-height:calc(100dvh - 84px)}.simulator-workspace>h2,.board-wizard>h2{font-size:21px;letter-spacing:-.035em;font-weight:750;margin-top:0}.simulator-workspace .toolbar button,.board-wizard button{border-radius:6px;font-size:12px}.simulator-workspace select,.board-wizard select{border-radius:6px;min-height:34px;font-size:12px}.simulator-workspace>details{border:0;border-top:1px solid var(--line);border-radius:0;padding:14px 0}.simulation-stage canvas{border:3px solid #343945;border-radius:8px}.simulation-readings{border-radius:7px;background:var(--field);padding:12px}.simulation-readings strong{font-size:13px}.game-checks{gap:8px}.game-checks>div{border-radius:6px;padding:10px 12px;font-size:11px}.board-connection-row{padding:16px 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}.board-wizard .board-status{border-radius:7px;background:var(--field);padding:14px;font-size:13px}.board-wizard .serial-tools{border-radius:7px}.board-run-dialog .board-wizard{min-height:0;padding:12px}@media(max-width:800px){.feature.simulator-workspace,.feature.board-wizard{padding:18px}}
+.feature.simulator-workspace,.feature.board-wizard{margin:0;border:0;border-radius:0;box-shadow:none;background:var(--surface);padding:22px 28px;min-height:calc(100dvh - 84px)}.simulator-workspace>h2,.board-wizard>h2{font-size:21px;letter-spacing:-.035em;font-weight:750;margin-top:0}.simulator-workspace .toolbar button,.board-wizard button{border-radius:6px;font-size:12px}.simulator-workspace select,.board-wizard select{border-radius:6px;min-height:34px;font-size:12px}.simulator-workspace>details{border:0;border-top:1px solid var(--line);border-radius:0;padding:14px 0}.simulation-stage canvas{border:3px solid #343945;border-radius:8px}.simulation-readings{border-radius:7px;background:var(--field);padding:12px}.simulation-readings strong{font-size:13px}.game-checks{gap:8px}.game-checks>div{border-radius:6px;padding:10px 12px;font-size:11px}.board-connection-row{padding:16px 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}.board-wizard .board-status{border-radius:7px;background:var(--field);padding:14px;font-size:13px}@media(max-width:800px){.feature.simulator-workspace,.feature.board-wizard{padding:18px}}
 
 .studio-toolbar .action-tooltip{left:auto;right:0;min-width:140px;width:max-content;max-width:280px;white-space:normal;line-height:1.45}
 

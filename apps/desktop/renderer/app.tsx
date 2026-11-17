@@ -1,8 +1,8 @@
+import {canUseWirelessPort,devicePortLabel,preferredWirelessPort} from './device-port-label';
 import {ArduinoWirelessPanel} from './ArduinoWirelessPanel';
 import {ArduinoStarter} from './ArduinoStarter';
 import {ArduinoRobotControl} from './ArduinoRobotControl';
 import {createArduinoUnoRobotProject,createArduinoUnoBlocksProject,arduinoUnoBlocksProgram,hasArduinoUnoRobotWiring} from '../../../packages/robots/arduino-uno';
-import './arduino-starter.css';
 import {useBoardProfiles} from './useBoardProfiles';
 import {AppErrorBoundary} from './AppErrorBoundary';
 import {RecoveryScreen} from './RecoveryScreen';
@@ -26,13 +26,11 @@ import {downloadJSON} from './download';
 import {createBuildErrorProject} from '../../../packages/content/build-error-learning';
 import {createCodeLessonProject} from '../../../packages/content/code-lesson-project';
 import type {SourceFiles} from '../../../packages/contracts/source-files';
-import {reviewStillCurrent,replaceReviewedFile} from '../../../packages/assistant/code-review';
 import {ProjectCodeEditor} from './ProjectCodeEditor';
 import {CodeFileTabs} from './CodeFileTabs';
 import {compilerDiagnostics} from '../../../packages/toolchain/diagnostics';
 import {sameSourceInputs} from '../../../packages/contracts/source-files';
 import {ActivityCalendar} from './ActivityCalendar';
-import {Brand} from './Brand';
 import {HelpMenu} from './HelpMenu';
 import {boardName} from './hardware-copy';
 import {WorldSchema,type World} from '../../../packages/simulator';
@@ -41,9 +39,9 @@ import {ThemeIcon} from './ThemeIcon';
 import {attachInterfaceAudio,soundEnabled,setSoundEnabled,playCue} from './interface-audio';
 import {TraceEventSchema} from '../../../packages/simulator/trace';
 import {artifacts} from '../../../packages/content/lessons';
-import {localizeBlocks} from './block-locale';
+import {localizeBlocks,setBlocklyLocale} from './block-locale';
+import {createLocalizedFlyout} from './blockly-flyout';
 import type {FunctionProgram} from '../../../packages/codegen/functions';
-declare const __JECTIVE_VERSION__:string;
 import React,{useEffect,useRef,useState} from 'react';
 import {createRoot} from 'react-dom/client';
 import * as Blockly from 'blockly';
@@ -55,7 +53,7 @@ import type {TraceEvent} from '../../../packages/simulator';
 import {profiles} from '../../../packages/profiles';
 import {projectProfile} from '../../../packages/profiles/project';
 import {fingerprint} from './ProfileExchangePanel';
-import type {Project,BuildResult,Result} from '../../../packages/contracts';
+import type {Project,BuildResult,Result,Device} from '../../../packages/contracts';
 import {z} from 'zod';
 import './style.css';
 import './student.css';
@@ -66,10 +64,11 @@ import './reading-design.css';
 import './chat-workspace.css';
 import './desktop-design.css';
 import './windows-workspace.css';
+import './blockly-toolbox.css';
 import {SimulatorPanel} from './SimulatorPanel';
-import {StudentHelp} from './StudentHelp';
-import {StudentBoard} from './StudentBoard';
-import {StudentNavigation,ActionButton,words} from './StudentUI';
+import {AssistantPanel} from './AssistantPanel';
+import {BoardMonitor} from './BoardMonitor';
+import {StudentNavigation,ActionButton,BackButton,words,type StudentSection} from './StudentUI';
 import {LocaleContext,translate} from './locale';
 import {StudentProjects} from './StudentProjects';
 import {ConnectionsPanel} from './ConnectionsPanel';
@@ -82,8 +81,30 @@ function App(){
  const [sound,setSound]=useState(soundEnabled);useEffect(attachInterfaceAudio,[]);
  const [theme,setTheme]=useState<'dark'|'light'>('light');useEffect(()=>{document.body.dataset.theme=theme;monaco.editor.setTheme(theme==='dark'?'vs-dark':'vs');workspace.current?.setTheme(blocklyTheme(theme));},[theme]);
  const [assistantOpen,setAssistantOpen]=useState(false);
- const [tab,changeTab]=useState('content');const setTab=(next:string)=>{if(next==='assistant'){setAssistantOpen(true);return;}changeTab(next);document.querySelector('main')?.scrollTo({top:0,left:0,behavior:'instant'});window.scrollTo({top:0,left:0,behavior:'instant'});};const [boardRunOpen,setBoardRunOpen]=useState(false);const [wirelessOpen,setWirelessOpen]=useState(false);const [reviewRequest,setReviewRequest]=useState(0);const [studioPane,setStudioPane]=useState<'program'|'circuit'>('program');const [editorExpanded,setEditorExpanded]=useState(false);const [editorView,setEditorView]=useState<'blocks'|'split'|'code'>('blocks');const [workspaceReady,setWorkspaceReady]=useState(false);
- const [locale,setLocale]=useState<keyof typeof labels>('ru');const t=labels[locale];const blockLocale=useRef(locale);blockLocale.current=locale;
+ const [tab,changeTab]=useState<Exclude<StudentSection,'assistant'>>('content');
+ const [simulationFromStudio,setSimulationFromStudio]=useState(false);
+ const resetScroll=()=>{
+  document.querySelector('main')?.scrollTo({top:0,left:0,behavior:'instant'});
+  window.scrollTo({top:0,left:0,behavior:'instant'});
+ };
+ const setTab=(next:typeof tab)=>{
+  setSimulationFromStudio(false);
+  changeTab(next);
+  resetScroll();
+ };
+ const [wirelessOpen,setWirelessOpen]=useState(false);const [reviewRequest,setReviewRequest]=useState(0);const [studioPane,setStudioPane]=useState<'program'|'circuit'>('program');const [editorExpanded,setEditorExpanded]=useState(false);const [editorView,setEditorView]=useState<'blocks'|'split'|'code'>('blocks');const [workspaceReady,setWorkspaceReady]=useState(false);
+ const selectSection=(next:StudentSection)=>{
+  if(next==='assistant'){setAssistantOpen(true);return;}
+  if(next==='studio')setStudioPane('program');
+  setTab(next);
+ };
+ const showStudioPane=(pane:typeof studioPane)=>{
+  if(pane===studioPane)return;
+  setStudioPane(pane);
+  resetScroll();
+ };
+ const backToProgram=()=>{setTab('studio');setStudioPane('program');};
+ const [locale,setLocale]=useState<keyof typeof labels>('ru');const t=labels[locale];const backToProgramLabel=words(locale,'Back to program','Назад к программе','Бағдарламаға оралу');const blockLocale=useRef(locale);blockLocale.current=locale;
  const profileSelectionRequest=useRef(0);const {available:availableProfiles,failed:profileListFailed,retry:retryProfileList}=useBoardProfiles(tab);
  const [project,setProject]=useState<Project>({schemaVersion:1,id:crypto.randomUUID(),name:'Новый проект',profileId:'esp32-devkit-reference',mode:'blocks',source:'',workspace:initialWorkspace,revision:0});
  const [buildReport,setBuildReport]=useState<BuildReport|null>(null);const [log,setLog]=useState('');const [busy,setBusy]=useState(false);const [saving,setSaving]=useState(false);const saveInFlight=useRef(false);const [dirty,setDirty]=useState(true);const [build,setBuild]=useState<BuildResult|null>(null);
@@ -93,7 +114,8 @@ function App(){
  const [resultsCollapsed,setResultsCollapsed]=useState(false);useEffect(()=>setResultsCollapsed(false),[log,busy]);
  const codeController=useRef<ProjectCodeEditor|null>(null);const [activeFile,setActiveFile]=useState('sketch.ino');const blocksDiv=useRef<HTMLDivElement>(null);const codeDiv=useRef<HTMLDivElement>(null);const workspace=useRef<Blockly.WorkspaceSvg|null>(null);const editor=useRef<monaco.editor.IStandaloneCodeEditor|null>(null);const latest=useRef(project);latest.current=project;
  useEffect(()=>window.jective.onBuildStage(event=>{if(latest.current.id===event.projectId){setLog(buildStageText(event.stage,locale));setBuildProgress(event.progress?buildProgressText(event.progress,locale):'');}}),[locale]);
- useEffect(()=>{if(workspace.current){workspace.current.updateToolbox(toolboxForLocale(locale));localizeBlocks(workspace.current,locale,hasArduinoUnoRobotWiring(project));const flyout=workspace.current.getFlyout()?.getWorkspace();if(flyout)localizeBlocks(flyout,locale,hasArduinoUnoRobotWiring(project));}},[locale,project.profileId,project.wiring]);
+ useEffect(()=>setBlocklyLocale(locale),[locale]);
+ useEffect(()=>{if(workspace.current){workspace.current.updateToolbox(toolboxForLocale(locale));localizeBlocks(workspace.current,locale,hasArduinoUnoRobotWiring(project));}},[locale,project.profileId,project.wiring]);
  useEffect(()=>{const element=blocksDiv.current;if(!element)return;const observer=new ResizeObserver(()=>{if(element.clientWidth&&element.clientHeight&&workspace.current)Blockly.svgResize(workspace.current);});observer.observe(element);return()=>observer.disconnect();},[]);
  const [lessonWorld,setLessonWorld]=useState<World|undefined>();const simulation=useRef<Worker|null>(null);const simulationId=useRef<string|null>(null);const [simulating,setSimulating]=useState(false);
  const [traceEvidence,setTraceEvidence]=useState<{schemaVersion:1;origin:'simulation';durationMs:number;recordedAt:string;projectId:string;projectName:string;revision:number;program:Program|FunctionProgram;trace:TraceEvent[]}|null>(null);
@@ -116,12 +138,17 @@ function App(){
  useEffect(()=>()=>simulation.current?.terminate(),[]);
  const stopSimulation=()=>{simulation.current?.terminate();simulation.current=null;simulationId.current=null;setSimulating(false);};
  const simulate=()=>{setResultsCollapsed(false);stopSimulation();try{const program=toProgram(workspace.current!);const evidenceProject={projectId:latest.current.id,projectName:latest.current.name,revision:latest.current.revision};setTraceEvidence(null);const operationId=crypto.randomUUID();simulationId.current=operationId;const worker=new Worker(new URL('./simulator.worker.js',location.href),{type:'module'});simulation.current=worker;setSimulating(true);worker.onmessage=event=>{if(simulationId.current!==operationId)return;const schema=z.discriminatedUnion('ok',[z.object({operationId:z.string(),ok:z.literal(true),trace:z.array(TraceEventSchema).max(10000)}),z.object({operationId:z.string(),ok:z.literal(false),error:z.string()})]);const response=schema.safeParse(event.data);if(!response.success){setLog('SIM_RESPONSE_INVALID');}else if(response.data.ok){setTraceEvidence({schemaVersion:1,origin:'simulation',durationMs:10000,recordedAt:new Date().toISOString(),...evidenceProject,program,trace:response.data.trace});setLog('SIMULATION • indicator subset • 10000 ms\n'+response.data.trace.map(e=>`${e.timeMs} ms | ${e.kind}${(e.kind==='led'||e.kind==='pwm')?' channel '+(e.channel??1):''}: ${e.value}${e.kind==='pwm'?' %':e.kind==='sound'?' Hz for '+e.durationMs+' ms':''}`).join('\n'));}else setLog(response.data.error);stopSimulation();};worker.onerror=e=>{setLog('SIM_WORKER_FAILED: '+e.message);stopSimulation();};worker.postMessage({operationId,program});}catch(e){setLog(String(e));}};
- useEffect(()=>{if(!blocksDiv.current)return;workspace.current=Blockly.inject(blocksDiv.current,{toolbox:toolboxForLocale(blockLocale.current),media:'./blockly-media/',trashcan:true,renderer:'zelos',grid:{spacing:24,length:2,colour:'#dce0ee',snap:true},zoom:{controls:true,wheel:true,startScale:.85,maxScale:1.5,minScale:.4},theme:blocklyTheme(document.body.dataset.theme==='dark'?'dark':'light')});Blockly.serialization.workspaces.load(initialWorkspace,workspace.current);
- const update=(event?:Blockly.Events.Abstract)=>{if(event?.isUiEvent)return;try{localizeBlocks(workspace.current!,blockLocale.current,hasArduinoUnoRobotWiring(latest.current));const flyout=workspace.current!.getFlyout()?.getWorkspace();if(flyout)localizeBlocks(flyout,blockLocale.current,hasArduinoUnoRobotWiring(latest.current));const p=latest.current;if(p.mode!=='blocks')return;const source=generate(toProgram(workspace.current!),p);setProject(old=>({...old,source,workspace:Blockly.serialization.workspaces.save(workspace.current!)}));setDirty(true);setBuild(null);}catch(e){setLog(String(e));setProject(old=>({...old,source:'',workspace:Blockly.serialization.workspaces.save(workspace.current!)}));setDirty(true);setBuild(null);}};
+ useEffect(()=>{if(!blocksDiv.current)return;workspace.current=Blockly.inject(blocksDiv.current,{toolbox:toolboxForLocale(blockLocale.current),media:'./blockly-media/',trashcan:true,renderer:'zelos',plugins:{flyoutsVerticalToolbox:createLocalizedFlyout(()=>({locale:blockLocale.current,physicalMotors:hasArduinoUnoRobotWiring(latest.current)}))},grid:{spacing:24,length:2,colour:'#dce0ee',snap:true},zoom:{controls:true,wheel:true,startScale:.85,maxScale:1.5,minScale:.4},theme:blocklyTheme(document.body.dataset.theme==='dark'?'dark':'light')});Blockly.serialization.workspaces.load(initialWorkspace,workspace.current);
+ const update=(event?:Blockly.Events.Abstract)=>{if(event?.isUiEvent)return;try{localizeBlocks(workspace.current!,blockLocale.current,hasArduinoUnoRobotWiring(latest.current));const p=latest.current;if(p.mode!=='blocks')return;const source=generate(toProgram(workspace.current!),p);setProject(old=>({...old,source,workspace:Blockly.serialization.workspaces.save(workspace.current!)}));setDirty(true);setBuild(null);}catch(e){setLog(String(e));setProject(old=>({...old,source:'',workspace:Blockly.serialization.workspaces.save(workspace.current!)}));setDirty(true);setBuild(null);}};
  workspace.current.addChangeListener(update);update();
  return ()=>{workspace.current?.dispose();};},[]);
  const [studioOpened,setStudioOpened]=useState(false);
  useEffect(()=>{if(tab==='studio')setStudioOpened(true);},[tab]);
+  useEffect(()=>{
+   if(tab!=='studio'||studioPane!=='program')return;
+   if(workspace.current)Blockly.svgResize(workspace.current);
+   editor.current?.layout();
+  },[tab,studioPane]);
  useEffect(()=>{if(!studioOpened||!codeDiv.current)return;editor.current=monaco.editor.create(codeDiv.current,{value:'',language:'cpp',theme:document.body.dataset.theme==='dark'?'vs-dark':'vs',automaticLayout:true,readOnly:true,editContext:false,ariaLabel:'Arduino C++ source',minimap:{enabled:false},fontSize:16,lineHeight:24,mouseWheelZoom:true});
  codeController.current=new ProjectCodeEditor(editor.current,(id,file,source)=>{const p=latest.current;if(p.id!==id||p.mode!=='code')return;const old=file==='sketch.ino'?p.source:p.sourceFiles?.[file];if(old===undefined||old===source)return;setProject(current=>current.id!==id?current:file==='sketch.ino'?{...current,source}:{...current,sourceFiles:{...current.sourceFiles,[file]:source}});setDirty(true);setBuild(null);});
  const active=codeController.current.sync(latest.current,activeFile);if(active!==activeFile)setActiveFile(active);
@@ -140,7 +167,117 @@ function App(){
   if(goToStudio)setTab('studio');return true;
  };
  const open=async()=>{if(dirty&&!confirm(translate(locale,'Discard unsaved edits and open another project?')))return;const p=result(await window.jective.open());if(p)await acceptPreparedProject(p,false);};
- const compile=async()=>{const requested=project;setBuildReport(null);setBusy(true);setBuild(null);setLog(translate(locale,'Running actual Arduino CLI…'));try{const r=result(await window.jective.compile(requested));if(r){studioNotifications.add(r.state==='succeeded'?'build-ready':r.state==='failed'?'build-failed':'build-cancelled',requested.name);setBuildReport(createBuildReport(requested,r,new Date().toISOString()));const current=latest.current;if(sameSourceInputs(current,requested)&&current.profileId===requested.profileId&&current.profileVersion===requested.profileVersion&&current.profileHash===requested.profileHash&&JSON.stringify(current.wiring)===JSON.stringify(requested.wiring)){setBuild(r);setLog(r.log+'\n'+translate(locale,'State')+': '+translate(locale,r.state)+'; '+translate(locale,'artifacts')+': '+r.artifacts.join(', '));}else setLog(r.log+'\n'+translate(locale,'Previous revision build')+': '+translate(locale,r.state)+'. '+translate(locale,'Current source changed; compile again.'));}}catch(e){setLog(String(e));}finally{setBusy(false);}};
+ const [usbPorts,setUsbPorts]=useState<Device[]>([]);
+ const [wirelessPorts,setWirelessPorts]=useState<Device[]>([]);
+ const [robotPort,setRobotPort]=useState('');
+ const [usbPort,setUsbPort]=useState('');
+ const [scanningPorts,setScanningPorts]=useState(false);
+ const [portScanFailed,setPortScanFailed]=useState(false);
+ const scanInFlight=useRef(false);
+ const buildInFlight=useRef(false);
+ const [boardRun,setBoardRun]=useState<'compiling'|'uploading'|'succeeded'|'failed'|'interrupted'|null>(null);
+ const refreshPorts=async()=>{
+  if(scanInFlight.current||buildInFlight.current)return;
+  scanInFlight.current=true;
+  setScanningPorts(true);
+  try{
+   const response=await window.jective.devices();
+   if(!response.ok)throw new Error(response.error.code);
+   const available=response.value.filter(port=>port.transport!=='bluetooth');
+   setUsbPorts(available);
+   setWirelessPorts(response.value.filter(canUseWirelessPort));
+   setRobotPort(previous=>preferredWirelessPort(response.value,previous));
+   setUsbPort(previous=>available.some(port=>port.path===previous)?previous:'');
+   setPortScanFailed(false);
+  }catch{
+   setUsbPorts([]);
+   setWirelessPorts([]);
+   setRobotPort('');
+   setUsbPort('');
+   setPortScanFailed(true);
+  }finally{
+   scanInFlight.current=false;
+   setScanningPorts(false);
+  }
+ };
+ useEffect(()=>{if(tab==='studio'||tab==='robot')void refreshPorts();},[tab]);
+ useEffect(()=>{setBoardRun(null);},[project.id,project.profileId,project.profileHash,usbPort]);
+
+ const compile=async(uploadPort?:string)=>{
+  if(buildInFlight.current)return;
+  buildInFlight.current=true;
+  const requested=latest.current;
+  setBoardRun(uploadPort?'compiling':null);
+  setBuildReport(null);
+  setBusy(true);
+  setBuild(null);
+  setLog(translate(locale,'Running actual Arduino CLI?'));
+  try{
+   const compiled=result(await window.jective.compile(requested));
+   if(!compiled){if(uploadPort)setBoardRun('failed');return;}
+   studioNotifications.add(compiled.state==='succeeded'?'build-ready':compiled.state==='failed'?'build-failed':'build-cancelled',requested.name);
+   setBuildReport(createBuildReport(requested,compiled,new Date().toISOString()));
+   const current=latest.current;
+   const currentBuild=current.id===requested.id&&sameSourceInputs(current,requested)
+    &&current.profileId===requested.profileId&&current.profileVersion===requested.profileVersion
+    &&current.profileHash===requested.profileHash&&JSON.stringify(current.wiring)===JSON.stringify(requested.wiring);
+   if(!currentBuild){
+    setLog(compiled.log+'\n'+translate(locale,'Previous revision build')+': '+translate(locale,compiled.state)+'. '+translate(locale,'Current source changed; compile again.'));
+    if(uploadPort)setBoardRun('failed');
+    return;
+   }
+   setBuild(compiled);
+   setLog(compiled.log+'\n'+translate(locale,'State')+': '+translate(locale,compiled.state)+'; '+translate(locale,'artifacts')+': '+compiled.artifacts.join(', '));
+   if(!uploadPort)return;
+   if(compiled.state!=='succeeded'){setBoardRun(compiled.state);return;}
+
+   setBoardRun('uploading');
+   const uploaded=result(await window.jective.upload(requested,compiled.operationId,uploadPort,'run'));
+   if(uploaded)setLog(uploaded.log);
+   setBoardRun(uploaded?.state??'failed');
+  }catch(error){
+   setLog(String(error));
+   if(uploadPort)setBoardRun('failed');
+  }finally{
+   buildInFlight.current=false;
+   setBusy(false);
+  }
+ };
+ const activeBoard=projectProfile(project);
+ const prepareArduinoTools=async()=>{
+  if(buildInFlight.current)return;
+  buildInFlight.current=true;
+  setBusy(true);
+  setBuild(null);
+  setBoardRun(null);
+  try{
+   const status=result(await window.jective.toolchainPrepare(project.profileId));
+   if(status)setLog(status);
+  }catch(error){setLog(String(error));}
+  finally{buildInFlight.current=false;setBusy(false);}
+ };
+ const usbPortLabel=words(locale,'USB port','USB-порт','USB порты');
+ const refreshPortsLabel=words(locale,'Refresh ports','Обновить порты','Порттарды жаңарту');
+ const runUnavailable=activeBoard.provisional
+  ?words(locale,'Select a supported board','Выбери поддерживаемую плату','Қолдау көрсетілетін тақшаны таңда')
+  :!project.source
+   ?words(locale,'This program has no board code','У программы нет кода для платы','Бағдарламаның тақшаға арналған коды жоқ')
+   :'';
+ const boardRunActive=busy&&(boardRun==='compiling'||boardRun==='uploading');
+ const portPlaceholder=scanningPorts
+  ?words(locale,'Finding ports…','Поиск портов…','Порттар ізделуде…')
+  :portScanFailed
+   ?words(locale,'Could not list ports','Не удалось получить порты','Порттар тізімін алу мүмкін болмады')
+   :usbPorts.length
+    ?words(locale,'Select USB port','Выбери USB-порт','USB портын таңда')
+    :words(locale,'No USB ports','Нет USB-портов','USB порттары жоқ');
+ const boardRunText={
+  compiling:words(locale,'Compiling…','Компиляция…','Құрастыру…'),
+  uploading:words(locale,'Uploading to '+usbPort+'…','Загрузка на '+usbPort+'…',usbPort+' портына жүктелуде…'),
+  succeeded:words(locale,'Uploaded to '+usbPort+'. The board starts automatically.','Загружено на '+usbPort+'. Плата запускает программу автоматически.',usbPort+' портына жүктелді. Тақша бағдарламаны автоматты түрде іске қосады.'),
+  failed:words(locale,'Could not run on the board. See Result.','Запуск не удался. Подробности в результатах.','Тақшада іске қосу сәтсіз. Нәтижені қара.'),
+  interrupted:words(locale,'Run cancelled','Запуск отменён','Іске қосу тоқтатылды'),
+ };
  const [converting,setConverting]=useState(false);const convertToCode=async()=>{if(converting)return;setConverting(true);try{const original=latest.current;const converted=await window.jective.convertCopy(original);if(!converted.ok){setLog(converted.error.message);return;}if(JSON.stringify(latest.current)!==JSON.stringify(original)){setLog(words(locale,'The original changed. Find both copies in My projects.','Исходный проект изменился. Обе копии доступны в «Моих проектах».','Бастапқы жоба өзгерді. Екі көшірме «Менің жобаларым» бөлімінде.'));return;}setEditorView('code');latest.current=converted.value;setProject(converted.value);setDirty(true);setBuild(null);}finally{setConverting(false);}};
  const loadProgram=(id:string,program:Program|FunctionProgram,world?:World)=>{if(dirty&&!confirm(translate(locale,'Load lesson project? Keep a saved or exported copy of your current work.')))return;void window.jective.newProject().then(()=>{const ws=programWorkspace(program);let source='';try{source=generate(program,project);}catch(e){setLog(String(e));}const p:Project={schemaVersion:1,id:crypto.randomUUID(),name:(id?id+' · ':'')+words(locale,'My experiment','Мой опыт','Менің тәжірибем'),profileId:project.profileId,profileDefinition:project.profileDefinition,profileVersion:project.profileVersion,profileHash:project.profileHash,wiring:project.wiring,mode:'blocks',source,workspace:ws,revision:0,simulationWorld:world?WorldSchema.parse(world):undefined,lessonId:/^L\d{2}$/.test(id)?id:undefined};latest.current=p;setProject(p);Blockly.serialization.workspaces.load(ws,workspace.current!);setDirty(true);setBuild(null);setLessonWorld(world);setEditorView('blocks');setStudioPane('program');setTab('studio');});};
  const duplicateProject=async()=>{if(converting)return;setConverting(true);try{const original=latest.current;const copy=result(await window.jective.duplicateProject(original));if(!copy)return;if(JSON.stringify(latest.current)!==JSON.stringify(original)){setLog(words(locale,'Your project changed. Find the preserved copy in My projects.','Проект изменился. Сохранённая копия доступна в «Моих проектах».','Жоба өзгерді. Сақталған көшірме «Менің жобаларым» ішінде.'));return false;}latest.current=copy;setProject(copy);setDirty(true);setBuild(null);}finally{setConverting(false);}};
@@ -160,26 +297,82 @@ function App(){
  };
  const openReviewStarter=async(assignment:Assignment)=>{if(busy||saving)return false;if(dirty&&!confirm(translate(locale,'Load lesson project? Keep a saved or exported copy of your current work.')))return false;const previous=latest.current;if(!assignment.starter)return false;const probe=new Blockly.Workspace();try{Blockly.serialization.workspaces.load(assignment.starter.workspace,probe);}catch(error){setLog(String(error));return false;}finally{probe.dispose();}const copy=result(await window.jective.reviewStarter(assignment));if(!copy)return false;if(JSON.stringify(latest.current)!==JSON.stringify(previous))return false;latest.current=copy;setProject(copy);Blockly.serialization.workspaces.load(copy.workspace,workspace.current!);setDirty(true);setBuild(null);setBuildReport(null);setLog('');setLessonWorld(copy.simulationWorld);setEditorView(copy.mode==='code'?'code':'blocks');setStudioPane('program');setTab('studio');return true;};
  const updateConnections=(p:Project)=>{let source=p.source;if(p.mode==='blocks'){try{source=generate(toProgram(workspace.current!),p);}catch(error){source='';setLog(String(error));}}setProject({...p,source});setDirty(true);setBuild(null);};
+ const selectBoard=async(key:string)=>{
+  const chosen=availableProfiles.find(p=>(profiles.some(b=>b.id===p.id)?p.id:p.id+'@'+p.version)===key);
+  if(!chosen)return;
+  const request=++profileSelectionRequest.current;
+  const previous=latest.current;
+  const version=previous.profileVersion??projectProfile(previous).version;
+  if(previous.profileId===chosen.id&&version!==chosen.version&&!confirm(translate(locale,'Change the project to this profile version? Logical wiring will be cleared and the previous build invalidated. Review the new definition and physical wiring before hardware use.')+'\n'+version+' → '+chosen.version))return;
+  try{
+   const custom=!profiles.some(p=>p.id===chosen.id);
+   const hash=custom?await fingerprint(chosen):undefined;
+   if(request!==profileSelectionRequest.current||latest.current.id!==previous.id){
+    setLog(translate(locale,'Profile selection became stale. Select the intended version again.'));
+    return;
+   }
+   updateConnections({...latest.current,profileId:chosen.id,profileDefinition:custom?chosen:undefined,profileVersion:custom?chosen.version:undefined,profileHash:hash,wiring:{}});
+   setBuildReport(null);
+  }catch(error){setLog(String(error));}
+ };
+ const runOnBoard=<button className="primary board-run-launch" disabled={busy||scanningPorts||!usbPort||!!runUnavailable} title={runUnavailable||(!usbPort?portPlaceholder:undefined)} onClick={()=>void compile(usbPort)}>
+  <span aria-hidden="true" className={boardRunActive?'board-run-spinner':undefined}>{boardRunActive?'':'↑'}</span>
+  {words(locale,'Run on board','Запустить на плате','Тақшада іске қосу')}
+ </button>;
  if(startupFailed)return <RecoveryScreen locale={locale} kind="workspace"/>;
- return <LocaleContext.Provider value={locale}><WindowChrome locale={locale}/><main><header><Brand/><button className="theme-toggle icon-button" title={translate(locale,theme==='light'?'Dark theme':'Light theme')} aria-label={translate(locale,'Color theme')} aria-pressed={theme==='light'} onClick={()=>{const next=theme==='dark'?'light':'dark';setTheme(next);void window.jective.preferences({theme:next}).then(r=>{if(!r.ok)setLog(translate(locale,'Theme save failed')+': '+r.error.message);});}}><ThemeIcon light={theme==='light'}/></button><button className="sound-toggle icon-button" data-sound-toggle title={locale==='ru'?'Звуки интерфейса':locale==='kk'?'Интерфейс дыбыстары':'Interface sounds'} aria-label={locale==='ru'?'Звуки интерфейса':locale==='kk'?'Интерфейс дыбыстары':'Interface sounds'} aria-pressed={sound} onClick={()=>{const next=!sound;setSound(next);setSoundEnabled(next);if(next)void playCue('click');}}><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" aria-hidden="true"><path d="M11 5L6 9H3v6h3l5 4ZM15 8c3 2 3 6 0 8"/>{sound?<path d="M18 5c5 4 5 10 0 14"/>:<path d="m16 10 5 5m0-5-5 5"/>}</svg></button><span className="milestone">{__JECTIVE_VERSION__} • {translate(locale,'development build')}</span><label>{t.language}<select aria-label={t.language} value={locale} onChange={e=>{const next=e.target.value as keyof typeof labels;setLocale(next);void window.jective.preferences({locale:next});}}><option value="en">English</option><option value="kk">Қазақша</option><option value="ru">Русский</option></select></label><NotificationCenter locale={locale}/><HelpMenu locale={locale} project={project} openStarter={openReviewStarter} reviewRequest={reviewRequest}/><ActivityCalendar revision={project.revision}/></header>
- <StudentNavigation locale={locale} tab={tab} select={setTab}/>
+ return <LocaleContext.Provider value={locale}><main><WindowChrome locale={locale}><label><select aria-label={t.language} value={locale} onChange={e=>{const next=e.target.value as keyof typeof labels;setLocale(next);void window.jective.preferences({locale:next});}}><option value="en">English</option><option value="kk">Қазақша</option><option value="ru">Русский</option></select></label><div className="hardware-controls"><div className="active-board"><span aria-hidden="true">{t.profile}</span><select aria-label={t.profile} disabled={busy||saving} value={project.profileDefinition?project.profileId+'@'+project.profileVersion:project.profileId} onChange={e=>void selectBoard(e.target.value)}>{[...availableProfiles,...(project.profileDefinition&&!availableProfiles.some(p=>p.id===project.profileId&&p.version===project.profileVersion)?[project.profileDefinition]:[])].map(p=><option key={p.id+'@'+p.version} value={profiles.some(b=>b.id===p.id)?p.id:p.id+'@'+p.version}>{boardName(p.id,p.name,locale)}{profiles.some(b=>b.id===p.id)?'':' · '+p.version}</option>)}</select></div>{(tab==='studio'||tab==='robot')&&<div className="usb-target">
+  <select aria-label={usbPortLabel} value={usbPort} disabled={busy||scanningPorts} onChange={e=>setUsbPort(e.target.value)}>
+   <option value="">{portPlaceholder}</option>
+   {usbPorts.map(port=><option key={port.path} value={port.path}>{devicePortLabel(port,locale)}</option>)}
+  </select>
+  <button type="button" className="usb-refresh" title={refreshPortsLabel} aria-label={refreshPortsLabel} disabled={busy||scanningPorts} onClick={()=>void refreshPorts()}>↻</button>
+ </div>}</div><NotificationCenter locale={locale}/><HelpMenu locale={locale} project={project} openStarter={openReviewStarter} reviewRequest={reviewRequest}/><ActivityCalendar revision={project.revision}/><button className="sound-toggle icon-button" data-sound-toggle title={locale==='ru'?'Звуки интерфейса':locale==='kk'?'Интерфейс дыбыстары':'Interface sounds'} aria-label={locale==='ru'?'Звуки интерфейса':locale==='kk'?'Интерфейс дыбыстары':'Interface sounds'} aria-pressed={sound} onClick={()=>{const next=!sound;setSound(next);setSoundEnabled(next);if(next)void playCue('click');}}><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" aria-hidden="true"><path d="M11 5L6 9H3v6h3l5 4ZM15 8c3 2 3 6 0 8"/>{sound?<path d="M18 5c5 4 5 10 0 14"/>:<path d="m16 10 5 5m0-5-5 5"/>}</svg></button><button className="theme-toggle icon-button" title={translate(locale,theme==='light'?'Dark theme':'Light theme')} aria-label={translate(locale,'Color theme')} aria-pressed={theme==='light'} onClick={()=>{const next=theme==='dark'?'light':'dark';setTheme(next);void window.jective.preferences({theme:next}).then(r=>{if(!r.ok)setLog(translate(locale,'Theme save failed')+': '+r.error.message);});}}><ThemeIcon light={theme==='light'}/></button></WindowChrome>
+ <StudentNavigation locale={locale} tab={tab} select={selectSection}/>
  {tab!=='studio'&&<OperationNotice error={operationError} locale={locale} dismiss={()=>setOperationError(null)}/>}
 
+ {tab==='simulation'&&simulationFromStudio&&<div className="workspace-return"><BackButton label={backToProgramLabel} onClick={backToProgram}/></div>}
  {tab==='simulation'&&<SimulatorPanel key={project.id} initialWorld={project.simulationWorld??lessonWorld??(project.lessonId?artifacts[project.lessonId]?.world:undefined)} worldChange={world=>{const p={...latest.current,simulationWorld:WorldSchema.parse(world),worldId:world.id};latest.current=p;setProject(p);setDirty(true);}} projectName={project.name} getProgram={()=>{if(latest.current.mode==='code')throw new Error(words(locale,'C++ runs on your board. Return to Studio and choose Run on board.','C++ запускается на плате. Вернись в студию и нажми «Запустить на плате».','C++ тақшада іске қосылады. Студияға қайтып, «Тақшада іске қосу» бас.'));return toProgram(workspace.current!);}} highlight={id=>workspace.current?.highlightBlock(id)}/>}
- {tab==='projects'&&<div className="arduino-project-start"><ArduinoStarter create={mode=>void createArduinoProject(mode)} disabled={busy||saving} control={project.profileId==='arduino-uno'?()=>setTab('device'):undefined}/></div>}
  {tab==='projects'&&<StudentProjects project={project} canLoad={()=>!dirty||confirm(translate(locale,'Open a local copy? Save or export current changes first.'))} load={async p=>{await acceptPreparedProject(p,true,true);}}/>}
- {tab==='wiring'&&<ConnectionsPanel project={project} update={updateConnections}/>}
  <div hidden={tab!=='content'}><ContentPanel openReview={()=>setReviewRequest(value=>value+1)} openSubstitution={loadSubstitution} openBuildError={loadBuildError} loadCode={(id,source,files)=>void loadCodeLesson(id,source,files)} active={tab==='content'} locale={locale} project={project} roverChange={report=>{setProject(old=>({...old,worksheets:{...old.worksheets,'L19-rover-inspection':report}}));setDirty(true);}} worksheetChange={values=>{setProject(old=>({...old,worksheets:{...old.worksheets,'L02-component-role-and-power-path':values}}));setDirty(true);}} load={(id,program)=>loadProgram(id,program,artifacts[id]?.world)}/></div>
- <AssistantPopover open={assistantOpen} setOpen={setAssistantOpen}><StudentHelp project={project} learn={()=>setTab('content')} studio={()=>setTab('studio')} board={()=>setTab('device')} apply={async(source,review)=>{const original=latest.current;if(!reviewStillCurrent(original,review)){setLog(words(locale,'Your code changed. Review the suggestion again.','Твой код изменился. Сравни подсказку заново.','Кодың өзгерді. Кеңесті қайта салыстыр.'));return false;}let target=original;if(original.mode==='blocks'){const copy=await window.jective.convertCopy(original);if(!copy.ok){setLog(copy.error.message);return false;}target=copy.value;if(!reviewStillCurrent(latest.current,review)){setLog(words(locale,'Your project changed. Find the preserved copy in My projects.','Проект изменился. Сохранённая копия доступна в «Моих проектах».','Жоба өзгерді. Сақталған көшірме «Менің жобаларым» ішінде.'));return false;}}const next=replaceReviewedFile(target,review.file,source);latest.current=next;setProject(next);setEditorView('code');setStudioPane('program');setDirty(true);setBuild(null);setActiveFile(review.file);setTab('studio');return true;}}/></AssistantPopover>
- {tab==='device'&&project.profileId==='arduino-uno'&&<ArduinoRobotControl key={project.id} active={!boardRunOpen&&!wirelessOpen&&!busy} connectionChange={setConnectedPort}/>}
- {tab==='device'&&<StudentBoard project={project} build={build} compiling={busy} compile={compile} compileLog={log} openConnections={()=>setTab('wiring')} connectedPort={connectedPort} connectionChange={setConnectedPort}/>}
+ <AssistantPopover open={assistantOpen} setOpen={setAssistantOpen}><AssistantPanel key={project.id} project={project} activeFile={activeFile}/></AssistantPopover>
+ <section className="feature serial-workspace" hidden={tab!=='device'}>
+  <h1>{words(locale,"Serial Monitor","Сериал-монитор","Сериялық монитор")}</h1>
+  <BoardMonitor profileId={project.profileId} defaultBaud={projectProfile(project).baudRate} port={connectedPort} connectionChange={setConnectedPort} active={tab==='device'}/>
+ </section>
+ {tab==='robot'&&<section className="robot-workspace">
+  <header className="robot-workspace-header">
+   <div><h1>{words(locale,'Robot control','Пульт робота','Робот пульті')}</h1><p>{project.name}</p></div>
+   <div className="robot-board-actions">{runOnBoard}{boardRunActive&&boardRun==='compiling'&&<ActionButton icon="stop" label={t.cancel} onClick={()=>void window.jective.cancel()}/>}</div>
+  </header>
+  {boardRun&&<div className="robot-board-status" role="status">
+   {boardRunText[boardRun]}
+   {boardRun==='failed'&&<BackButton label={backToProgramLabel} onClick={()=>{setResultsCollapsed(false);backToProgram();}}/>}
+  </div>}
+  <ArduinoRobotControl key={project.id} active={!wirelessOpen&&!busy} connectionChange={setConnectedPort}
+   ports={wirelessPorts} selected={robotPort} selectPort={setRobotPort} scanning={scanningPorts}/>
+ </section>}
  <dialog id="arduino-wireless-dialog" className="arduino-wireless-dialog" aria-label="Arduino Bluetooth" onClose={()=>setWirelessOpen(false)}><button className="dialog-close" aria-label={words(locale,'Close','\u0417\u0430\u043a\u0440\u044b\u0442\u044c','\u0416\u0430\u0431\u0443')} onClick={()=>document.querySelector<HTMLDialogElement>('#arduino-wireless-dialog')?.close()}>×</button>{wirelessOpen&&<ArduinoWirelessPanel project={project} getProgram={()=>toProgram(workspace.current!)} connectionChange={setConnectedPort} connectedPort={connectedPort}/>}</dialog>
- <dialog id="board-run-dialog" className="board-run-dialog" aria-label={words(locale,'Run on board','Запуск на плате','Тақшада іске қосу')} onClose={()=>setBoardRunOpen(false)}><Brand/><button className="dialog-close" aria-label={words(locale,'Close','Закрыть','Жабу')} onClick={()=>document.querySelector<HTMLDialogElement>('#board-run-dialog')?.close()}>×</button>{boardRunOpen&&<StudentBoard project={project} build={build} compiling={busy} compile={compile} compileLog={log} openConnections={()=>{document.querySelector<HTMLDialogElement>('#board-run-dialog')?.close();setTab('studio');setStudioPane('circuit');}} connectedPort={connectedPort} connectionChange={setConnectedPort}/>}</dialog><div className="studio" data-pane={studioPane} data-expanded={editorExpanded} hidden={tab!=='studio'}><div className="workspace-heading"><div><h1>{project.name}</h1></div><ArduinoStarter create={mode=>void createArduinoProject(mode)} disabled={busy||saving} control={project.profileId==='arduino-uno'?()=>setTab('device'):undefined}/><div className="view-switch" aria-label={words(locale,'Editor layout','Вид редактора','Редактор көрінісі')}>{(['blocks','split','code'] as const).map(view=><button key={view} aria-pressed={editorView===view} onClick={()=>{setEditorView(view);setTimeout(()=>{if(workspace.current)Blockly.svgResize(workspace.current);editor.current?.layout();},0);}}>{view==='blocks'?t.blocks:view==='code'?t.code:locale==='ru'?'Блоки + код':locale==='kk'?'Блоктар + код':'Blocks + code'}</button>)}</div><EditorExpand locale={locale} expanded={editorExpanded} toggle={()=>setEditorExpanded(value=>!value)}/></div>
+ <div className="studio" data-pane={studioPane} data-expanded={editorExpanded} hidden={tab!=='studio'}><div className="workspace-heading">
+ <h1 className="studio-project-heading">{project.name}</h1>
+ <div className="studio-project-fields">
+  <label className="studio-project-name"><span>{t.name}</span><input aria-label={t.name} value={project.name} maxLength={100} onChange={e=>{const name=e.target.value;setProject(old=>({...old,name}));setDirty(true);}}/></label>
+ </div>
+ <div className="view-switch" aria-label={words(locale,'Editor layout','Вид редактора','Редактор көрінісі')}>{(['blocks','split','code'] as const).map(view=><button key={view} aria-pressed={editorView===view} onClick={()=>{setEditorView(view);setTimeout(()=>{if(workspace.current)Blockly.svgResize(workspace.current);editor.current?.layout();},0);}}>{view==='blocks'?t.blocks:view==='code'?t.code:locale==='ru'?'Блоки + код':locale==='kk'?'Блоктар + код':'Blocks + code'}</button>)}</div><EditorExpand locale={locale} expanded={editorExpanded} toggle={()=>setEditorExpanded(value=>!value)}/></div>
+ <div className="studio-toolbar"><nav className="studio-panes" aria-label={words(locale,'Studio workspace','Рабочее пространство студии','Студия кеңістігі')}>{studioPane==='circuit'?<BackButton label={backToProgramLabel} onClick={()=>showStudioPane('program')}/>:<button aria-pressed={true} onClick={()=>showStudioPane('program')}>{words(locale,'Program','Программа','Бағдарлама')}</button>}<button aria-pressed={studioPane==='circuit'} onClick={()=>showStudioPane('circuit')}>{words(locale,'Connections','Подключения','Қосылымдар')}</button></nav><nav className="studio-actions" aria-label={words(locale,'Program actions','Команды программы','Бағдарлама командалары')}><ActionButton icon="open" label={t.open} onClick={()=>void open()}/><ActionButton icon="save" label={t.save} disabled={saving} onClick={()=>void save()}/><span className="toolbar-divider"/><ActionButton icon="run" label={words(locale,'Run blocks in simulator','Запустить блоки в симуляторе','Блоктарды симуляторда іске қосу')} disabled={project.mode==='code'} onClick={()=>{setTab('simulation');setSimulationFromStudio(true);}}/><ActionButton icon="compile" label={words(locale,'Compile — check code for the board','Компилировать — проверить код для платы','Компиляция — тақша кодын тексеру')} disabled={busy||!project.source||projectProfile(project).provisional} onClick={()=>void compile()}/>
+
+ {runOnBoard}
+ {project.mode==='blocks'&&hasArduinoUnoRobotWiring(project)&&<button className="bluetooth-run-launch" disabled={busy||!workspaceReady} onClick={()=>void openWireless()}>{words(locale,'Run via Bluetooth','\u0417\u0430\u043f\u0443\u0441\u0442\u0438\u0442\u044c \u043f\u043e Bluetooth','Bluetooth \u0430\u0440\u049b\u044b\u043b\u044b \u0456\u0441\u043a\u0435 \u049b\u043e\u0441\u0443')}</button>}{busy&&boardRun!=='uploading'&&<ActionButton icon="stop" label={t.cancel} onClick={()=>void window.jective.cancel()}/>}<span role="status" className="studio-run-status">{boardRun?boardRunText[boardRun]:busy?words(locale,'Checking code…','Проверяем код…','Код тексерілуде…'):build?.state==='succeeded'?words(locale,'Code is ready to upload','Код готов к загрузке','Код жүктеуге дайын'):dirty?'● '+translate(locale,'Unsaved'):'✓ '+translate(locale,'Saved')}</span></nav></div>
  {studioPane==='circuit'&&<ConnectionsPanel project={project} update={updateConnections}/>}
- <div className="studio-toolbar"><nav className="studio-panes" aria-label={words(locale,'Studio workspace','Рабочее пространство студии','Студия кеңістігі')}><button aria-pressed={studioPane==='program'} onClick={()=>{setStudioPane('program');setTimeout(()=>{if(workspace.current)Blockly.svgResize(workspace.current);editor.current?.layout();},0);}}>{words(locale,'Program','Программа','Бағдарлама')}</button><button aria-pressed={studioPane==='circuit'} onClick={()=>setStudioPane('circuit')}>{words(locale,'Connections','Подключения','Қосылымдар')}</button></nav><nav className="studio-actions" aria-label={words(locale,'Program actions','Команды программы','Бағдарлама командалары')}><ActionButton icon="open" label={t.open} onClick={()=>void open()}/><ActionButton icon="save" label={t.save} disabled={saving} onClick={()=>void save()}/><span className="toolbar-divider"/><ActionButton icon="run" label={words(locale,'Run blocks in simulator','Запустить блоки в симуляторе','Блоктарды симуляторда іске қосу')} disabled={project.mode==='code'} onClick={()=>setTab('simulation')}/><ActionButton icon="compile" label={words(locale,'Compile — check code for the board','Компилировать — проверить код для платы','Компиляция — тақша кодын тексеру')} disabled={busy||!project.source||projectProfile(project).provisional} onClick={()=>void compile()}/><button className="primary board-run-launch" onClick={()=>{setBoardRunOpen(true);requestAnimationFrame(()=>document.querySelector<HTMLDialogElement>('#board-run-dialog')?.showModal());}}>↑ {words(locale,'Run on board','Запустить на плате','Тақшада іске қосу')}</button>{project.mode==='blocks'&&hasArduinoUnoRobotWiring(project)&&<button className="bluetooth-run-launch" disabled={busy||!workspaceReady} onClick={()=>void openWireless()}>{words(locale,'Run via Bluetooth','\u0417\u0430\u043f\u0443\u0441\u0442\u0438\u0442\u044c \u043f\u043e Bluetooth','Bluetooth \u0430\u0440\u049b\u044b\u043b\u044b \u0456\u0441\u043a\u0435 \u049b\u043e\u0441\u0443')}</button>}{busy&&<ActionButton icon="stop" label={t.cancel} onClick={()=>void window.jective.cancel()}/>}<span role="status">{busy?words(locale,'Checking code…','Проверяем код…','Код тексерілуде…'):build?.state==='succeeded'?words(locale,'Code is ready to upload','Код готов к загрузке','Код жүктеуге дайын'):dirty?'● '+translate(locale,'Unsaved'):'✓ '+translate(locale,'Saved')}</span></nav></div>
- <details className="student-settings"><summary>{words(locale,'Project name, board and Code mode','Название проекта, плата и режим кода','Жоба атауы, тақша және код режимі')}</summary><aside><h2>{words(locale,'Project settings','Настройки проекта','Жоба баптаулары')}</h2>{profileListFailed&&<p role="alert">{words(locale,'Could not refresh the board list. Your project is unchanged.','Не удалось обновить список плат. Проект не изменён.','Тақшалар тізімі жаңартылмады. Жоба өзгерген жоқ.')} <button onClick={retryProfileList}>{words(locale,'Try again','Попробовать снова','Қайта көру')}</button></p>}<label>{t.name}<input aria-label={t.name} value={project.name} maxLength={100} onChange={e=>{setProject({...project,name:e.target.value});setDirty(true);}}/></label><label>{t.profile}<select aria-label={t.profile} value={project.profileDefinition?project.profileId+'@'+project.profileVersion:project.profileId} onChange={async e=>{const key=e.target.value;const chosen=availableProfiles.find(p=>(profiles.some(b=>b.id===p.id)?p.id:p.id+'@'+p.version)===key);if(!chosen)return;const request=++profileSelectionRequest.current;const previous=latest.current;const from=projectProfile(previous);if(previous.profileId===chosen.id&&(previous.profileVersion??from.version)!==chosen.version&&!confirm(translate(locale,'Change the project to this profile version? Logical wiring will be cleared and the previous build invalidated. Review the new definition and physical wiring before hardware use.')+'\n'+(previous.profileVersion??from.version)+' → '+chosen.version))return;try{const custom=!profiles.some(p=>p.id===chosen.id);const hash=custom?await fingerprint(chosen):undefined;if(request!==profileSelectionRequest.current||latest.current.id!==previous.id){setLog(translate(locale,'Profile selection became stale. Select the intended version again.'));return;}const old=latest.current;let source=old.source;if(old.mode==='blocks'){try{source=generate(toProgram(workspace.current!),{...old,profileId:chosen.id,profileDefinition:custom?chosen:undefined,profileVersion:custom?chosen.version:undefined,profileHash:hash,wiring:{}});}catch(error){source='';setLog(String(error));}}setProject({...old,profileId:chosen.id,profileDefinition:custom?chosen:undefined,profileVersion:custom?chosen.version:undefined,profileHash:hash,wiring:{},source});setDirty(true);setBuild(null);}catch(error){setLog(String(error));}}}>{[...availableProfiles,...(project.profileDefinition&&!availableProfiles.some(p=>p.id===project.profileId&&p.version===project.profileVersion)?[project.profileDefinition]:[])].map(p=><option key={p.id+'@'+p.version} value={profiles.some(b=>b.id===p.id)?p.id:p.id+'@'+p.version}>{boardName(p.id,p.name,locale)}{profiles.some(b=>b.id===p.id)?'':' · '+p.version}</option>)}</select></label><details className="board-details"><summary>{locale==='ru'?'О плате':locale==='kk'?'Тақша туралы':'Board details'}</summary><p className="note">{translate(locale,'Changing the board profile clears logical wiring and invalidates the current build.')}</p><p className="note">{projectProfile(project).provenance}</p></details><button disabled={converting} onClick={()=>void duplicateProject()}>{words(locale,'Work on a project copy','Работать в копии проекта','Жоба көшірмесінде жұмыс істеу')}</button><h2>{translate(locale,'Mode')}</h2><p><strong>{project.mode==='blocks'?t.blocks:t.code}</strong> · {translate(locale,'Hardware compiler')}</p><button disabled={project.mode==='code'||converting} onClick={()=>void convertToCode()}>{t.convert}</button><details className="verification-details"><summary>{translate(locale,'Verification')}</summary><p>{translate(locale,'Compiler')}: {build?translate(locale,build.state):translate(locale,'NOT RUN')}</p><p>{translate(locale,'Upload')}: {translate(locale,'NOT RUN')}</p><p>{translate(locale,'Physical')}: {translate(locale,'NOT RUN')}</p>{project.profileId!=='arduino-uno'&&<p className="note">{translate(locale,'Connect no motors. This milestone generates basic indicator sketches only.')}</p>}</details></aside></details><section className="layout">
- <section className={"editors view-"+editorView}><div className="panel"><h2>{t.blocks}{project.mode==='code'?' • '+translate(locale,'preserved original'):''}</h2><div ref={blocksDiv} className="editor studio-editor" inert={project.mode==='code'}/></div><div className="panel"><h2>Arduino C++ {project.mode==='blocks'?'• '+translate(locale,'generated preview'):''}</h2>{project.mode==='blocks'&&<div className="code-preview-help"><span>{words(locale,'Code from your blocks. Edit a copy to type C++.','Код из твоих блоков. Для правок создай копию.','Блоктардан жасалған код. Өңдеу үшін көшірме жаса.')}</span><button disabled={converting} onClick={()=>void convertToCode()}>{words(locale,'Edit a Code copy','Редактировать копию кода','Код көшірмесін өңдеу')}</button></div>}{project.mode==='code'&&<CodeFileTabs key={project.id} project={project} active={activeFile} select={setActiveFile} change={p=>{latest.current=p;setProject(p);setDirty(true);setBuild(null);}} locale={locale} busy={busy}/>}<div ref={codeDiv} className="editor studio-editor"/></div></section></section><ComponentsPanel project={project} locale={locale} port={connectedPort} openWiring={()=>setTab('wiring')} openDevice={()=>setTab('device')}/><section className="output" data-collapsed={resultsCollapsed} hidden={!log&&!busy}><h2>{words(locale,'Result','Результат','Нәтиже')}<ResultsToggle locale={locale} collapsed={resultsCollapsed} toggle={()=>setResultsCollapsed(value=>!value)}/></h2><p className="note">{build?.state==='succeeded'?words(locale,'Code checked. Choose Run on board to upload by USB.','Код проверен. Нажми «Запустить на плате» для загрузки по USB.','Код тексерілді. USB арқылы жүктеу үшін «Тақшада іске қосу» бас.'):build?.state==='failed'?words(locale,'Find the error below. Click its line number to return to the code.','Найди ошибку ниже. Нажми на номер строки, чтобы перейти к коду.','Төмендегі қатені тап. Кодқа өту үшін жол нөмірін бас.'):null}</p><div className="diagnostics">{compilerDiagnostics(log,project,build?.operationId??'').map((diagnostic,i)=><button key={i} onClick={()=>{setActiveFile(diagnostic.file);codeController.current?.navigate(diagnostic.file,diagnostic.line,diagnostic.column);if(diagnostic.file==='sketch.ino'){const before=latest.current.source.split('\n').slice(0,diagnostic.line).join('\n');const ids=[...before.matchAll(/\/\/ block:([a-zA-Z0-9_-]+)/g)];workspace.current?.highlightBlock(ids.at(-1)?.[1]??null);}}}>{diagnostic.file}:{diagnostic.line}:{diagnostic.column} · {diagnostic.message}</button>)}</div><p className="build-integrity-progress" aria-live="off" hidden={!buildProgress}>{buildProgress}</p><pre aria-live="polite">{log}</pre>{buildReport&&<CompilerJournal key={buildReport.build.operationId} operationId={buildReport.build.operationId} locale={locale}/>}
-{buildReport&&<button onClick={()=>downloadJSON('jective-build-'+buildReport.build.operationId+'.json',buildReport)}>{words(locale,'Save build report (compiled source and log)','Скачать отчёт сборки (проверенный код и журнал)','Құрастыру есебін жүктеу (тексерілген код пен журнал)')}</button>}</section><details className="trace-tools"><summary>{words(locale,'Indicator experiment','Опыт с индикатором','Индикатор тәжірибесі')}</summary><button disabled={project.mode==='code'||simulating} onClick={simulate}>{translate(locale,'Simulate indicator trace')}</button><button disabled={!simulating} onClick={()=>{stopSimulation();setLog(translate(locale,'SIMULATION interrupted'));}}>{translate(locale,'Stop simulation')}</button><button disabled={!traceEvidence} onClick={()=>{if(!traceEvidence)return;const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(traceEvidence,null,2)],{type:'application/json'}));a.download='jective-indicator-simulation-trace.json';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);}}>{translate(locale,'Export simulation trace')}</button></details></div> <details className="project-tools" hidden={tab!=='projects'}><summary>{translate(locale,'Projects and tools')}</summary><nav><button disabled={busy} onClick={async()=>{const s=result(await window.jective.toolchain());if(s)setLog(s);}}>{t.toolchain}</button><button onClick={()=>void window.jective.toolchainImport().then(result)}>{translate(locale,'Import offline toolchain folder')}</button><button onClick={async()=>{if(dirty&&!confirm(translate(locale,'Create a new project? Existing edits remain in local recovery until replaced.')))return;const r=result(await window.jective.newProject());if(r){const p:Project={schemaVersion:1,id:crypto.randomUUID(),name:'New project',profileId:'esp32-devkit-reference',mode:'blocks',source:'',workspace:initialWorkspace,revision:0};latest.current=p;setProject(p);Blockly.serialization.workspaces.load(initialWorkspace,workspace.current!);setDirty(true);setBuild(null);}}}>{translate(locale,'New project')}</button><button onClick={()=>void window.jective.exportProject(project).then(result)}>{translate(locale,'Export portable project')}</button><button onClick={async()=>{if(dirty&&!confirm(translate(locale,'Open a local copy? Save or export current changes first.')))return;const p=result(await window.jective.importProject());if(p)await acceptPreparedProject(p,true);}}>{translate(locale,'Import portable project')}</button><button onClick={()=>void window.jective.exportArduino(project).then(result)}>{translate(locale,'Export Arduino sketch')}</button><button onClick={()=>void window.jective.backup().then(result)}>{translate(locale,'Backup workspace')}</button><button onClick={()=>void window.jective.restore().then(r=>{if(result(r))location.reload();})}>{translate(locale,'Restore workspace')}</button></nav></details></main></LocaleContext.Provider>;
+ <details className="student-settings" onKeyDown={event=>{
+  if(event.key!=='Escape'||!event.currentTarget.open)return;
+  event.preventDefault();
+  event.currentTarget.open=false;
+  event.currentTarget.querySelector('summary')?.focus();
+ }}>
+  <summary>{words(locale,"Project settings","Настройки проекта","Жоба баптаулары")}</summary>
+  <aside>{activeBoard.core==='arduino:avr'&&<button disabled={busy} onClick={()=>void prepareArduinoTools()}>{words(locale,'Prepare Arduino tools',"Подготовить инструменты Arduino","Arduino құралдарын дайындау")}</button>}{profileListFailed&&<p role="alert">{words(locale,'Could not refresh the board list. Your project is unchanged.','Не удалось обновить список плат. Проект не изменён.','Тақшалар тізімі жаңартылмады. Жоба өзгерген жоқ.')} <button onClick={retryProfileList}>{words(locale,'Try again','Попробовать снова','Қайта көру')}</button></p>}<details className="board-details"><summary>{locale==='ru'?'О плате':locale==='kk'?'Тақша туралы':'Board details'}</summary><p className="note">{translate(locale,'Changing the board profile clears logical wiring and invalidates the current build.')}</p><p className="note">{projectProfile(project).provenance}</p></details><button disabled={converting} onClick={()=>void duplicateProject()}>{words(locale,'Work on a project copy','Работать в копии проекта','Жоба көшірмесінде жұмыс істеу')}</button><p><strong>{project.mode==='blocks'?t.blocks:t.code}</strong> · {translate(locale,'Hardware compiler')}</p><button disabled={project.mode==='code'||converting} onClick={()=>void convertToCode()}>{t.convert}</button><details className="verification-details"><summary>{translate(locale,'Verification')}</summary><p>{translate(locale,'Compiler')}: {build?translate(locale,build.state):translate(locale,'NOT RUN')}</p><p>{translate(locale,'Upload')}: {translate(locale,'NOT RUN')}</p><p>{translate(locale,'Physical')}: {translate(locale,'NOT RUN')}</p>{project.profileId!=='arduino-uno'&&<p className="note">{translate(locale,'Connect no motors. This milestone generates basic indicator sketches only.')}</p>}</details></aside></details><section className="layout">
+ <section className={"editors view-"+editorView}><div className="panel"><h2>{t.blocks}{project.mode==='code'?' • '+translate(locale,'preserved original'):''}</h2><div ref={blocksDiv} className="editor studio-editor" inert={project.mode==='code'}/></div><div className="panel"><h2>Arduino C++ {project.mode==='blocks'?'• '+translate(locale,'generated preview'):''}</h2>{project.mode==='blocks'&&<div className="code-preview-help"><span>{words(locale,'Code from your blocks. Edit a copy to type C++.','Код из твоих блоков. Для правок создай копию.','Блоктардан жасалған код. Өңдеу үшін көшірме жаса.')}</span><button disabled={converting} onClick={()=>void convertToCode()}>{words(locale,'Edit a Code copy','Редактировать копию кода','Код көшірмесін өңдеу')}</button></div>}{project.mode==='code'&&<CodeFileTabs key={project.id} project={project} active={activeFile} select={setActiveFile} change={p=>{latest.current=p;setProject(p);setDirty(true);setBuild(null);}} locale={locale} busy={busy}/>}<div ref={codeDiv} className="editor studio-editor"/></div></section></section><ComponentsPanel project={project} locale={locale} port={connectedPort} openWiring={()=>showStudioPane('circuit')} openDevice={()=>setTab('device')}/><section className="output" data-collapsed={resultsCollapsed} hidden={!log&&!busy}><h2>{words(locale,'Result','Результат','Нәтиже')}<ResultsToggle locale={locale} collapsed={resultsCollapsed} toggle={()=>setResultsCollapsed(value=>!value)}/></h2><p className="note">{!boardRun&&build?.state==='succeeded'?words(locale,'Code checked. Choose Run on board to upload by USB.','Код проверен. Нажми «Запустить на плате» для загрузки по USB.','Код тексерілді. USB арқылы жүктеу үшін «Тақшада іске қосу» бас.'):build?.state==='failed'?words(locale,'Find the error below. Click its line number to return to the code.','Найди ошибку ниже. Нажми на номер строки, чтобы перейти к коду.','Төмендегі қатені тап. Кодқа өту үшін жол нөмірін бас.'):null}</p><div className="diagnostics">{compilerDiagnostics(log,project,build?.operationId??'').map((diagnostic,i)=><button key={i} onClick={()=>{setActiveFile(diagnostic.file);codeController.current?.navigate(diagnostic.file,diagnostic.line,diagnostic.column);if(diagnostic.file==='sketch.ino'){const before=latest.current.source.split('\n').slice(0,diagnostic.line).join('\n');const ids=[...before.matchAll(/\/\/ block:([a-zA-Z0-9_-]+)/g)];workspace.current?.highlightBlock(ids.at(-1)?.[1]??null);}}}>{diagnostic.file}:{diagnostic.line}:{diagnostic.column} · {diagnostic.message}</button>)}</div><p className="build-integrity-progress" aria-live="off" hidden={!buildProgress}>{buildProgress}</p><pre aria-live="polite">{log}</pre>{buildReport&&<CompilerJournal key={buildReport.build.operationId} operationId={buildReport.build.operationId} locale={locale}/>}
+{buildReport&&<button onClick={()=>downloadJSON('jective-build-'+buildReport.build.operationId+'.json',buildReport)}>{words(locale,'Save build report (compiled source and log)','Скачать отчёт сборки (проверенный код и журнал)','Құрастыру есебін жүктеу (тексерілген код пен журнал)')}</button>}</section><details className="trace-tools"><summary>{words(locale,'Indicator experiment','Опыт с индикатором','Индикатор тәжірибесі')}</summary><button disabled={project.mode==='code'||simulating} onClick={simulate}>{translate(locale,'Simulate indicator trace')}</button><button disabled={!simulating} onClick={()=>{stopSimulation();setLog(translate(locale,'SIMULATION interrupted'));}}>{translate(locale,'Stop simulation')}</button><button disabled={!traceEvidence} onClick={()=>{if(!traceEvidence)return;const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(traceEvidence,null,2)],{type:'application/json'}));a.download='jective-indicator-simulation-trace.json';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);}}>{translate(locale,'Export simulation trace')}</button></details></div> <details className="project-tools" hidden={tab!=='projects'}><summary>{translate(locale,'Projects and tools')}</summary><nav><button disabled={busy} onClick={async()=>{const s=result(await window.jective.toolchain());if(s)setLog(s);}}>{t.toolchain}</button><button onClick={()=>void window.jective.toolchainImport().then(result)}>{translate(locale,'Import offline toolchain folder')}</button><button onClick={async()=>{if(dirty&&!confirm(translate(locale,'Create a new project? Existing edits remain in local recovery until replaced.')))return;const r=result(await window.jective.newProject());if(r){const p:Project={schemaVersion:1,id:crypto.randomUUID(),name:'New project',profileId:latest.current.profileId,profileDefinition:latest.current.profileDefinition,profileVersion:latest.current.profileVersion,profileHash:latest.current.profileHash,mode:'blocks',source:'',workspace:initialWorkspace,revision:0};latest.current=p;setProject(p);Blockly.serialization.workspaces.load(initialWorkspace,workspace.current!);setDirty(true);setBuild(null);}}}>{translate(locale,'New project')}</button><ArduinoStarter create={mode=>void createArduinoProject(mode)} disabled={busy||saving}/><button onClick={()=>void window.jective.exportProject(project).then(result)}>{translate(locale,'Export portable project')}</button><button onClick={async()=>{if(dirty&&!confirm(translate(locale,'Open a local copy? Save or export current changes first.')))return;const p=result(await window.jective.importProject());if(p)await acceptPreparedProject(p,true);}}>{translate(locale,'Import portable project')}</button><button onClick={()=>void window.jective.exportArduino(project).then(result)}>{translate(locale,'Export Arduino sketch')}</button><button onClick={()=>void window.jective.backup().then(result)}>{translate(locale,'Backup workspace')}</button><button onClick={()=>void window.jective.restore().then(r=>{if(result(r))location.reload();})}>{translate(locale,'Restore workspace')}</button></nav></details></main></LocaleContext.Provider>;
 }
 createRoot(document.getElementById('root')!,{onCaughtError:()=>console.error('JECTIVE UI_RENDER_FAILED')}).render(<AppErrorBoundary><App/></AppErrorBoundary>);
 

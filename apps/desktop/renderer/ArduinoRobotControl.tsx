@@ -4,12 +4,24 @@ import type {ArduinoCommand,ArduinoConnection} from '../../../packages/contracts
 import {ArduinoInput,arduinoKeys} from '../../../packages/devices/arduino-input';
 import {useLocale} from './locale';
 import {words} from './StudentUI';
-import {devicePortLabel,preferredWirelessPort} from './device-port-label';
+import {RobotDrivePreview} from './RobotDrivePreview';
+import {devicePortLabel} from './device-port-label';
 import './arduino-robot.css';
 
-export function ArduinoRobotControl({active,connectionChange}:{active:boolean;connectionChange:(port:string|null)=>void}){
+type ControlProps={
+ active:boolean;
+ connectionChange:(port:string|null)=>void;
+ ports:Device[];
+ selected:string;
+ selectPort:(port:string)=>void;
+ scanning:boolean;
+};
+
+const directions:Record<string,ArduinoCommand>={F:'F',B:'B',L:'L',R:'R'};
+
+export function ArduinoRobotControl({active,connectionChange,ports,selected,selectPort,scanning}:ControlProps){
  const {locale}=useLocale();const w=(en:string,ru:string,kk:string)=>words(locale,en,ru,kk);
- const [ports,setPorts]=useState<Device[]>([]),[selected,setSelected]=useState(''),[connection,setConnection]=useState<ArduinoConnection|null>(null),[busy,setBusy]=useState(false),[error,setError]=useState(''),[command,setCommand]=useState<ArduinoCommand>('S');
+ const [connection,setConnection]=useState<ArduinoConnection|null>(null),[busy,setBusy]=useState(false),[error,setError]=useState(''),[command,setCommand]=useState<ArduinoCommand>('S');
  const session=useRef<ArduinoConnection|null>(null),sequence=useRef(0),input=useRef(new ArduinoInput()),mounted=useRef(true),notify=useRef(connectionChange),transmit=useRef<()=>void>(()=>undefined);
  notify.current=connectionChange;
  useEffect(()=>{mounted.current=true;return()=>{mounted.current=false;input.current.clear();const current=session.current;session.current=null;if(current){notify.current(null);void window.jective.arduinoClose(current.id).catch(()=>undefined);}};},[]);
@@ -22,7 +34,7 @@ export function ArduinoRobotControl({active,connectionChange}:{active:boolean;co
   let pending=0,live=true,last:ArduinoCommand='S';
   const send=(force=false)=>{
    if(session.current?.id!==current.id)return;
-   const next=active&&!document.hidden&&document.documentElement.dataset.windowHidden!=='true'?input.current.command:'S';
+   const next=active&&!busy&&!document.hidden&&document.documentElement.dataset.windowHidden!=='true'?input.current.command:'S';
    if(!force&&next===last&&next==='S')return;
    if(!force&&pending&&next===last)return;
    last=next;setCommand(next);pending++;
@@ -40,7 +52,7 @@ export function ArduinoRobotControl({active,connectionChange}:{active:boolean;co
   };
   const stop=()=>{input.current.clear();send(true);};
   const keyDown=(event:KeyboardEvent)=>{
-   if(!active||!live||event.ctrlKey||event.metaKey||event.altKey)return;
+   if(!active||busy||!live||event.defaultPrevented||event.ctrlKey||event.metaKey||event.altKey)return;
    if(event.target instanceof HTMLElement&&event.target.closest('input,textarea,select,[contenteditable="true"]'))return;
    const key=event.key.length===1?event.key.toLowerCase():event.key;
    if(key===' '||key==='Escape'){event.preventDefault();input.current.stop();send(true);return;}
@@ -54,16 +66,60 @@ export function ArduinoRobotControl({active,connectionChange}:{active:boolean;co
   window.addEventListener('keydown',keyDown);window.addEventListener('keyup',keyUp);window.addEventListener('blur',stop);document.addEventListener('visibilitychange',hidden);window.addEventListener('jective-window-visibility',hidden);
   const timer=setInterval(()=>send(),100);
   return()=>{live=false;clearInterval(timer);window.removeEventListener('keydown',keyDown);window.removeEventListener('keyup',keyUp);window.removeEventListener('blur',stop);document.removeEventListener('visibilitychange',hidden);window.removeEventListener('jective-window-visibility',hidden);stop();transmit.current=()=>undefined;};
- },[connection,active]);
- const refresh=async()=>{setBusy(true);try{const result=await window.jective.devices();if(!mounted.current)return;if(result.ok){setPorts(result.value);setSelected(previous=>result.value.some(port=>port.path===previous)?previous:preferredWirelessPort(result.value));setError('');}else setError(result.error.message);}catch{if(mounted.current)setError('PORT_LIST_FAILED');}finally{if(mounted.current)setBusy(false);}};
- useEffect(()=>{void refresh();},[]);
+ },[connection,active,busy]);
  const connect=async()=>{
-  if(!selected||session.current)return;setBusy(true);setError('');
+  if(!active||scanning||busy||!selected||session.current)return;setBusy(true);setError('');
   try{const result=await window.jective.arduinoOpen(selected);if(result.ok){if(!mounted.current){void window.jective.arduinoClose(result.value.id);return;}sequence.current=0;session.current=result.value;setConnection(result.value);notify.current(result.value.port);}else if(mounted.current)setError(result.error.message);}catch{if(mounted.current)setError('ARDUINO_CONNECTION_FAILED');}finally{if(mounted.current)setBusy(false);}
  };
  const disconnect=async()=>{const current=session.current;if(!current)return;setBusy(true);input.current.clear();transmit.current();try{const result=await window.jective.arduinoClose(current.id);if(!result.ok){setError(result.error.message);return;}session.current=null;setConnection(null);setCommand('S');notify.current(null);}catch{setError('ARDUINO_CONNECTION_FAILED');}finally{if(mounted.current)setBusy(false);}};
- const controlSetup=w('For control, upload the “C++ / Bluetooth” project. A blocks program runs on its own after uploading.','Для управления загрузите проект «C++ / Bluetooth». Программа из блоков выполняется самостоятельно после загрузки.','Басқару үшін «C++ / Bluetooth» жобасын жүктеңіз. Блоктар бағдарламасы жүктелгеннен кейін өздігінен орындалады.');
  const names:Record<ArduinoCommand,string>={F:w('Forward','Вперёд','Алға'),B:w('Backward','Назад','Артқа'),L:w('Left','Влево','Солға'),R:w('Right','Вправо','Оңға'),S:w('Stopped','Остановлен','Тоқтады')};
- const direction=(value:ArduinoCommand,symbol:string)=> <button type="button" className={'arduino-direction direction-'+value} aria-label={names[value]} aria-pressed={command===value} disabled={!connection||!active||busy} onPointerDown={event=>{if(event.button!==0)return;event.preventDefault();event.currentTarget.setPointerCapture(event.pointerId);input.current.pointerDown(event.pointerId,value);transmit.current();}} onPointerUp={event=>{input.current.pointerUp(event.pointerId);transmit.current();}} onPointerCancel={event=>{input.current.pointerUp(event.pointerId);transmit.current();}} onLostPointerCapture={event=>{input.current.pointerUp(event.pointerId);transmit.current();}}>{symbol}</button>;
- return <section className="arduino-robot-control" aria-label={w('Arduino robot control','Управление роботом Arduino','Arduino роботын басқару')}><h2>{w('Arduino robot','Робот Arduino','Arduino роботы')}</h2><p>{controlSetup}</p><div className="toolbar"><label>{w('HC-05 COM port','COM-порт HC-05','HC-05 COM порты')}<select aria-label={w('HC-05 COM port','COM-порт HC-05','HC-05 COM порты')} value={selected} disabled={!!connection||busy} onChange={event=>setSelected(event.target.value)}><option value="">{w('Choose a port','Выберите порт','Порт таңдаңыз')}</option>{ports.map(port=><option key={port.path} value={port.path}>{devicePortLabel(port,locale)}</option>)}</select></label><button disabled={busy||!!connection} onClick={()=>void refresh()}>{w('Refresh ports','Обновить порты','Порттарды жаңарту')}</button><button disabled={busy||!selected||!!connection||!active} onClick={()=>void connect()}>{w('Connect · 9600','Подключить · 9600','Қосу · 9600')}</button><button disabled={busy||!connection} onClick={()=>void disconnect()}>{w('Disconnect','Отключить','Ажырату')}</button></div><p>{w('Pair HC-05 in Windows and choose its outgoing COM port. Close the Python controller before connecting.','Сопрягите HC-05 в Windows и выберите его исходящий COM-порт. Перед подключением закройте Python-пульт.','HC-05 құрылғысын Windows жүйесінде жұптастырып, шығыс COM портын таңдаңыз. Қосар алдында Python пультін жабыңыз.')}</p><div className="arduino-drive-pad">{direction('F','↑')}{direction('L','←')}<button type="button" className="arduino-stop" disabled={!connection} onClick={()=>{input.current.stop();transmit.current();}}>STOP</button>{direction('R','→')}{direction('B','↓')}</div><p className="arduino-drive-status" role="status">{connection?connection.port+' · '+names[command]:w('Disconnected','Не подключён','Қосылмаған')}</p><p>{w('Hold an arrow or W A S D. Release to stop. Space / Esc: STOP.','Удерживайте стрелку или W A S D. Отпускание — стоп. Пробел / Esc: STOP.','Бағыт пернесін немесе W A S D басып тұрыңыз. Жіберу — тоқтау. Бос орын / Esc: STOP.')}</p>{error&&<p role="alert">{error}</p>}</section>;
+ const releasePointer=(event:React.PointerEvent<HTMLButtonElement>)=>{
+  input.current.pointerUp(event.pointerId);
+  transmit.current();
+ };
+ const direction=(value:ArduinoCommand)=><button type="button" className={'arduino-direction direction-'+value}
+  data-direction={value} aria-label={names[value]} aria-pressed={command===value} disabled={!connection||!active||busy}
+  onPointerDown={event=>{
+   if(event.button!==0)return;
+   event.preventDefault();
+   event.currentTarget.setPointerCapture(event.pointerId);
+   input.current.pointerDown(event.pointerId,value);
+   transmit.current();
+  }}
+  onPointerMove={event=>{
+   if(!event.currentTarget.hasPointerCapture(event.pointerId))return;
+   const target=document.elementFromPoint(event.clientX,event.clientY)?.closest<HTMLButtonElement>('.arduino-direction');
+   const next=target&&!target.disabled?directions[target.dataset.direction??'']:undefined;
+   input.current.pointerMove(event.pointerId,next??'S');
+   transmit.current();
+  }}
+  onPointerUp={releasePointer} onPointerCancel={releasePointer} onLostPointerCapture={releasePointer}>
+  <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M12 21V3m-7 7 7-7 7 7"/></svg></span>
+ </button>;
+ const portLabel=w('HC-05 COM port','COM-порт HC-05','HC-05 COM порты');
+ return <section className="arduino-robot-control" aria-label={w('Arduino robot control','Управление роботом Arduino','Arduino роботын басқару')}>
+  <div className="arduino-robot-connection">
+   <select aria-label={portLabel} title={portLabel} value={connection?.port??selected} disabled={!!connection||busy||scanning||!active} onChange={event=>selectPort(event.target.value)}>
+    <option value="">{portLabel}</option>
+    {connection&&!ports.some(port=>port.path===connection.port)&&<option value={connection.port}>{connection.port}</option>}
+    {ports.map(port=><option key={port.path} value={port.path}>{devicePortLabel(port,locale)}</option>)}
+   </select>
+   {connection
+    ?<button disabled={busy} onClick={()=>void disconnect()}>{w('Disconnect','Отключить','Ажырату')}</button>
+    :<button disabled={busy||scanning||!selected||!active} onClick={()=>void connect()}>{w('Connect · 9600','Подключить · 9600','Қосу · 9600')}</button>}
+  </div>
+  {error&&<p className="arduino-robot-error" role="alert">{error}</p>}
+  <div className="arduino-drive-controls">
+   <RobotDrivePreview command={command} label={w('Command preview','Визуализация команд','Командаларды көрсету')}/>
+   <div className="arduino-drive-pad">
+    {direction('F')}{direction('L')}
+    <button type="button" className="arduino-stop" disabled={!connection} onClick={()=>{input.current.stop();transmit.current();}}><span>STOP</span></button>
+    {direction('R')}{direction('B')}
+   </div>
+  </div>
+  <p className="arduino-drive-status" role="status" data-connected={!!connection}><span aria-hidden="true"/>{connection?connection.port+' · '+names[command]:w('Disconnected','Не подключён','Қосылмаған')}</p>
+  <p className="arduino-drive-hint">{connection
+   ?w('Arrows / WASD · Space / Esc to stop','Стрелки / WASD · Пробел / Esc для остановки','Бағыт пернелері / WASD · Тоқтату үшін бос орын / Esc')
+   :w('Pair HC-05 in Windows and upload the C++ / Bluetooth project.','Сопрягите HC-05 в Windows и загрузите проект «C++ / Bluetooth».','HC-05 құрылғысын Windows жүйесінде жұптастырып, «C++ / Bluetooth» жобасын жүктеңіз.')}</p>
+ </section>;
 }

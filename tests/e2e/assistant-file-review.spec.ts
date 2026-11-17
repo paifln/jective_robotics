@@ -1,13 +1,13 @@
 import {openAssistant} from './helpers/assistant';
 import {test,expect,_electron as electron} from '@playwright/test';
-import {mkdtemp,writeFile,readFile,rm} from 'node:fs/promises';
+import {mkdtemp,writeFile,rm} from 'node:fs/promises';
 import {join} from 'node:path';
 import {tmpdir} from 'node:os';
 import {randomUUID} from 'node:crypto';
 import type {Project} from '../../packages/contracts';
-test('assistant file review respects consent, source snapshots and project identity without live AI or device commands',async()=>{
- test.setTimeout(90000);const root=await mkdtemp(join(tmpdir(),'jective-review-ui-')),path=join(root,'program.json'),otherPath=join(root,'other.json');
- const project:Project={schemaVersion:1,id:randomUUID(),name:'File review',profileId:'esp32-devkit-reference',mode:'code',source:'void setup(){}\nvoid loop(){}',sourceFiles:{'helper.cpp':'// original helper\n','config.h':'// private configuration\n'},workspace:{},revision:0};await writeFile(path,JSON.stringify(project));await writeFile(otherPath,JSON.stringify({...project,id:randomUUID(),name:'Other review'}));
+test('Jexi attaches only the opted-in code source and cancels pending requests',async()=>{
+ test.setTimeout(90000);const root=await mkdtemp(join(tmpdir(),'jective-review-ui-')),path=join(root,'program.json');
+ const project:Project={schemaVersion:1,id:randomUUID(),name:'File review',profileId:'esp32-devkit-reference',mode:'code',source:'void setup(){}\nvoid loop(){}',sourceFiles:{'helper.cpp':'// original helper\n','config.h':'// private configuration\n'},workspace:{},revision:0};await writeFile(path,JSON.stringify(project));
  const env:Record<string,string>=Object.fromEntries(Object.entries(process.env).filter((e):e is [string,string]=>e[1]!==undefined));delete env.ELECTRON_RUN_AS_NODE;env.JECTIVE_WORKSPACE_ROOT=root;const app=await electron.launch({args:['.'],env});
  try{const page=await app.firstWindow();const errors:string[]=[];page.on('pageerror',e=>errors.push(e.message));await app.evaluate(({BrowserWindow,ipcMain,dialog},path)=>{
   BrowserWindow.getAllWindows().forEach(w=>{w.setFocusable(false);w.webContents.setBackgroundThrottling(false);w.setPosition(-12000,-12000);w.on('show',()=>w.setPosition(-12000,-12000));w.showInactive();});dialog.showOpenDialog=async()=>({canceled:false,filePaths:[path]});
@@ -16,12 +16,51 @@ test('assistant file review respects consent, source snapshots and project ident
   ipcMain.removeHandler('assistant:ask');ipcMain.handle('assistant:ask',(_event,value:{question:string;context:string})=>{state.reviewRequests.push(value);return new Promise(resolve=>{state.releaseReview=resolve;});});
   for(const channel of ['build:compile','device:upload']){ipcMain.removeHandler(channel);ipcMain.handle(channel,()=>{state.deviceCommands++;throw new Error('DEVICE_COMMAND_FORBIDDEN_IN_REVIEW_TEST');});}
  },path);await expect(page.locator('#launch-screen')).toHaveCount(0,{timeout:20000});await page.evaluate(()=>{window.confirm=()=>true;window.dispatchEvent(new Event('assistant-settings-changed'));});await page.getByLabel('Язык',{exact:true}).selectOption('en');const nav=page.locator('main>nav');await nav.getByRole('button',{name:'Studio',exact:true}).click();await page.getByRole('button',{name:'Open project',exact:true}).click();
- const help=async()=>{await openAssistant(page);await expect(page.locator('.learner-chat')).toBeVisible();};const chat=page.locator('.learner-chat');
- await help();await chat.getByLabel('File to discuss',{exact:true}).selectOption('helper.cpp');await chat.getByLabel('Question',{exact:true}).fill('Explain this helper');await chat.getByRole('button',{name:'Request hint',exact:true}).click();await expect.poll(()=>app.evaluate(()=>((globalThis as typeof globalThis&{reviewRequests:unknown[]}).reviewRequests.length))).toBe(1);
- await expect(chat.getByLabel('Question',{exact:true})).toBeDisabled();await expect(chat.getByRole('checkbox',{name:/Include my code/})).toBeDisabled();expect(await app.evaluate(()=>((globalThis as typeof globalThis&{reviewRequests:{context:string}[]}).reviewRequests[0]!.context))).toBe('');await app.evaluate(()=>{(globalThis as typeof globalThis&{releaseReview:(v:{ok:true;value:string})=>void}).releaseReview({ok:true,value:'```cpp\n// reviewed helper\n```'});});await expect(chat.locator('.assistant-answer')).toContainText('reviewed helper');await expect(chat.getByLabel('Question',{exact:true})).toBeEnabled();await expect(chat.getByRole('checkbox',{name:/Include my code/})).toBeEnabled();await chat.getByText('Review proposed code',{exact:true}).click();await chat.getByRole('button',{name:'Prepare code review',exact:true}).click();const downloadPath=join(root,'comparison.json');await app.evaluate(({BrowserWindow},file)=>{BrowserWindow.getAllWindows()[0]!.webContents.session.once('will-download',(_event,item)=>item.setSavePath(file));},downloadPath);await chat.getByRole('button',{name:'Save source comparison',exact:true}).click();await expect.poll(async()=>{try{return JSON.parse(await readFile(downloadPath,'utf8')).proposed;}catch{return '';}}).toBe('// reviewed helper\n');const record=JSON.parse(await readFile(downloadPath,'utf8'));expect(record.original).toBe(project.sourceFiles!['helper.cpp']);expect(record.verification.compilation).toBe('NOT RUN');expect(JSON.stringify(record)).not.toContain('private configuration');await chat.getByRole('button',{name:'Reject suggestion',exact:true}).click();await expect(chat.getByLabel('Proposed source',{exact:true})).toHaveValue('');await nav.getByRole('button',{name:'Studio',exact:true}).click();await page.locator('.code-files').getByRole('tab',{name:'helper.cpp',exact:true}).click();await expect(page.locator('.studio .monaco-editor')).toHaveAttribute('data-source',project.sourceFiles!['helper.cpp']!);await help();await chat.getByRole('button',{name:'Prepare code review',exact:true}).click();await chat.getByRole('button',{name:'Apply reviewed source',exact:true}).click();const editor=page.locator('.studio .monaco-editor');await expect(editor).toHaveAttribute('data-file','helper.cpp');await expect(editor).toHaveAttribute('data-source','// reviewed helper\n');await page.getByRole('button',{name:'Save project',exact:true}).click();await expect(page.locator('.output>pre')).toContainText('Saved revision');await expect.poll(async()=>JSON.parse(await readFile(path,'utf8')).sourceFiles['helper.cpp']).toBe('// reviewed helper\n');expect(JSON.parse(await readFile(path,'utf8')).source).toBe(project.source);
- await help();await chat.getByLabel('Question',{exact:true}).fill('Explain the updated helper');await chat.getByRole('checkbox',{name:/Include my code/}).check();await chat.locator('.shared-source-preview>summary').click();await expect(chat.locator('.shared-source-preview')).toContainText('Selected source file: helper.cpp');await expect(chat.locator('.shared-source-preview')).not.toContainText('private configuration');await chat.getByRole('button',{name:'Request hint',exact:true}).click();await expect.poll(()=>app.evaluate(()=>((globalThis as typeof globalThis&{reviewRequests:unknown[]}).reviewRequests.length))).toBe(2);expect(await app.evaluate(()=>((globalThis as typeof globalThis&{reviewRequests:{context:string}[]}).reviewRequests[1]!.context))).toBe('Selected source file: helper.cpp\n// reviewed helper\n');
- await nav.getByRole('button',{name:'Studio',exact:true}).click();await page.locator('.code-files').getByRole('tab',{name:'helper.cpp',exact:true}).click();await editor.locator('textarea').focus();await page.keyboard.press('Control+End');await page.keyboard.insertText('// edited while the request waits\n');await help();await expect(chat.locator('.shared-source-preview .shared-context')).toHaveText('Selected source file: helper.cpp\n// reviewed helper\n');await nav.getByRole('button',{name:'Studio',exact:true}).click();await page.locator('.code-files').getByRole('tab',{name:'sketch.ino',exact:true}).click();await editor.locator('textarea').focus();await page.keyboard.press('Control+End');await page.keyboard.insertText('\n// new main');await help();await app.evaluate(()=>{(globalThis as typeof globalThis&{releaseReview:(v:{ok:true;value:string})=>void}).releaseReview({ok:true,value:'```cpp\n// STALE ANSWER\n```'});});await expect(chat).toContainText('Your program changed. Prepare the review again.');await expect(chat.locator('.assistant-answer')).not.toContainText('STALE ANSWER');
- await chat.getByLabel('Proposed source',{exact:true}).fill('// manual helper');await expect(chat.getByRole('button',{name:'Apply reviewed source',exact:true})).toBeEnabled();await nav.getByRole('button',{name:'Studio',exact:true}).click();await page.locator('.code-files').getByRole('tab',{name:'config.h',exact:true}).click();await editor.locator('textarea').focus();await page.keyboard.press('Control+End');await page.keyboard.insertText('// changed config');await help();await expect(chat.getByRole('button',{name:'Apply reviewed source',exact:true})).toBeDisabled();
- await chat.getByLabel('File to discuss',{exact:true}).selectOption('sketch.ino');await expect(chat.getByLabel('Proposed source',{exact:true})).toHaveValue('');await expect(chat.getByRole('checkbox',{name:/Include my code/})).not.toBeChecked();await chat.getByLabel('Proposed source',{exact:true}).fill('// another pending proposal');await nav.getByRole('button',{name:'Studio',exact:true}).click();await app.evaluate(({dialog},file)=>{dialog.showOpenDialog=async()=>({canceled:false,filePaths:[file]});},otherPath);await page.getByRole('button',{name:'Open project',exact:true}).click();await help();await expect(chat.getByLabel('Proposed source',{exact:true})).toHaveValue('');await chat.getByText('Review proposed code',{exact:true}).click();await expect(chat.getByRole('button',{name:'Apply reviewed source',exact:true})).toBeDisabled();await chat.getByLabel('Question',{exact:true}).fill('Cancelled question');await chat.getByRole('button',{name:'Request hint',exact:true}).click();await expect.poll(()=>app.evaluate(()=>((globalThis as typeof globalThis&{reviewRequests:unknown[]}).reviewRequests.length))).toBe(3);await chat.getByRole('button',{name:'Cancel request',exact:true}).click();await expect(chat).toContainText('Request cancelled');await expect(chat.getByLabel('Question',{exact:true})).toBeEnabled();await expect(chat.getByRole('checkbox',{name:/Include my code/})).toBeEnabled();await app.evaluate(()=>{(globalThis as typeof globalThis&{releaseReview:(v:{ok:true;value:string})=>void}).releaseReview({ok:true,value:'CANCELLED RESULT'});});await expect(chat.locator('.assistant-answer')).not.toContainText('CANCELLED RESULT');expect(await app.evaluate(()=>((globalThis as typeof globalThis&{deviceCommands:number}).deviceCommands))).toBe(0);expect(errors).toEqual([]);
+ await page.locator('.code-files').getByRole('tab',{name:'helper.cpp',exact:true}).click();
+ await openAssistant(page);
+ const chat=page.locator('.learner-chat');
+ const share=chat.getByRole('checkbox',{name:/Add code from a file/});
+ const source=chat.getByRole('combobox',{name:'Code source'});
+ const question=chat.getByRole('textbox',{name:'Question'});
+ const send=chat.getByRole('button',{name:'Request hint'});
+ const contexts=()=>app.evaluate(()=>(globalThis as typeof globalThis&{reviewRequests:{context:string}[]}).reviewRequests.map(request=>request.context));
+ const answer=async(text:string)=>app.evaluate((_electron,text)=>{
+  (globalThis as typeof globalThis&{releaseReview:(result:{ok:true;value:string})=>void}).releaseReview({ok:true,value:text});
+ },text);
+ await expect(share).not.toBeChecked();
+ await expect(source).toBeDisabled();
+ await question.fill('Explain without code');
+ await send.click();
+ await expect.poll(contexts).toEqual(['']);
+ await expect(share).toBeDisabled();
+ await answer('First reply');
+ await expect(chat.locator('.assistant-answer')).toHaveText('First reply');
+
+ await share.check();
+ await expect(source).toHaveValue('current');
+ await expect(source.locator('option')).toHaveText(['Current','From file']);
+ await question.fill('Explain the active file');
+ await send.click();
+ const current='Selected source file: helper.cpp\n// original helper\n';
+ await expect.poll(contexts).toEqual(['',current]);
+ await answer('Current file reply');
+ await expect(chat.locator('.assistant-answer')).toHaveText('Current file reply');
+
+ const picker=page.waitForEvent('filechooser');
+ await source.selectOption('file');
+ await (await picker).setFiles({name:'external.cpp',mimeType:'text/plain',buffer:Buffer.from('// external code')});
+ await expect(source).toHaveValue('file');
+ await expect(chat.getByRole('button',{name:'external.cpp'})).toBeVisible();
+ await question.fill('Explain the external file');
+ await send.click();
+ await expect.poll(contexts).toEqual(['',current,'Selected source file: external.cpp\n// external code']);
+ await chat.getByRole('button',{name:'Cancel request'}).click();
+ await expect(chat).toContainText('Request cancelled');
+ await answer('CANCELLED RESULT');
+ await expect(chat.locator('.assistant-answer')).toHaveText('Current file reply');
+ await expect(question).toBeEnabled();
+ await expect(page.locator('.shared-source-preview, .chat-review, .offline-help')).toHaveCount(0);
+ expect(await app.evaluate(()=>(globalThis as typeof globalThis&{deviceCommands:number}).deviceCommands)).toBe(0);
+ expect(errors).toEqual([]);
  }finally{await app.evaluate(({app})=>app.exit(0));if(app.process().exitCode===null&&app.process().signalCode===null)await new Promise<void>(resolve=>app.process().once('exit',()=>resolve()));await rm(root,{recursive:true,force:true,maxRetries:20,retryDelay:100});}
 });

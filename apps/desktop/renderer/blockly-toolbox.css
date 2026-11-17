@@ -1,0 +1,80 @@
+.studio .blocklyToolbox {
+  min-width: 136px;
+}
+
+.studio .blocklyToolboxCategory {
+  display: flex;
+  align-items: center;
+  height: auto;
+  min-height: 32px;
+  margin: 2px 5px;
+  padding: 4px 8px;
+  border-width: 0 0 0 3px !important;
+  border-radius: 6px;
+}
+
+.studio .blocklyToolboxCategory > div {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  border-color: inherit;
+}
+
+.studio .blocklyToolboxCategoryLabel,
+.studio .blocklyToolboxSelected .blocklyToolboxCategoryLabel {
+  padding: 0;
+  color: inherit;
+  font: 13px/20px "Segoe UI", sans-serif;
+}
+
+.studio .blocklyToolboxCategory:not(.blocklyToolboxSelected):hover {
+  background: rgba(100, 121, 176, .12);
+}
+
+.studio .blocklyToolboxCategory.blocklyToolboxSelected {
+  background: #dce5ff !important;
+  color: #203363;
+}
+
+body[data-theme="dark"] .studio .blocklyToolboxCategory.blocklyToolboxSelected {
+  background: #36466b !important;
+  color: #f1f5ff;
+}
+
+.studio .toolbox-shape {
+  visibility: visible;
+  flex: 0 0 16px;
+  height: 16px;
+  background: none;
+  border-left: 16px solid;
+  border-left-color: inherit;
+  clip-path: polygon(0 16%, 24% 16%, 36% 30%, 56% 30%, 68% 16%, 100% 16%, 100% 72%, 68% 72%, 56% 86%, 36% 86%, 24% 72%, 0 72%);
+}
+
+.studio .toolbox-shape-start {
+  clip-path: polygon(0 38%, 20% 20%, 47% 14%, 73% 20%, 100% 38%, 100% 85%, 0 85%);
+}
+
+.studio .toolbox-shape-timing {
+  clip-path: polygon(18% 10%, 82% 10%, 82% 24%, 60% 50%, 82% 76%, 82% 90%, 18% 90%, 18% 76%, 40% 50%, 18% 24%);
+}
+
+.studio .toolbox-shape-logic {
+  clip-path: polygon(0 12%, 100% 12%, 100% 34%, 30% 34%, 30% 66%, 100% 66%, 100% 88%, 0 88%);
+}
+
+.studio .toolbox-shape-math {
+  clip-path: inset(20% 0 round 8px);
+}
+
+.studio .toolbox-shape-variables {
+  clip-path: polygon(0 20%, 72% 20%, 100% 50%, 72% 80%, 0 80%);
+}
+
+.studio .toolbox-shape-sensors {
+  clip-path: circle(41%);
+}
+
+.studio .toolbox-shape-functions {
+  clip-path: polygon(24% 14%, 76% 14%, 100% 50%, 76% 86%, 24% 86%, 0 50%);
+}

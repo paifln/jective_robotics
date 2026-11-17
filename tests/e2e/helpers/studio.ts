@@ -6,3 +6,9 @@ export async function openStudioProgram(page:Page,settings=false){
 export async function openComponentConnections(page:Page){
  await page.locator('main>nav').getByRole('button',{name:'Studio',exact:true}).click();await page.locator('.studio-panes').getByRole('button',{name:'Connections',exact:true}).click();
 }
+export async function openArduinoTemplates(page:Page){
+ await page.locator('main>nav').getByRole('button',{name:'My projects',exact:true}).click();
+ const tools=page.locator('.project-tools');
+ if(await tools.getAttribute('open')===null)await tools.locator(':scope>summary').click();
+ return tools;
+}
