@@ -6,8 +6,7 @@
 }
 
 .robot-workspace-header,
-.robot-board-actions,
-.arduino-robot-connection {
+.robot-board-actions {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
@@ -52,14 +51,6 @@
   border: 1px solid var(--line);
   border-radius: 20px;
   background: var(--surface);
-}
-
-.arduino-robot-connection {
-  justify-content: center;
-}
-
-.arduino-robot-connection select {
-  max-width: min(100%, 320px);
 }
 
 .arduino-robot-error {

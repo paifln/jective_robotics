@@ -31,18 +31,31 @@ export class ToolchainService {
   exportJournal(id:unknown,destination:string){return copyJournal(this.root,this.journalPath(id),destination);}
   constructor(readonly executable:string,readonly root:string,private readonly snapshotter:typeof snapshotEnvironment=snapshotEnvironment,private readonly onStage:(event:BuildStageEvent)=>void=()=>{}){}
   async config(){await mkdir(this.root,{recursive:true});const file=join(this.root,'arduino-cli.yaml');await writeFile(file,JSON.stringify({directories:{data:join(this.root,'data'),downloads:join(this.root,'downloads'),user:join(this.root,'user')},board_manager:{additional_urls:['https://espressif.github.io/arduino-esp32/package_esp32_index.json']}}));return file;}
+  private async checkCliVersion(){
+    const result=await this.run(['version','--json']);
+    if(result.interrupted)throw new Error('BUILD_INTERRUPTED');
+    const diagnostic=(result.stderr.trim()||result.stdout.trim()).slice(-1000);
+    if(result.code!==0)throw new Error('CLI_UNAVAILABLE: version command exited with '+result.code+(diagnostic?' — '+diagnostic:''));
+    let output:unknown;
+    try{output=JSON.parse(result.stdout);}catch{throw new Error('CLI_UNAVAILABLE: invalid version response'+(diagnostic?' — '+diagnostic:''));}
+    const parsed=z.object({VersionString:z.string().min(1)}).safeParse(output);
+    if(!parsed.success)throw new Error('CLI_UNAVAILABLE: version response has no VersionString');
+    const version=parsed.data.VersionString;
+    if(version!=='1.5.1')throw new Error('CLI_VERSION_MISMATCH: requires Arduino CLI 1.5.1, found '+version);
+    return 'arduino-cli Version: '+version;
+  }
   async status(profileId:string){
     const profile=resolveProfile(profileId);if(profile.provisional)throw new Error('WIRING_UNASSIGNED');
-    const version=await this.run(['version']);if(version.code!==0||!version.stdout.includes('Version: 1.5.1 '))throw new Error('CLI_VERSION_MISMATCH: requires Arduino CLI 1.5.1');
+    const version=await this.checkCliVersion();
     const query=await this.run(['core','list','--json']);if(query.interrupted)throw new Error('BUILD_INTERRUPTED');if(query.code!==0)throw new Error('CORE_QUERY_FAILED: '+query.log);
     const installed=z.object({platforms:z.array(z.object({id:z.string(),installed_version:z.string().optional()}))}).parse(JSON.parse(query.stdout));
     const core=installed.platforms.find(item=>item.id===profile.core);if(!core?.installed_version)throw new Error('CORE_MISSING: '+profile.core+'@'+profile.coreVersion);if(core.installed_version!==profile.coreVersion)throw new Error('CORE_VERSION_MISMATCH: requires '+profile.core+'@'+profile.coreVersion);
-    return version.stdout.trim()+'\n'+profile.name+': '+profile.core+'@'+profile.coreVersion+' ready';
+    return version+'\n'+profile.name+': '+profile.core+'@'+profile.coreVersion+' ready';
   }
   /** Called only by the explicit board-tools action, never by editing or compiling. */
   async prepareCore(profileId:string){
     const profile=resolveProfile(profileId);if(profile.provisional)throw new Error('WIRING_UNASSIGNED');
-    const version=await this.run(['version']);if(version.code!==0||!version.stdout.includes('Version: 1.5.1 '))throw new Error('CLI_VERSION_MISMATCH: requires Arduino CLI 1.5.1');
+    await this.checkCliVersion();
     const query=await this.run(['core','list','--json']);if(query.interrupted)throw new Error('BUILD_INTERRUPTED');if(query.code!==0)throw new Error('CORE_QUERY_FAILED: '+query.log);
     const installed=z.object({platforms:z.array(z.object({id:z.string(),installed_version:z.string().optional()}))}).parse(JSON.parse(query.stdout));
     if(installed.platforms.some(item=>item.id===profile.core&&item.installed_version===profile.coreVersion))return profile.name+': '+profile.core+'@'+profile.coreVersion+' ready';
@@ -77,7 +90,7 @@ export class ToolchainService {
     const stage=(value:BuildStage)=>this.onStage({projectId:project.id,stage:value});
     this.latestBuild.delete(project.id);this.latestEnvironment.delete(project.id);if(project.mode==='blocks')indicatorPin(project);
     const profile=verifyProjectProfile(project).profile;if(profile.provisional)throw new Error('WIRING_UNASSIGNED: JECTIVE hardware is provisional');
-    stage('toolchain');const version=await this.run(['version']);if(version.code!==0||!version.stdout.includes('Version: 1.5.1 '))throw new Error('CLI_VERSION_MISMATCH: requires Arduino CLI 1.5.1');
+    stage('toolchain');const version=await this.checkCliVersion();
     const cores=await this.run(['core','list','--json']);if(cores.code!==0)throw new Error('CORE_QUERY_FAILED: '+cores.log);
     const installed=z.object({platforms:z.array(z.object({id:z.string(),installed_version:z.string().optional()}))}).parse(JSON.parse(cores.stdout));
     const core=installed.platforms.find(p=>p.id===profile.core);if(!core?.installed_version)throw new Error('CORE_MISSING: run the approved toolchain setup procedure');if(core.installed_version!==profile.coreVersion)throw new Error('CORE_VERSION_MISMATCH: requires '+profile.coreVersion);
@@ -92,7 +105,7 @@ export class ToolchainService {
       if(environmentAfter.sha256!==environment.sha256){
         // Preserve the failed integrity check for diagnosis without publishing any
         // upload candidate. The compiler's exit code alone is not build success.
-        await writeFile(join(folder,'manifest.json'),JSON.stringify({operationId,state:'failed',sourceHash,artifacts:[],exitCode:result.code,log:result.log,rawLogFile:'compiler.raw.log',error:'BUILD_ENVIRONMENT_CHANGED',profile,cliVersion:version.stdout.trim(),coreVersion:core.installed_version,fqbn:profile.fqbn,environment,environmentAfter,sourceFileHashes,artifactHashes:{}},null,2),{flag:'wx'});
+        await writeFile(join(folder,'manifest.json'),JSON.stringify({operationId,state:'failed',sourceHash,artifacts:[],exitCode:result.code,log:result.log,rawLogFile:'compiler.raw.log',error:'BUILD_ENVIRONMENT_CHANGED',profile,cliVersion:version,coreVersion:core.installed_version,fqbn:profile.fqbn,environment,environmentAfter,sourceFileHashes,artifactHashes:{}},null,2),{flag:'wx'});
         throw new Error('BUILD_ENVIRONMENT_CHANGED');
       }
     }
@@ -102,7 +115,7 @@ export class ToolchainService {
     const state:BuildResult['state']=result.interrupted||result.code===null?'interrupted':result.code===0&&artifacts.includes(firmware)&&artifacts.includes('sketch.ino.elf')?'succeeded':'failed';
     const manifest={operationId,state,sourceHash,artifacts,exitCode:result.code,log:result.log};
     const {hashes,sizes}=await snapshotBuildArtifacts(output,artifacts);
-    await writeFile(join(folder,'manifest.json'),JSON.stringify({...manifest,rawLogFile:'compiler.raw.log',profile,cliVersion:version.stdout.trim(),coreVersion:core.installed_version,fqbn:profile.fqbn,environment,sourceFileHashes,artifactHashes:hashes,artifactSizes:sizes},null,2));if(state==='succeeded'){this.latestBuild.set(project.id,operationId);this.latestEnvironment.set(project.id,environment.sha256);}return manifest;
+    await writeFile(join(folder,'manifest.json'),JSON.stringify({...manifest,rawLogFile:'compiler.raw.log',profile,cliVersion:version,coreVersion:core.installed_version,fqbn:profile.fqbn,environment,sourceFileHashes,artifactHashes:hashes,artifactSizes:sizes},null,2));if(state==='succeeded'){this.latestBuild.set(project.id,operationId);this.latestEnvironment.set(project.id,environment.sha256);}return manifest;
   }
   async upload(project:Project,operationId:string,port:string):Promise<BuildResult>{
    project=ProjectSchema.parse(project);

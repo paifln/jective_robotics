@@ -2,6 +2,8 @@ import {toSeconds} from './time-units';
 import {canUseWirelessPort,devicePortLabel,preferredWirelessPort} from './device-port-label';
 import {ArduinoWirelessPanel} from './ArduinoWirelessPanel';
 import {ArduinoStarter} from './ArduinoStarter';
+import {NativePythonFiles,PythonConsoleInput,PythonRuntimeActions} from './NativePythonProject';
+import {unoPythonStarter,espPythonStarter,type PythonRequest} from '../../../packages/robots/python-runtime';
 import {PythonProjectFiles} from './PythonProjectFiles';
 import {ArduinoRobotControl} from './ArduinoRobotControl';
 import {createArduinoUnoRobotProject,createArduinoUnoBlocksProject,arduinoUnoBlocksProgram,hasArduinoUnoRobotWiring} from '../../../packages/robots/arduino-uno';
@@ -50,7 +52,8 @@ import * as Blockly from 'blockly';
 import * as monaco from 'monaco-editor';
 import {toolboxForLocale,initialWorkspace,toFunctionProgram as toProgram,programWorkspace} from './blocks';
 import {type Program} from '../../../packages/codegen';
-import {pythonUnoExample,updatePythonSketch} from '../../../packages/codegen/python';
+import {studioLanguage,switchStudioLanguage,type StudioLanguage} from '../../../packages/codegen/studio-language';
+import {parsePythonProgram,updatePythonSketch} from '../../../packages/codegen/python';
 import {generateForProject as generate} from '../../../packages/codegen/project';
 import type {TraceEvent} from '../../../packages/simulator';
 import {profiles} from '../../../packages/profiles';
@@ -86,6 +89,7 @@ function App(){
  const [assistantOpen,setAssistantOpen]=useState(false);
  const [tab,changeTab]=useState<Exclude<StudentSection,'assistant'>>('content');
  const [simulationFromStudio,setSimulationFromStudio]=useState(false);
+ const [pythonSimulatorProject,setPythonSimulatorProject]=useState<string|null>(null);
  const resetScroll=()=>{
   document.querySelector('main')?.scrollTo({top:0,left:0,behavior:'instant'});
   window.scrollTo({top:0,left:0,behavior:'instant'});
@@ -95,7 +99,7 @@ function App(){
   changeTab(next);
   resetScroll();
  };
- const [wirelessOpen,setWirelessOpen]=useState(false);const [reviewRequest,setReviewRequest]=useState(0);const [studioPane,setStudioPane]=useState<'program'|'circuit'>('program');const [editorExpanded,setEditorExpanded]=useState(false);const [editorView,setEditorView]=useState<'blocks'|'split'|'code'>('blocks');const [workspaceReady,setWorkspaceReady]=useState(false);
+ const [reviewRequest,setReviewRequest]=useState(0);const [studioPane,setStudioPane]=useState<'program'|'circuit'>('program');const [editorExpanded,setEditorExpanded]=useState(false);const [editorView,setEditorView]=useState<'blocks'|'split'|'code'>('blocks');const [workspaceReady,setWorkspaceReady]=useState(false);
  const selectSection=(next:StudentSection)=>{
   if(next==='assistant'){setAssistantOpen(true);return;}
   if(next==='studio')setStudioPane('program');
@@ -155,8 +159,9 @@ function App(){
   },[tab,studioPane]);
  useEffect(()=>{if(!studioOpened||!codeDiv.current)return;editor.current=monaco.editor.create(codeDiv.current,{value:'',language:'cpp',theme:document.body.dataset.theme==='dark'?'vs-dark':'vs',automaticLayout:true,readOnly:true,editContext:false,ariaLabel:'Arduino C++ source',minimap:{enabled:false},fontSize:16,lineHeight:24,mouseWheelZoom:true});
  codeController.current=new ProjectCodeEditor(editor.current,(id,file,source)=>{const p=latest.current;if(p.id!==id||p.mode!=='code')return;if(p.pythonSource!==undefined){
-   if(file!=='main.py'||source===p.pythonSource)return;
-   const updated=updatePythonSketch({...p,pythonSource:source});
+   const previous=file==='main.py'?p.pythonSource:p.pythonFiles?.[file];
+   if(previous===undefined||previous===source)return;
+   const updated=updatePythonSketch(file==='main.py'?{...p,pythonSource:source}:{...p,pythonFiles:{...p.pythonFiles,[file]:source}});
    latest.current=updated;setProject(updated);setDirty(true);setBuild(null);setBoardRun(null);
    return;
   }const old=file==='sketch.ino'?p.source:p.sourceFiles?.[file];if(old===undefined||old===source)return;setProject(current=>current.id!==id?current:file==='sketch.ino'?{...current,source}:{...current,sourceFiles:{...current.sourceFiles,[file]:source}});setDirty(true);setBuild(null);});
@@ -177,6 +182,9 @@ function App(){
   if(goToStudio)setTab('studio');return true;
  };
  const open=async()=>{if(dirty&&!confirm(translate(locale,'Discard unsaved edits and open another project?')))return;const p=result(await window.jective.open());if(p)await acceptPreparedProject(p,false);};
+ const [pythonRunning,setPythonRunning]=useState(false);
+ const [pythonInputOpen,setPythonInputOpen]=useState(false);
+ useEffect(()=>window.jective.onPythonOutput(setLog),[]);
  const [usbPorts,setUsbPorts]=useState<Device[]>([]);
  const [wirelessPorts,setWirelessPorts]=useState<Device[]>([]);
  const [robotPort,setRobotPort]=useState('');
@@ -187,7 +195,7 @@ function App(){
  const buildInFlight=useRef(false);
  const [boardRun,setBoardRun]=useState<'compiling'|'uploading'|'succeeded'|'failed'|'interrupted'|null>(null);
  const refreshPorts=async()=>{
-  if(scanInFlight.current||buildInFlight.current)return;
+  if(scanInFlight.current||buildInFlight.current)return '';
   scanInFlight.current=true;
   setScanningPorts(true);
   try{
@@ -199,12 +207,14 @@ function App(){
    setRobotPort(previous=>preferredWirelessPort(response.value,previous));
    setUsbPort(previous=>available.some(port=>port.path===previous)?previous:'');
    setPortScanFailed(false);
+   return preferredWirelessPort(response.value,robotPort);
   }catch{
    setUsbPorts([]);
    setWirelessPorts([]);
    setRobotPort('');
    setUsbPort('');
    setPortScanFailed(true);
+   return '';
   }finally{
    scanInFlight.current=false;
    setScanningPorts(false);
@@ -229,7 +239,8 @@ function App(){
   setBusy(true);
   setLog(translate(locale,'Running actual Arduino CLI?'));
   try{
-   const compiled=result(await window.jective.compile(requested));
+   const response=await window.jective.compile(requested);
+   const compiled=robotFirmware?(response.ok?response.value:undefined):result(response);
    if(!compiled){if(uploadPort)setRunStatus('failed');return;}
    if(!robotFirmware){
     studioNotifications.add(compiled.state==='succeeded'?'build-ready':compiled.state==='failed'?'build-failed':'build-cancelled',requested.name);
@@ -250,7 +261,8 @@ function App(){
    if(compiled.state!=='succeeded'){setRunStatus(compiled.state);return;}
 
    setRunStatus('uploading');
-   const uploaded=result(await window.jective.upload(requested,compiled.operationId,uploadPort,'run'));
+   const uploadResponse=await window.jective.upload(requested,compiled.operationId,uploadPort,'run');
+   const uploaded=robotFirmware?(uploadResponse.ok?uploadResponse.value:undefined):result(uploadResponse);
    if(uploaded)setLog(uploaded.log);
    setRunStatus(uploaded?.state??'failed');
   }catch(error){
@@ -302,29 +314,47 @@ function App(){
  const loadBuildError:OpenBuildError=async(caseId,corrected,lesson='L50')=>{if(dirty&&!confirm(translate(locale,'Load lesson project? Keep a saved or exported copy of your current work.')))return;const created=result(await window.jective.newProject());if(!created)return;const p=createBuildErrorProject(caseId,corrected,crypto.randomUUID(),lesson+' · '+caseId);latest.current=p;setProject(p);Blockly.serialization.workspaces.load({},workspace.current!);setDirty(true);setBuild(null);setBuildReport(null);setLog('');setLessonWorld(undefined);setEditorView('code');setStudioPane('program');setTab('studio');};
  const loadSubstitution=async()=>{if(dirty&&!confirm(translate(locale,'Load lesson project? Keep a saved or exported copy of your current work.')))return;const created=result(await window.jective.newProject());if(!created)return;const p=createSubstitutionProject(crypto.randomUUID(),'L52 · '+words(locale,'Driver substitution','Замена драйвера','Драйвер ауыстыру'));latest.current=p;setProject(p);Blockly.serialization.workspaces.load({},workspace.current!);setDirty(true);setBuild(null);setBuildReport(null);setLog('');setLessonWorld(undefined);setEditorView('code');setStudioPane('circuit');setTab('studio');};
  const loadCodeLesson=async(id:string,source:string,files?:SourceFiles)=>{if(dirty&&!confirm(translate(locale,'Load lesson project? Keep a saved or exported copy of your current work.')))return;const previous=latest.current;const created=result(await window.jective.newProject());if(!created)return;const p=createCodeLessonProject(previous,id,source,files,crypto.randomUUID(),id+' · '+words(locale,'Code experiment','Опыт с кодом','Код тәжірибесі'));latest.current=p;setProject(p);Blockly.serialization.workspaces.load({},workspace.current!);setDirty(true);setBuild(null);setLessonWorld(undefined);setEditorView('code');setStudioPane('program');setTab('studio');};
- const hasWirelessProgram=project.mode==='blocks'||project.pythonSource!==undefined;
- const openWireless=async()=>{
-  if(busy)return;
-  if(hasWirelessProgram){
-   const closed=result(await window.jective.serialClose());
-   if(!closed)return;
-   setConnectedPort(null);
-  }
-  setWirelessOpen(true);
-  requestAnimationFrame(()=>document.querySelector<HTMLDialogElement>('#arduino-wireless-dialog')?.showModal());
+ const hasWirelessProgram=project.mode==='blocks'||(project.pythonSource!==undefined&&!project.pythonTarget);
+ const runPython=async(action:PythonRequest['action'],usePort:boolean)=>{
+  const p=latest.current;
+  if(!p.pythonTarget||p.pythonSource===undefined||buildInFlight.current)return;
+  buildInFlight.current=true;
+  setBusy(true);setPythonRunning(true);setPythonInputOpen(p.pythonTarget==='uno'&&action==='run');setBoardRun(null);setLog('');
+  try{
+   const response=result(await window.jective.pythonRun({target:p.pythonTarget,action,files:action==='install'||action==='probe'||action==='stop-board'?{}:{...p.pythonFiles,'main.py':p.pythonSource},port:usePort?usbPort:undefined}));
+   if(response){
+    const heading=response.state==='succeeded'?(action==='install'
+     ?words(locale,'MicroPython installed','MicroPython установлен','MicroPython орнатылды')
+     :action==='probe'?words(locale,'MicroPython is ready','MicroPython готов к работе','MicroPython жұмысқа дайын')
+     :words(locale,'Python operation completed','Команда Python завершена','Python пәрмені аяқталды')):
+     response.state==='interrupted'?words(locale,'Python operation cancelled','Команда Python отменена','Python пәрмені тоқтатылды'):
+      words(locale,'Python reported an error','Ошибка Python','Python қатесі');
+    setLog(heading+'\n'+response.log);
+   }
+  }catch(error){setLog(String(error));}
+  finally{buildInFlight.current=false;setPythonRunning(false);setPythonInputOpen(false);setBusy(false);}
  };
- const createArduinoProject=async(mode:'code'|'blocks'|'python')=>{
+ const bluetoothPorts={ports:wirelessPorts,selected:robotPort,selectPort:setRobotPort,scanning:scanningPorts,scanFailed:portScanFailed,refreshPorts};
+ const prepareBluetoothConnection=async()=>{
+  if(!connectedPort)return true;
+  const closed=await window.jective.serialClose();
+  if(!closed.ok)throw new Error(closed.error.message);
+  setConnectedPort(null);
+  return true;
+ };
+ const createArduinoProject=async(mode:'code'|'blocks'|'python'|'micropython')=>{
   if(busy||saving)return;
-  if(dirty&&!confirm(words(locale,'Create an Arduino Uno project? Save the current program first if needed.','Создать проект Arduino Uno? При необходимости сначала сохрани текущую программу.','Arduino Uno жобасын жасау керек пе? Қажет болса, ағымдағы бағдарламаны алдымен сақта.')))return;
+  if(dirty&&!confirm(words(locale,'Create a new project? Save the current program first if needed.','Создать новый проект? При необходимости сначала сохрани текущую программу.','Жаңа жоба жасау керек пе? Қажет болса, ағымдағы бағдарламаны алдымен сақта.')))return;
   const previous=latest.current;
   const created=result(await window.jective.newProject());if(!created||latest.current!==previous)return;
   const name=words(locale,'My Arduino Uno robot','Мой робот Arduino Uno','Менің Arduino Uno роботым');
   const id=crypto.randomUUID();
-  const p=mode==='blocks'?createArduinoUnoBlocksProject(id,programWorkspace(arduinoUnoBlocksProgram),name):
-   mode==='python'?updatePythonSketch({...createArduinoUnoRobotProject(id,name),pythonSource:pythonUnoExample}):
+  const p:Project=mode==='blocks'?createArduinoUnoBlocksProject(id,programWorkspace(arduinoUnoBlocksProgram),name):
+   mode==='python'?updatePythonSketch({...createArduinoUnoRobotProject(id,name),pythonTarget:'uno',pythonSource:unoPythonStarter}):
+   mode==='micropython'?{schemaVersion:1,id,name:'ESP32 · MicroPython',profileId:'esp32-devkit-reference',mode:'code',source:'',pythonTarget:'esp32',pythonSource:espPythonStarter,workspace:{},revision:0}:
    createArduinoUnoRobotProject(id,name);
   latest.current=p;setProject(p);Blockly.serialization.workspaces.load(p.workspace,workspace.current!);
-  setDirty(true);setBuild(null);setBuildReport(null);setLog('');setLessonWorld(undefined);setActiveFile(mode==='python'?'main.py':'sketch.ino');setEditorView(mode==='blocks'?'blocks':'code');setStudioPane('program');setTab('studio');
+  setDirty(true);setBuild(null);setBuildReport(null);setLog('');setLessonWorld(undefined);setActiveFile(p.pythonSource!==undefined?'main.py':'sketch.ino');setEditorView(mode==='blocks'?'blocks':'code');setStudioPane('program');setTab('studio');
  };
  const openReviewStarter=async(assignment:Assignment)=>{if(busy||saving)return false;if(dirty&&!confirm(translate(locale,'Load lesson project? Keep a saved or exported copy of your current work.')))return false;const previous=latest.current;if(!assignment.starter)return false;const probe=new Blockly.Workspace();try{Blockly.serialization.workspaces.load(assignment.starter.workspace,probe);}catch(error){setLog(String(error));return false;}finally{probe.dispose();}const copy=result(await window.jective.reviewStarter(assignment));if(!copy)return false;if(JSON.stringify(latest.current)!==JSON.stringify(previous))return false;latest.current=copy;setProject(copy);Blockly.serialization.workspaces.load(copy.workspace,workspace.current!);setDirty(true);setBuild(null);setBuildReport(null);setLog('');setLessonWorld(copy.simulationWorld);setEditorView(copy.mode==='code'?'code':'blocks');setStudioPane('program');setTab('studio');return true;};
  const updateConnections=(p:Project)=>{let source=p.source;if(p.mode==='blocks'){try{source=generate(toProgram(workspace.current!),p);}catch(error){source='';setLog(String(error));}}const updated=updatePythonSketch({...p,source});latest.current=updated;setProject(updated);setDirty(true);setBuild(null);};
@@ -342,27 +372,61 @@ function App(){
     setLog(translate(locale,'Profile selection became stale. Select the intended version again.'));
     return;
    }
-   updateConnections({...latest.current,profileId:chosen.id,profileDefinition:custom?chosen:undefined,profileVersion:custom?chosen.version:undefined,profileHash:hash,wiring:{}});
+   updateConnections({...latest.current,profileId:chosen.id,profileDefinition:custom?chosen:undefined,profileVersion:custom?chosen.version:undefined,profileHash:hash,wiring:{},
+    pythonTarget:latest.current.pythonTarget?(chosen.fqbn==='arduino:avr:uno'?'uno':'esp32'):undefined});
    setBuildReport(null);
   }catch(error){setLog(String(error));}
  };
+ const showPythonSimulator=pythonSimulatorProject===project.id;
+ useEffect(()=>{if(tab!=='studio'||studioPane!=='program')setPythonSimulatorProject(null);},[tab,studioPane]);
+ const lastCodeLanguage=useRef<{id:string;language:'cpp'|'python'}|null>(null);
+ const chooseLanguage=(language:StudioLanguage)=>{
+  if(busy||saving)return;
+  const current=latest.current;
+  if(language!=='blocks')lastCodeLanguage.current={id:current.id,language};
+  else if(current.pythonSource!==undefined)lastCodeLanguage.current={id:current.id,language:'python'};
+  let blocksSource=current.mode==='blocks'?current.source:'';
+  if(language!=='python'&&current.mode!=='blocks'&&workspace.current){
+   try{blocksSource=generate(toProgram(workspace.current),current);}
+   catch(error){if(language==='blocks')setLog(String(error));}
+  }
+  const next=switchStudioLanguage(current,language,blocksSource);
+  if(next===current)return;
+  latest.current=next;setProject(next);setEditorView(language==='blocks'?'blocks':'code');
+  setActiveFile(language==='python'?'main.py':'sketch.ino');setPythonSimulatorProject(null);
+  setDirty(true);setBuild(null);setBuildReport(null);setBoardRun(null);
+ };
+ const simulationProgram=()=>{
+  const current=latest.current;
+  if(current.pythonSource!==undefined&&!current.pythonTarget)return parsePythonProgram(current.pythonSource);
+  if(current.mode==='code')throw new Error(words(locale,'Choose Blocks or Python in Studio to run in the simulator.','Для симулятора выбери в студии «Блоки» или Python.','Симулятор үшін студияда «Блоктар» немесе Python таңда.'));
+  return toProgram(workspace.current!);
+ };
+ const simulationFiles=()=>({...latest.current.pythonFiles,'main.py':latest.current.pythonSource??''});
+ const simulator=(embedded=false)=><SimulatorPanel key={project.id+'-'+studioLanguage(project)}
+  embedded={embedded} runOnMount={embedded}
+  initialWorld={project.simulationWorld??lessonWorld??(project.lessonId?artifacts[project.lessonId]?.world:undefined)}
+  worldChange={world=>{const p={...latest.current,simulationWorld:WorldSchema.parse(world),worldId:world.id};latest.current=p;setProject(p);setDirty(true);}}
+  projectName={project.name} getProgram={simulationProgram} getPythonFiles={project.pythonTarget?simulationFiles:undefined}
+  highlight={id=>workspace.current?.highlightBlock(id)}/>;
  const runOnBoard=<button className="primary board-run-launch" disabled={busy||scanningPorts||!usbPort||!!runUnavailable} title={runUnavailable||(!usbPort?portPlaceholder:undefined)} onClick={()=>void compile(usbPort)}>
   <span aria-hidden="true" className={boardRunActive?'board-run-spinner':undefined}>{boardRunActive?'':'↑'}</span>
   {words(locale,'Run on board','Запустить на плате','Тақшада іске қосу')}
  </button>;
- if(startupFailed)return <RecoveryScreen locale={locale} kind="workspace"/>;
- return <LocaleContext.Provider value={locale}><main><WindowChrome locale={locale}><label><select aria-label={t.language} value={locale} onChange={e=>{const next=e.target.value as keyof typeof labels;setLocale(next);void window.jective.preferences({locale:next});}}><option value="en">English</option><option value="kk">Қазақша</option><option value="ru">Русский</option></select></label><div className="hardware-controls"><div className="active-board"><span aria-hidden="true">{t.profile}</span><select aria-label={t.profile} disabled={busy||saving} value={project.profileDefinition?project.profileId+'@'+project.profileVersion:project.profileId} onChange={e=>void selectBoard(e.target.value)}>{[...availableProfiles,...(project.profileDefinition&&!availableProfiles.some(p=>p.id===project.profileId&&p.version===project.profileVersion)?[project.profileDefinition]:[])].map(p=><option key={p.id+'@'+p.version} value={profiles.some(b=>b.id===p.id)?p.id:p.id+'@'+p.version}>{boardName(p.id,p.name,locale)}{profiles.some(b=>b.id===p.id)?'':' · '+p.version}</option>)}</select></div>{(tab==='studio'||tab==='robot')&&<div className="usb-target">
+ const usbTarget=<div className="usb-target">
   <select aria-label={usbPortLabel} value={usbPort} disabled={busy||scanningPorts} onChange={e=>setUsbPort(e.target.value)}>
    <option value="">{portPlaceholder}</option>
    {usbPorts.map(port=><option key={port.path} value={port.path}>{devicePortLabel(port,locale)}</option>)}
   </select>
   <button type="button" className="usb-refresh" title={refreshPortsLabel} aria-label={refreshPortsLabel} disabled={busy||scanningPorts} onClick={()=>void refreshPorts()}>↻</button>
- </div>}</div><NotificationCenter locale={locale}/><HelpMenu locale={locale} project={project} openStarter={openReviewStarter} reviewRequest={reviewRequest}/><ActivityCalendar revision={project.revision}/><button className="sound-toggle icon-button" data-sound-toggle title={locale==='ru'?'Звуки интерфейса':locale==='kk'?'Интерфейс дыбыстары':'Interface sounds'} aria-label={locale==='ru'?'Звуки интерфейса':locale==='kk'?'Интерфейс дыбыстары':'Interface sounds'} aria-pressed={sound} onClick={()=>{const next=!sound;setSound(next);setSoundEnabled(next);if(next)void playCue('click');}}><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" aria-hidden="true"><path d="M11 5L6 9H3v6h3l5 4ZM15 8c3 2 3 6 0 8"/>{sound?<path d="M18 5c5 4 5 10 0 14"/>:<path d="m16 10 5 5m0-5-5 5"/>}</svg></button><button className="theme-toggle icon-button" title={translate(locale,theme==='light'?'Dark theme':'Light theme')} aria-label={translate(locale,'Color theme')} aria-pressed={theme==='light'} onClick={()=>{const next=theme==='dark'?'light':'dark';setTheme(next);void window.jective.preferences({theme:next}).then(r=>{if(!r.ok)setLog(translate(locale,'Theme save failed')+': '+r.error.message);});}}><ThemeIcon light={theme==='light'}/></button></WindowChrome>
+ </div>;
+ if(startupFailed)return <RecoveryScreen locale={locale} kind="workspace"/>;
+ return <LocaleContext.Provider value={locale}><main><WindowChrome locale={locale}><label><select aria-label={t.language} value={locale} onChange={e=>{const next=e.target.value as keyof typeof labels;setLocale(next);void window.jective.preferences({locale:next});}}><option value="en">English</option><option value="kk">Қазақша</option><option value="ru">Русский</option></select></label><div className="hardware-controls"><div className="active-board"><span aria-hidden="true">{t.profile}</span><select aria-label={t.profile} disabled={busy||saving} value={project.profileDefinition?project.profileId+'@'+project.profileVersion:project.profileId} onChange={e=>void selectBoard(e.target.value)}>{[...availableProfiles,...(project.profileDefinition&&!availableProfiles.some(p=>p.id===project.profileId&&p.version===project.profileVersion)?[project.profileDefinition]:[])].map(p=><option key={p.id+'@'+p.version} value={profiles.some(b=>b.id===p.id)?p.id:p.id+'@'+p.version}>{boardName(p.id,p.name,locale)}{profiles.some(b=>b.id===p.id)?'':' · '+p.version}</option>)}</select></div>{tab==='studio'&&usbTarget}</div><NotificationCenter locale={locale}/><HelpMenu locale={locale} project={project} openStarter={openReviewStarter} reviewRequest={reviewRequest}/><ActivityCalendar revision={project.revision}/><button className="sound-toggle icon-button" data-sound-toggle title={locale==='ru'?'Звуки интерфейса':locale==='kk'?'Интерфейс дыбыстары':'Interface sounds'} aria-label={locale==='ru'?'Звуки интерфейса':locale==='kk'?'Интерфейс дыбыстары':'Interface sounds'} aria-pressed={sound} onClick={()=>{const next=!sound;setSound(next);setSoundEnabled(next);if(next)void playCue('click');}}><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" aria-hidden="true"><path d="M11 5L6 9H3v6h3l5 4ZM15 8c3 2 3 6 0 8"/>{sound?<path d="M18 5c5 4 5 10 0 14"/>:<path d="m16 10 5 5m0-5-5 5"/>}</svg></button><button className="theme-toggle icon-button" title={translate(locale,theme==='light'?'Dark theme':'Light theme')} aria-label={translate(locale,'Color theme')} aria-pressed={theme==='light'} onClick={()=>{const next=theme==='dark'?'light':'dark';setTheme(next);void window.jective.preferences({theme:next}).then(r=>{if(!r.ok)setLog(translate(locale,'Theme save failed')+': '+r.error.message);});}}><ThemeIcon light={theme==='light'}/></button></WindowChrome>
  <StudentNavigation locale={locale} tab={tab} select={selectSection}/>
  {tab!=='studio'&&<OperationNotice error={operationError} locale={locale} dismiss={()=>setOperationError(null)}/>}
 
  {tab==='simulation'&&simulationFromStudio&&<div className="workspace-return"><BackButton label={backToProgramLabel} onClick={backToProgram}/></div>}
- {tab==='simulation'&&<SimulatorPanel key={project.id} initialWorld={project.simulationWorld??lessonWorld??(project.lessonId?artifacts[project.lessonId]?.world:undefined)} worldChange={world=>{const p={...latest.current,simulationWorld:WorldSchema.parse(world),worldId:world.id};latest.current=p;setProject(p);setDirty(true);}} projectName={project.name} getProgram={()=>{if(latest.current.mode==='code')throw new Error(words(locale,'C++ runs on your board. Return to Studio and choose Run on board.','C++ запускается на плате. Вернись в студию и нажми «Запустить на плате».','C++ тақшада іске қосылады. Студияға қайтып, «Тақшада іске қосу» бас.'));return toProgram(workspace.current!);}} highlight={id=>workspace.current?.highlightBlock(id)}/>}
+ {tab==='simulation'&&simulator()}
  {tab==='projects'&&<StudentProjects project={project} canLoad={()=>!dirty||confirm(translate(locale,'Open a local copy? Save or export current changes first.'))} load={async p=>{await acceptPreparedProject(p,true,true);}}/>}
  <div hidden={tab!=='content'}><ContentPanel openReview={()=>setReviewRequest(value=>value+1)} openSubstitution={loadSubstitution} openBuildError={loadBuildError} loadCode={(id,source,files)=>void loadCodeLesson(id,source,files)} active={tab==='content'} locale={locale} project={project} roverChange={report=>{setProject(old=>({...old,worksheets:{...old.worksheets,'L19-rover-inspection':report}}));setDirty(true);}} worksheetChange={values=>{setProject(old=>({...old,worksheets:{...old.worksheets,'L02-component-role-and-power-path':values}}));setDirty(true);}} load={(id,program)=>loadProgram(id,program,artifacts[id]?.world)}/></div>
  <AssistantPopover open={assistantOpen} setOpen={setAssistantOpen}><AssistantPanel key={project.id} project={project} activeFile={activeFile}/></AssistantPopover>
@@ -373,34 +437,45 @@ function App(){
  {tab==='robot'&&<section className="robot-workspace">
   <header className="robot-workspace-header">
    <div><h1>{words(locale,'Robot control','Пульт робота','Робот пульті')}</h1><p>{project.name}</p></div>
+  </header>
+  <ArduinoRobotControl key={project.id} active={!busy} connectionChange={setConnectedPort}
+   ports={bluetoothPorts} prepareConnection={prepareBluetoothConnection} setup={<>
    <div className="robot-board-actions">
+    <p>{words(locale,'First setup: connect the robot by USB to install the controller firmware.','Первый запуск: подключи робота по USB для установки прошивки пульта.','Алғашқы іске қосу: пульт микробағдарламасын орнату үшін роботты USB арқылы қос.')}</p>
+    {usbTarget}
     <button className="primary board-run-launch" disabled={busy||scanningPorts||!usbPort} title={!usbPort?portPlaceholder:undefined}
      onClick={()=>void compile(usbPort,createArduinoUnoRobotProject(crypto.randomUUID()))}>
      {words(locale,'Install controller firmware via USB','Установить прошивку пульта по USB','Пульт микробағдарламасын USB арқылы орнату')}
     </button>
     {busy&&robotFirmwareRun==='compiling'&&<ActionButton icon="stop" label={t.cancel} onClick={()=>void window.jective.cancel()}/>}
    </div>
-  </header>
-  {robotFirmwareRun&&<div className="robot-board-status" role="status">
-   {boardRunText[robotFirmwareRun]}
-   {robotFirmwareRun==='failed'&&<BackButton label={backToProgramLabel} onClick={()=>{setResultsCollapsed(false);backToProgram();}}/>}
-  </div>}
-  <ArduinoRobotControl key={project.id} active={!wirelessOpen&&!busy} connectionChange={setConnectedPort}
-   ports={wirelessPorts} selected={robotPort} selectPort={setRobotPort} scanning={scanningPorts}/>
+    {robotFirmwareRun&&<p className="robot-board-status" role="status">{robotFirmwareRun==='failed'?words(locale,'Could not install the controller firmware, so check the USB cable.','Не удалось установить прошивку пульта — проверь USB-кабель.','Пульт микробағдарламасын орнату мүмкін болмады, USB кабелін тексер.'):boardRunText[robotFirmwareRun]}</p>}
+   </>}/>
  </section>}
- <dialog id="arduino-wireless-dialog" className="arduino-wireless-dialog" aria-label="Arduino Bluetooth" onClose={()=>setWirelessOpen(false)}><button className="dialog-close" aria-label={words(locale,'Close','\u0417\u0430\u043a\u0440\u044b\u0442\u044c','\u0416\u0430\u0431\u0443')} onClick={()=>document.querySelector<HTMLDialogElement>('#arduino-wireless-dialog')?.close()}>×</button>{wirelessOpen&&(hasWirelessProgram
-  ? <ArduinoWirelessPanel key={project.id} project={project} getProgram={()=>toProgram(workspace.current!)} connectionChange={setConnectedPort} connectedPort={connectedPort}/>
-  : <section className="arduino-wireless-panel"><h2>{words(locale,'Run via Bluetooth','Запуск по Bluetooth','Bluetooth арқылы іске қосу')}</h2><p role="status">{words(locale,'Upload C++ programs to the board by USB. For manual Bluetooth control, open Robot control.','Загрузи программу C++ на плату по USB. Для ручного управления по Bluetooth открой «Пульт робота».','C++ бағдарламасын тақшаға USB арқылы жүкте. Bluetooth арқылы қолмен басқару үшін «Робот пультін» аш.')}</p></section>)}</dialog>
  <div className="studio" data-pane={studioPane} data-expanded={editorExpanded} hidden={tab!=='studio'}><div className="workspace-heading">
  <h1 className="studio-project-heading">{project.name}</h1>
  <div className="studio-project-fields">
   <label className="studio-project-name"><span>{t.name}</span><input aria-label={t.name} value={project.name} maxLength={100} onChange={e=>{const name=e.target.value;setProject(old=>({...old,name}));setDirty(true);}}/></label>
  </div>
- <div className="view-switch" aria-label={words(locale,'Editor layout','Вид редактора','Редактор көрінісі')}>{(['blocks','split','code'] as const).map(view=><button key={view} aria-pressed={editorView===view} onClick={()=>{setEditorView(view);setTimeout(()=>{if(workspace.current)Blockly.svgResize(workspace.current);editor.current?.layout();},0);}}>{view==='blocks'?t.blocks:view==='code'?t.code:locale==='ru'?'Блоки + код':locale==='kk'?'Блоктар + код':'Blocks + code'}</button>)}</div><EditorExpand locale={locale} expanded={editorExpanded} toggle={()=>setEditorExpanded(value=>!value)}/></div>
- <div className="studio-toolbar"><nav className="studio-panes" aria-label={words(locale,'Studio workspace','Рабочее пространство студии','Студия кеңістігі')}>{studioPane==='circuit'?<BackButton label={backToProgramLabel} onClick={()=>showStudioPane('program')}/>:<button aria-pressed={true} onClick={()=>showStudioPane('program')}>{words(locale,'Program','Программа','Бағдарлама')}</button>}<button aria-pressed={studioPane==='circuit'} onClick={()=>showStudioPane('circuit')}>{words(locale,'Connections','Подключения','Қосылымдар')}</button></nav><nav className="studio-actions" aria-label={words(locale,'Program actions','Команды программы','Бағдарлама командалары')}><ActionButton icon="open" label={t.open} onClick={()=>void open()}/><ActionButton icon="save" label={t.save} disabled={saving} onClick={()=>void save()}/><span className="toolbar-divider"/><ActionButton icon="run" label={words(locale,'Run blocks in simulator','Запустить блоки в симуляторе','Блоктарды симуляторда іске қосу')} disabled={project.mode==='code'} onClick={()=>{setTab('simulation');setSimulationFromStudio(true);}}/><ActionButton icon="compile" label={words(locale,'Compile — check code for the board','Компилировать — проверить код для платы','Компиляция — тақша кодын тексеру')} disabled={busy||!project.source||projectProfile(project).provisional} onClick={()=>void compile()}/>
+ <div className="view-switch" aria-label={words(locale,'Editor layout','Вид редактора','Редактор көрінісі')}>
+ {(['blocks','split','code'] as const).map(view=><button key={view} aria-pressed={editorView===view} onClick={()=>{
+  if(view==='blocks'&&latest.current.pythonSource!==undefined)chooseLanguage('blocks');
+  else if(view==='code'&&latest.current.mode==='blocks'&&lastCodeLanguage.current?.id===project.id&&lastCodeLanguage.current.language==='python')chooseLanguage('python');
+  setEditorView(view);
+  setTimeout(()=>{if(workspace.current)Blockly.svgResize(workspace.current);editor.current?.layout();},0);
+ }}>{view==='blocks'?t.blocks:view==='code'?t.code:words(locale,'Blocks + code','Блоки + код','Блоктар + код')}</button>)}
+ </div><EditorExpand locale={locale} expanded={editorExpanded} toggle={()=>setEditorExpanded(value=>!value)}/></div>
+ <div className="studio-toolbar"><nav className="studio-panes" aria-label={words(locale,'Studio workspace','Рабочее пространство студии','Студия кеңістігі')}>{studioPane==='circuit'?<BackButton label={backToProgramLabel} onClick={()=>showStudioPane('program')}/>:<button aria-pressed={true} onClick={()=>showStudioPane('program')}>{words(locale,'Program','Программа','Бағдарлама')}</button>}<button aria-pressed={studioPane==='circuit'} onClick={()=>showStudioPane('circuit')}>{words(locale,'Connections','Подключения','Қосылымдар')}</button></nav><nav className="studio-actions" aria-label={words(locale,'Program actions','Команды программы','Бағдарлама командалары')}><ActionButton icon="open" label={t.open} onClick={()=>void open()}/><ActionButton icon="save" label={t.save} disabled={saving} onClick={()=>void save()}/><span className="toolbar-divider"/>{project.pythonSource!==undefined?<ActionButton icon="run" label={words(locale,'Run Python in simulator','Запустить Python в симуляторе','Python-ды симуляторда іске қосу')} aria-pressed={showPythonSimulator} onClick={()=>{
+  if(project.pythonTarget)setPythonSimulatorProject(value=>value===project.id?null:project.id);
+  else{setTab('simulation');setSimulationFromStudio(true);}
+ }}/>:<ActionButton icon="run" label={words(locale,'Run blocks in simulator','Запустить блоки в симуляторе','Блоктарды симуляторда іске қосу')} disabled={project.mode==='code'} onClick={()=>{setTab('simulation');setSimulationFromStudio(true);}}/>}{!project.pythonTarget&&<ActionButton icon="compile" label={words(locale,'Compile — check code for the board','Компилировать — проверить код для платы','Компиляция — тақша кодын тексеру')} disabled={busy||!project.source||projectProfile(project).provisional} onClick={()=>void compile()}/>}
 
- {runOnBoard}
- <button className="bluetooth-run-launch" disabled={busy||(project.mode==='blocks'&&!workspaceReady)} onClick={()=>void openWireless()}>{words(locale,'Run via Bluetooth','\u0417\u0430\u043f\u0443\u0441\u0442\u0438\u0442\u044c \u043f\u043e Bluetooth','Bluetooth \u0430\u0440\u049b\u044b\u043b\u044b \u0456\u0441\u043a\u0435 \u049b\u043e\u0441\u0443')}</button>{busy&&boardRun!=='uploading'&&<ActionButton icon="stop" label={t.cancel} onClick={()=>void window.jective.cancel()}/>}<span role="status" className="studio-run-status">{boardRun?boardRunText[boardRun]:busy?words(locale,'Checking code…','Проверяем код…','Код тексерілуде…'):build?.state==='succeeded'?words(locale,'Code is ready to upload','Код готов к загрузке','Код жүктеуге дайын'):dirty?'● '+translate(locale,'Unsaved'):'✓ '+translate(locale,'Saved')}</span></nav></div>
+ {!project.pythonTarget&&runOnBoard}
+ {busy&&!pythonRunning&&boardRun!=='uploading'&&<ActionButton icon="stop" label={t.cancel} onClick={()=>void window.jective.cancel()}/>}<span role="status" className="studio-run-status">{boardRun?boardRunText[boardRun]:pythonRunning?words(locale,'Python is running…','Выполняется команда Python…','Python пәрмені орындалуда…'):busy?words(locale,'Checking code…','Проверяем код…','Код тексерілуде…'):build?.state==='succeeded'?words(locale,'Code is ready to upload','Код готов к загрузке','Код жүктеуге дайын'):dirty?'● '+translate(locale,'Unsaved'):'✓ '+translate(locale,'Saved')}</span></nav></div>
+ {tab==='studio'&&project.pythonTarget&&<PythonRuntimeActions target={project.pythonTarget} locale={locale} busy={busy} running={pythonRunning}
+  port={(project.pythonTarget==='uno'?activeBoard.fqbn==='arduino:avr:uno':activeBoard.core==='esp32:esp32'&&!activeBoard.provisional)?usbPort:''} run={runPython} stop={()=>void window.jective.pythonStop()}
+  installUno={()=>void compile(usbPort,createArduinoUnoRobotProject(crypto.randomUUID(),'JECTIVE Uno controller'))}/>}
+ {tab==='studio'&&hasWirelessProgram&&<ArduinoWirelessPanel key={project.id} project={project} getProgram={()=>toProgram(workspace.current!)} connectionChange={setConnectedPort} connectedPort={connectedPort} ports={bluetoothPorts} disabled={busy||(project.mode==='blocks'&&!workspaceReady)} prepareConnection={prepareBluetoothConnection}/>}
  {studioPane==='circuit'&&<ConnectionsPanel project={project} update={updateConnections}/>}
  <details className="student-settings" onKeyDown={event=>{
   if(event.key!=='Escape'||!event.currentTarget.open)return;
@@ -409,10 +484,18 @@ function App(){
   event.currentTarget.querySelector('summary')?.focus();
  }}>
   <summary>{words(locale,"Project settings","Настройки проекта","Жоба баптаулары")}</summary>
-  <aside>{activeBoard.core==='arduino:avr'&&<button disabled={busy} onClick={()=>void prepareArduinoTools()}>{words(locale,'Prepare Arduino tools',"Подготовить инструменты Arduino","Arduino құралдарын дайындау")}</button>}{profileListFailed&&<p role="alert">{words(locale,'Could not refresh the board list. Your project is unchanged.','Не удалось обновить список плат. Проект не изменён.','Тақшалар тізімі жаңартылмады. Жоба өзгерген жоқ.')} <button onClick={retryProfileList}>{words(locale,'Try again','Попробовать снова','Қайта көру')}</button></p>}<details className="board-details"><summary>{locale==='ru'?'О плате':locale==='kk'?'Тақша туралы':'Board details'}</summary><p className="note">{translate(locale,'Changing the board profile clears logical wiring and invalidates the current build.')}</p><p className="note">{projectProfile(project).provenance}</p></details><button disabled={converting} onClick={()=>void duplicateProject()}>{words(locale,'Work on a project copy','Работать в копии проекта','Жоба көшірмесінде жұмыс істеу')}</button><p><strong>{project.mode==='blocks'?t.blocks:t.code}</strong> · {translate(locale,'Hardware compiler')}</p><button disabled={project.mode==='code'||converting} onClick={()=>void convertToCode()}>{t.convert}</button><details className="verification-details"><summary>{translate(locale,'Verification')}</summary><p>{translate(locale,'Compiler')}: {build?translate(locale,build.state):translate(locale,'NOT RUN')}</p><p>{translate(locale,'Upload')}: {translate(locale,'NOT RUN')}</p><p>{translate(locale,'Physical')}: {translate(locale,'NOT RUN')}</p>{project.profileId!=='arduino-uno'&&<p className="note">{translate(locale,'Connect no motors. This milestone generates basic indicator sketches only.')}</p>}</details></aside></details><section className="layout">
- <section className={"editors view-"+editorView}><div className="panel"><h2>{t.blocks}{project.mode==='code'?' • '+translate(locale,'preserved original'):''}</h2><div ref={blocksDiv} className="editor studio-editor" inert={project.mode==='code'}/></div><div className="panel"><h2>{project.pythonSource!==undefined?'Python':'Arduino C++'} {project.mode==='blocks'?'• '+translate(locale,'generated preview'):''}</h2>{project.mode==='blocks'&&<div className="code-preview-help"><span>{words(locale,'Code from your blocks. Edit a copy to type C++.','Код из твоих блоков. Для правок создай копию.','Блоктардан жасалған код. Өңдеу үшін көшірме жаса.')}</span><button disabled={converting} onClick={()=>void convertToCode()}>{words(locale,'Edit a Code copy','Редактировать копию кода','Код көшірмесін өңдеу')}</button></div>}{project.pythonSource!==undefined&&<PythonProjectFiles project={project} activeFile={activeFile} select={setActiveFile} locale={locale}/>}
- {project.mode==='code'&&project.pythonSource===undefined&&<CodeFileTabs key={project.id} project={project} active={activeFile} select={setActiveFile} change={p=>{latest.current=p;setProject(p);setDirty(true);setBuild(null);}} locale={locale} busy={busy}/>}<div ref={codeDiv} className="editor studio-editor"/></div></section></section><ComponentsPanel project={project} locale={locale} port={connectedPort} openWiring={()=>showStudioPane('circuit')} openDevice={()=>setTab('device')}/><section className="output" data-collapsed={resultsCollapsed} hidden={!log&&!busy}><h2>{words(locale,'Result','Результат','Нәтиже')}<ResultsToggle locale={locale} collapsed={resultsCollapsed} toggle={()=>setResultsCollapsed(value=>!value)}/></h2><p className="note">{!boardRun&&build?.state==='succeeded'?words(locale,'Code checked. Choose Run on board to upload by USB.','Код проверен. Нажми «Запустить на плате» для загрузки по USB.','Код тексерілді. USB арқылы жүктеу үшін «Тақшада іске қосу» бас.'):build?.state==='failed'?words(locale,'Find the error below. Click its line number to return to the code.','Найди ошибку ниже. Нажми на номер строки, чтобы перейти к коду.','Төмендегі қатені тап. Кодқа өту үшін жол нөмірін бас.'):null}</p><div className="diagnostics">{compilerDiagnostics(log,project,build?.operationId??'').map((diagnostic,i)=><button key={i} onClick={()=>{setActiveFile(diagnostic.file);codeController.current?.navigate(diagnostic.file,diagnostic.line,diagnostic.column);if(diagnostic.file==='sketch.ino'){const before=latest.current.source.split('\n').slice(0,diagnostic.line).join('\n');const ids=[...before.matchAll(/\/\/ block:([a-zA-Z0-9_-]+)/g)];workspace.current?.highlightBlock(ids.at(-1)?.[1]??null);}}}>{diagnostic.file}:{diagnostic.line}:{diagnostic.column} · {diagnostic.message}</button>)}</div><p className="build-integrity-progress" aria-live="off" hidden={!buildProgress}>{buildProgress}</p><pre aria-live="polite">{log}</pre>{buildReport&&<CompilerJournal key={buildReport.build.operationId} operationId={buildReport.build.operationId} locale={locale}/>}
-{buildReport&&<button onClick={()=>downloadJSON('jective-build-'+buildReport.build.operationId+'.json',buildReport)}>{words(locale,'Save build report (compiled source and log)','Скачать отчёт сборки (проверенный код и журнал)','Құрастыру есебін жүктеу (тексерілген код пен журнал)')}</button>}</section><details className="trace-tools"><summary>{words(locale,'Indicator experiment','Опыт с индикатором','Индикатор тәжірибесі')}</summary><button disabled={project.mode==='code'||simulating} onClick={simulate}>{translate(locale,'Simulate indicator trace')}</button><button disabled={!simulating} onClick={()=>{stopSimulation();setLog(translate(locale,'SIMULATION interrupted'));}}>{translate(locale,'Stop simulation')}</button><button disabled={!traceEvidence} onClick={()=>{if(!traceEvidence)return;const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(traceEvidence,null,2)],{type:'application/json'}));a.download='jective-indicator-simulation-trace.json';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);}}>{translate(locale,'Export simulation trace')}</button></details></div> <details className="project-tools" hidden={tab!=='projects'}><summary>{translate(locale,'Projects and tools')}</summary><nav><button disabled={busy} onClick={async()=>{const s=result(await window.jective.toolchain());if(s)setLog(s);}}>{t.toolchain}</button><button onClick={()=>void window.jective.toolchainImport().then(result)}>{translate(locale,'Import offline toolchain folder')}</button><button onClick={async()=>{if(dirty&&!confirm(translate(locale,'Create a new project? Existing edits remain in local recovery until replaced.')))return;const r=result(await window.jective.newProject());if(r){const p:Project={schemaVersion:1,id:crypto.randomUUID(),name:'New project',profileId:latest.current.profileId,profileDefinition:latest.current.profileDefinition,profileVersion:latest.current.profileVersion,profileHash:latest.current.profileHash,mode:'blocks',source:'',workspace:initialWorkspace,revision:0};latest.current=p;setProject(p);Blockly.serialization.workspaces.load(initialWorkspace,workspace.current!);setDirty(true);setBuild(null);}}}>{translate(locale,'New project')}</button><ArduinoStarter create={mode=>void createArduinoProject(mode)} disabled={busy||saving}/><button onClick={()=>void window.jective.exportProject(project).then(result)}>{translate(locale,'Export portable project')}</button><button onClick={async()=>{if(dirty&&!confirm(translate(locale,'Open a local copy? Save or export current changes first.')))return;const p=result(await window.jective.importProject());if(p)await acceptPreparedProject(p,true);}}>{translate(locale,'Import portable project')}</button><button onClick={()=>void window.jective.exportArduino(project).then(result)}>{translate(locale,'Export Arduino sketch')}</button><button onClick={()=>void window.jective.backup().then(result)}>{translate(locale,'Backup workspace')}</button><button onClick={()=>void window.jective.restore().then(r=>{if(result(r))location.reload();})}>{translate(locale,'Restore workspace')}</button></nav></details></main></LocaleContext.Provider>;
+  <aside>{activeBoard.core==='arduino:avr'&&<button disabled={busy} onClick={()=>void prepareArduinoTools()}>{words(locale,'Prepare Arduino tools',"Подготовить инструменты Arduino","Arduino құралдарын дайындау")}</button>}{profileListFailed&&<p role="alert">{words(locale,'Could not refresh the board list. Your project is unchanged.','Не удалось обновить список плат. Проект не изменён.','Тақшалар тізімі жаңартылмады. Жоба өзгерген жоқ.')} <button onClick={retryProfileList}>{words(locale,'Try again','Попробовать снова','Қайта көру')}</button></p>}<details className="board-details"><summary>{locale==='ru'?'О плате':locale==='kk'?'Тақша туралы':'Board details'}</summary><p className="note">{translate(locale,'Changing the board profile clears logical wiring and invalidates the current build.')}</p><p className="note">{projectProfile(project).provenance}</p></details><button disabled={converting} onClick={()=>void duplicateProject()}>{words(locale,'Work on a project copy','Работать в копии проекта','Жоба көшірмесінде жұмыс істеу')}</button><p><strong>{project.mode==='blocks'?t.blocks:t.code}</strong> · {translate(locale,'Hardware compiler')}</p><button disabled={project.mode==='code'||converting} onClick={()=>void convertToCode()}>{t.convert}</button><details className="verification-details"><summary>{translate(locale,'Verification')}</summary><p>{translate(locale,'Compiler')}: {build?translate(locale,build.state):translate(locale,'NOT RUN')}</p><p>{translate(locale,'Upload')}: {translate(locale,'NOT RUN')}</p><p>{translate(locale,'Physical')}: {translate(locale,'NOT RUN')}</p>{project.profileId!=='arduino-uno'&&<p className="note">{translate(locale,'Connect no motors. This milestone generates basic indicator sketches only.')}</p>}</details></aside></details><section className={"layout"+(showPythonSimulator?" with-python-simulator":"")}>
+ <section className={"editors view-"+editorView}><div className="panel"><h2>{t.blocks}{project.mode==='code'?' • '+translate(locale,'preserved original'):''}</h2><div ref={blocksDiv} className="editor studio-editor" inert={project.mode==='code'}/></div><div className="panel">{editorView==='code'?<div className="editor-language-header">
+ <div className="editor-language-switch" role="group" aria-label={words(locale,'Code language','Язык кода','Код тілі')}>
+  <button type="button" aria-pressed={project.pythonSource===undefined} disabled={busy||saving} onClick={()=>chooseLanguage('cpp')}>C++</button>
+  <button type="button" aria-pressed={project.pythonSource!==undefined} disabled={busy||saving} onClick={()=>chooseLanguage('python')}>Python</button>
+ </div>
+ {project.mode==='blocks'&&<span>{translate(locale,'generated preview')}</span>}
+ </div>:<h2>{project.pythonSource!==undefined?'Python':'Arduino C++'} {project.mode==='blocks'?'• '+translate(locale,'generated preview'):''}</h2>}{project.mode==='blocks'&&<div className="code-preview-help"><span>{words(locale,'Code from your blocks. Edit a copy to type C++.','Код из твоих блоков. Для правок создай копию.','Блоктардан жасалған код. Өңдеу үшін көшірме жаса.')}</span><button disabled={converting} onClick={()=>void convertToCode()}>{words(locale,'Edit a Code copy','Редактировать копию кода','Код көшірмесін өңдеу')}</button></div>}{project.pythonTarget&&<NativePythonFiles key={project.id} project={project} activeFile={activeFile} select={setActiveFile} locale={locale}
+  change={next=>{latest.current=next;setProject(next);setDirty(true);}}/>}
+ {project.pythonSource!==undefined&&!project.pythonTarget&&<PythonProjectFiles project={project} activeFile={activeFile} select={setActiveFile} locale={locale}/>}
+ {project.mode==='code'&&project.pythonSource===undefined&&<CodeFileTabs key={project.id} project={project} active={activeFile} select={setActiveFile} change={p=>{latest.current=p;setProject(p);setDirty(true);setBuild(null);}} locale={locale} busy={busy}/>}<div ref={codeDiv} className="editor studio-editor"/></div></section>{tab==='studio'&&studioPane==='program'&&showPythonSimulator&&project.pythonTarget&&simulator(true)}</section><ComponentsPanel project={project} locale={locale} port={connectedPort} openWiring={()=>showStudioPane('circuit')} openDevice={()=>setTab('device')}/><section className="output" data-collapsed={resultsCollapsed} hidden={!log&&!busy}><h2>{words(locale,'Result','Результат','Нәтиже')}<ResultsToggle locale={locale} collapsed={resultsCollapsed} toggle={()=>setResultsCollapsed(value=>!value)}/></h2><p className="note">{!boardRun&&build?.state==='succeeded'?words(locale,'Code checked. Choose Run on board to upload by USB.','Код проверен. Нажми «Запустить на плате» для загрузки по USB.','Код тексерілді. USB арқылы жүктеу үшін «Тақшада іске қосу» бас.'):build?.state==='failed'?words(locale,'Find the error below. Click its line number to return to the code.','Найди ошибку ниже. Нажми на номер строки, чтобы перейти к коду.','Төмендегі қатені тап. Кодқа өту үшін жол нөмірін бас.'):null}</p><div className="diagnostics">{compilerDiagnostics(log,project,build?.operationId??'').map((diagnostic,i)=><button key={i} onClick={()=>{setActiveFile(diagnostic.file);codeController.current?.navigate(diagnostic.file,diagnostic.line,diagnostic.column);if(diagnostic.file==='sketch.ino'){const before=latest.current.source.split('\n').slice(0,diagnostic.line).join('\n');const ids=[...before.matchAll(/\/\/ block:([a-zA-Z0-9_-]+)/g)];workspace.current?.highlightBlock(ids.at(-1)?.[1]??null);}}}>{diagnostic.file}:{diagnostic.line}:{diagnostic.column} · {diagnostic.message}</button>)}</div><p className="build-integrity-progress" aria-live="off" hidden={!buildProgress}>{buildProgress}</p><pre aria-live="polite">{log}</pre>{pythonInputOpen&&<PythonConsoleInput locale={locale} send={async line=>{const response=await window.jective.pythonInput(line);return response.ok&&response.value;}}/>}{buildReport&&<CompilerJournal key={buildReport.build.operationId} operationId={buildReport.build.operationId} locale={locale}/>}
+{buildReport&&<button onClick={()=>downloadJSON('jective-build-'+buildReport.build.operationId+'.json',buildReport)}>{words(locale,'Save build report (compiled source and log)','Скачать отчёт сборки (проверенный код и журнал)','Құрастыру есебін жүктеу (тексерілген код пен журнал)')}</button>}</section><details className="trace-tools"><summary>{words(locale,'Indicator experiment','Опыт с индикатором','Индикатор тәжірибесі')}</summary><button disabled={project.mode==='code'||simulating} onClick={simulate}>{translate(locale,'Simulate indicator trace')}</button><button disabled={!simulating} onClick={()=>{stopSimulation();setLog(translate(locale,'SIMULATION interrupted'));}}>{translate(locale,'Stop simulation')}</button><button disabled={!traceEvidence} onClick={()=>{if(!traceEvidence)return;const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(traceEvidence,null,2)],{type:'application/json'}));a.download='jective-indicator-simulation-trace.json';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);}}>{translate(locale,'Export simulation trace')}</button></details></div> <details className="project-tools" hidden={tab!=='projects'}><summary>{translate(locale,'Projects and tools')}</summary><nav><button disabled={busy} onClick={async()=>{const s=result(await window.jective.toolchain());if(s)setLog(s);}}>{t.toolchain}</button><button onClick={()=>void window.jective.toolchainImport().then(result)}>{translate(locale,'Import offline toolchain folder')}</button><button onClick={async()=>{if(dirty&&!confirm(translate(locale,'Create a new project? Existing edits remain in local recovery until replaced.')))return;const r=result(await window.jective.newProject());if(r){const p:Project={schemaVersion:1,id:crypto.randomUUID(),name:'New project',profileId:latest.current.profileId,profileDefinition:latest.current.profileDefinition,profileVersion:latest.current.profileVersion,profileHash:latest.current.profileHash,mode:'blocks',source:'',workspace:initialWorkspace,revision:0};latest.current=p;setProject(p);Blockly.serialization.workspaces.load(initialWorkspace,workspace.current!);setDirty(true);setBuild(null);}}}>{translate(locale,'New project')}</button><ArduinoStarter create={mode=>void createArduinoProject(mode)} disabled={busy||saving}/><button onClick={()=>void window.jective.exportProject(project).then(result)}>{translate(locale,'Export portable project')}</button><button onClick={async()=>{if(dirty&&!confirm(translate(locale,'Open a local copy? Save or export current changes first.')))return;const p=result(await window.jective.importProject());if(p)await acceptPreparedProject(p,true);}}>{translate(locale,'Import portable project')}</button><button disabled={!!project.pythonTarget} onClick={()=>void window.jective.exportArduino(project).then(result)}>{translate(locale,'Export Arduino sketch')}</button><button onClick={()=>void window.jective.backup().then(result)}>{translate(locale,'Backup workspace')}</button><button onClick={()=>void window.jective.restore().then(r=>{if(result(r))location.reload();})}>{translate(locale,'Restore workspace')}</button></nav></details></main></LocaleContext.Provider>;
 }
 createRoot(document.getElementById('root')!,{onCaughtError:()=>console.error('JECTIVE UI_RENDER_FAILED')}).render(<AppErrorBoundary><App/></AppErrorBoundary>);
 

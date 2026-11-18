@@ -30,6 +30,8 @@
     "distance:check": "node scripts/distance-check.mjs",
     "print-value:check": "node scripts/print-value-check.mjs",
     "content:validate": "node scripts/content-check.mjs",
+    "python:bundle": "py -3.14 scripts/prepare-python-runtime.py",
+    "prepackage": "node scripts/verify-bundled-avr.mjs && npm run python:bundle",
     "package": "npm run build -- --production && electron-builder --win nsis --x64",
     "release:verify": "npm run github:test && npm run github:check && npm run security:audit && npm run architecture:test && npm run assistant:test && npm run requirements:check && npm run audio:test && npm run typecheck && npm run lint && npm test && npm run test:coverage && npm run content:validate && npm run firmware:check && npm run test:e2e",
     "evidence": "node scripts/evidence.mjs",
@@ -100,6 +102,16 @@
         "filter": [
           "arduino-cli.exe"
         ]
+      },
+      {
+        "from": ".toolchain/python",
+        "to": "tools/python",
+        "filter": ["**/*", "!**/__pycache__/**", "!packages/Scripts/**"]
+      },
+      {
+        "from": ".toolchain/sdk/data",
+        "to": "tools/avr-data",
+        "filter": ["packages/**/*", "*_index.json", "*_index.json.sig"]
       }
     ],
     "win": {

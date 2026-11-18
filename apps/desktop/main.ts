@@ -1,3 +1,4 @@
+import {seedBundledAvr} from '../../packages/toolchain/bundled-avr';
 import {WirelessOpenSchema,WirelessRunSchema,WirelessSessionSchema} from '../../packages/contracts/arduino-wireless';
 import {ArduinoOpenSchema,ArduinoCommandRequestSchema,ArduinoCloseSchema} from '../../packages/contracts/arduino-robot';
 import {rendererRecovery} from './infrastructure/renderer-recovery';
@@ -9,6 +10,9 @@ import {ProjectListRequestSchema} from '../../packages/contracts/project-browser
 import {assessKnowledge} from '../../packages/content/assess-knowledge';
 import {snapshotEnvironmentInThread} from './infrastructure/environment-thread';
 import {isStudioMedia,studioMediaResponse} from './infrastructure/media';
+import {PythonSimulationRequestSchema} from '../../packages/robots/python-simulation';
+import {PythonRuntime} from './infrastructure/python-runtime';
+import {PythonRequestSchema} from '../../packages/robots/python-runtime';
 import {pythonSketch,updatePythonSketch} from '../../packages/codegen/python';
 import {exportArduinoProject} from '../../packages/persistence/arduino-export';
 import {createProjectCopy} from '../../packages/contracts/project-copy';
@@ -48,10 +52,15 @@ let activeOperations=0;let restoringWorkspace=false;
 function clearCurrentDocument(){documents.clear();}
 function currentLocale(){try{return store?.state().locale??'ru';}catch{return 'ru' as const;}}
 function brandedMessage(options:Electron.MessageBoxOptions){const locale=currentLocale();return {...options,message:nativeText(options.message,locale),buttons:options.buttons?.map(label=>nativeText(label,locale)),title:options.title?'JECTIVE — '+nativeText(options.title,locale):'JECTIVE Robotics Studio',icon:nativeImage.createFromPath(join(__dirname,'renderer','jective-icon.png')).resize({width:64,height:64})};}
+const pythonBundle=app.isPackaged?join(process.resourcesPath,'tools','python'):join(app.getAppPath(),'.toolchain','python');
+const pythonRuntime=new PythonRuntime(pythonBundle);
+const simulationRuntime=new PythonRuntime(pythonBundle);
+let pythonSimulationId:string|undefined;
 function resolveProject(value:unknown,forBoard=false){
  const input=ProjectSchema.parse(value);
  const {profile,hash}=verifyProjectProfile(input);
  const project={...input,profileVersion:profile.version,profileHash:hash};
+ if(forBoard&&project.pythonTarget)throw new Error('PYTHON_RUNTIME_REQUIRED');
  return forBoard?{...project,source:pythonSketch(project)}:updatePythonSketch(project);
 }
 async function chooseExport(extension:string,name:string,bytes:Uint8Array|string){const selected=await dialog.showSaveDialog(win,{defaultPath:name+'.'+extension,filters:[{name:extension,extensions:[extension]}]});if(selected.canceled||!selected.filePath)return false;await writeFile(selected.filePath,bytes);return true;}
@@ -98,7 +107,12 @@ if(primaryInstance)app.whenReady().then(async()=>{
   session.defaultSession.setPermissionRequestHandler((_wc,_permission,callback)=>callback(false));
   session.defaultSession.setPermissionCheckHandler(()=>false);
   session.defaultSession.setDevicePermissionHandler(()=>false);
-  service=new ToolchainService(app.isPackaged?join(process.resourcesPath,'tools','arduino-cli.exe'):join(app.getAppPath(),'.toolchain','bin','arduino-cli.exe'),process.env.JECTIVE_TOOLCHAIN_ROOT??join(app.getPath('userData'),'toolchain'),(executable,root,coreVersion,cancelled,progress,core)=>snapshotEnvironmentInThread(executable,root,coreVersion,cancelled,undefined,undefined,progress,core),event=>{if(win&&!win.isDestroyed()&&!win.webContents.isDestroyed())win.webContents.send('build:stage',event);});
+  const toolchainRoot=process.env.JECTIVE_TOOLCHAIN_ROOT??join(app.getPath('userData'),'toolchain');
+  if(app.isPackaged&&!process.env.JECTIVE_TOOLCHAIN_ROOT){
+    try{await seedBundledAvr(join(process.resourcesPath,'tools','avr-data'),toolchainRoot);}
+    catch(error){operationLog.record('toolchain','BUNDLED_AVR_SETUP_FAILED');console.error(error);}
+  }
+  service=new ToolchainService(app.isPackaged?join(process.resourcesPath,'tools','arduino-cli.exe'):join(app.getAppPath(),'.toolchain','bin','arduino-cli.exe'),toolchainRoot,(executable,root,coreVersion,cancelled,progress,core)=>snapshotEnvironmentInThread(executable,root,coreVersion,cancelled,undefined,undefined,progress,core),event=>{if(win&&!win.isDestroyed()&&!win.webContents.isDestroyed())win.webContents.send('build:stage',event);});
   const placementPath=join(app.getPath('userData'),'window-placement.json');
   const primaryDisplay=screen.getPrimaryDisplay();
   const placement=restoreWindowPlacement(await readWindowPlacement(placementPath),[primaryDisplay.workArea,...screen.getAllDisplays().filter(display=>display.id!==primaryDisplay.id).map(display=>display.workArea)]);
@@ -167,6 +181,35 @@ if(primaryInstance)app.whenReady().then(async()=>{
   handler('arduino:open',async value=>{const request=ArduinoOpenSchema.parse(value);if(buildBusy)throw new Error('DEVICE_BUSY');return devices.openRobot(request.path);});
   handler('arduino:command',async value=>{const request=ArduinoCommandRequestSchema.parse(value);if(request.command!=='S'&&(buildBusy||win.isDestroyed()||!win.isFocused()||win.isMinimized())){await devices.stopRobot();throw new Error('ROBOT_CONTROL_INACTIVE');}return devices.commandRobot(request);});
   handler('arduino:close',async value=>devices.closeRobot(ArduinoCloseSchema.parse(value).sessionId));
+  handler('python:simulate',async value=>{
+   const request=PythonSimulationRequestSchema.parse(value);
+   if(pythonSimulationId)throw new Error('PYTHON_SIMULATION_BUSY');
+   pythonSimulationId=request.id;
+   const publish=(event:object)=>{
+    if(!win.isDestroyed()&&!win.webContents.isDestroyed())win.webContents.send('python:simulationState',{id:request.id,...event});
+   };
+   try{
+    return await simulationRuntime.run({target:'uno',action:'run',files:request.files},log=>publish({log}),
+     {world:request.world,publish:state=>publish({state})});
+   }finally{pythonSimulationId=undefined;}
+  });
+  handler('python:simulationStop',async value=>pythonSimulationId===z.uuid().parse(value)&&simulationRuntime.stop());
+  handler('python:run',async value=>{
+   const request=PythonRequestSchema.parse(value);
+   if(buildBusy)throw new Error('TOOLCHAIN_BUSY');
+   buildBusy=true;
+   try{
+    if(request.port){
+     if(!(await devices.list()).some(device=>device.transport==='usb'&&device.path===request.port))throw new Error('PORT_NOT_FOUND');
+     await devices.close();
+    }
+    return await pythonRuntime.run(request,log=>{
+     if(!win.isDestroyed()&&!win.webContents.isDestroyed())win.webContents.send('python:output',log);
+    });
+   }finally{buildBusy=false;}
+  });
+  handler('python:stop',async()=>pythonRuntime.stop());
+  handler('python:input',async value=>pythonRuntime.input(z.string().max(4096).parse(value)));
   handler('devices:list',async()=>devices.list());
   devices.subscribe(event=>{if(win&&!win.isDestroyed())win.webContents.send('serial:event',event);});
   handler('serial:open',async value=>{const p=z.object({path:z.string().max(100),baudRate:z.number().int()}).strict().parse(value);if(buildBusy)throw new Error('DEVICE_BUSY');return devices.open(p.path,p.baudRate);});
@@ -206,6 +249,6 @@ if(primaryInstance)app.whenReady().then(async()=>{
  finally{app.quit();}
 });
 let deviceShutdownComplete=false;let deviceShutdownStarted=false;
-app.on('before-quit',event=>{service?.cancel();if(deviceShutdownComplete)return;event.preventDefault();if(deviceShutdownStarted)return;deviceShutdownStarted=true;void Promise.race([devices.close().catch(()=>undefined),new Promise<void>(resolve=>setTimeout(resolve,1000))]).finally(()=>{store?.close();deviceShutdownComplete=true;app.quit();});});app.on('window-all-closed',()=>app.quit());
+app.on('before-quit',event=>{simulationRuntime.stop();pythonRuntime.stop();service?.cancel();if(deviceShutdownComplete)return;event.preventDefault();if(deviceShutdownStarted)return;deviceShutdownStarted=true;void Promise.race([devices.close().catch(()=>undefined),new Promise<void>(resolve=>setTimeout(resolve,1000))]).finally(()=>{store?.close();deviceShutdownComplete=true;app.quit();});});app.on('window-all-closed',()=>app.quit());
 
 

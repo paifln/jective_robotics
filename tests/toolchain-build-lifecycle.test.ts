@@ -11,7 +11,7 @@ import {snapshotEnvironment} from '../packages/toolchain/environment';
 type Reply={code:number|null;log:string;stdout:string;stderr:string;interrupted:boolean};
 // Explicit software fixture: no Arduino executable or serial port is invoked.
 class FixtureToolchain extends ToolchainService {
- duringCompile:(()=>Promise<void>)|undefined;calls:string[][]=[];version='Version: 1.5.1 fixture';versionWarning='';cores:Reply={code:0,log:JSON.stringify({platforms:[{id:'esp32:esp32',installed_version:'3.3.12'}]}),stdout:JSON.stringify({platforms:[{id:'esp32:esp32',installed_version:'3.3.12'}]}),stderr:'',interrupted:false};compileReply:Reply={code:0,log:'fixture compile',stdout:'fixture compile',stderr:'',interrupted:false};uploadReply:Reply={code:0,log:'fixture upload',stdout:'fixture upload',stderr:'',interrupted:false};files=['sketch.ino.bin','sketch.ino.elf'];
+ duringCompile:(()=>Promise<void>)|undefined;calls:string[][]=[];version='{"VersionString":"1.5.1"}';versionWarning='';cores:Reply={code:0,log:JSON.stringify({platforms:[{id:'esp32:esp32',installed_version:'3.3.12'}]}),stdout:JSON.stringify({platforms:[{id:'esp32:esp32',installed_version:'3.3.12'}]}),stderr:'',interrupted:false};compileReply:Reply={code:0,log:'fixture compile',stdout:'fixture compile',stderr:'',interrupted:false};uploadReply:Reply={code:0,log:'fixture upload',stdout:'fixture upload',stderr:'',interrupted:false};files=['sketch.ino.bin','sketch.ino.elf'];
  override async run(args:string[],_timeout?:number,rawLogPath?:string):Promise<Reply>{this.calls.push(args);if(rawLogPath)await writeFile(rawLogPath,'explicit fixture raw output',{flag:'wx'});if(args[0]==='version')return {code:0,log:this.version+this.versionWarning,stdout:this.version,stderr:this.versionWarning,interrupted:false};if(args[0]==='core')return this.cores;if(args[0]==='compile'){await this.duringCompile?.();const output=args[args.indexOf('--build-path')+1]!;for(const file of this.files)await writeFile(join(output,file),'fixture artifact '+file);return this.compileReply;}if(args[0]==='upload')return this.uploadReply;throw new Error('Unexpected fixture command');}
 }
 const project=():Project=>({schemaVersion:1,id:randomUUID(),name:'Build lifecycle fixture',profileId:'esp32-devkit-reference',mode:'code',source:'void setup(){}\nvoid loop(){}',workspace:{},revision:0});
@@ -68,7 +68,7 @@ it('modified external compiler or SDK content refuses upload and a during-build 
 }));
 async function fixture(fn:(service:FixtureToolchain,p:Project)=>Promise<void>){const dir=await mkdtemp(join(tmpdir(),'jective-build-'));try{await fn(new FixtureToolchain(await prepareEnvironmentFixture(dir),dir),project());}finally{await rm(dir,{recursive:true,force:true});}}
 it('compiler refuses provisional wiring and wrong, missing or unreadable toolchain versions before compiling',async()=>fixture(async(s,p)=>{
- await expect(s.compile({...p,profileId:'jective-prototype'})).rejects.toThrow('WIRING_UNASSIGNED');expect(s.calls).toEqual([]);s.version='Version: 9.0';await expect(s.compile(p)).rejects.toThrow('CLI_VERSION_MISMATCH');s.version='Version: 1.5.1 fixture';s.cores={code:1,log:'fixture query failure',stdout:'fixture query failure',stderr:'',interrupted:false};await expect(s.compile(p)).rejects.toThrow('CORE_QUERY_FAILED');s.cores={code:0,log:'{bad json',stdout:'{bad json',stderr:'',interrupted:false};await expect(s.compile(p)).rejects.toThrow();s.cores.log=s.cores.stdout=JSON.stringify({platforms:[]});await expect(s.compile(p)).rejects.toThrow('CORE_MISSING');s.cores.log=s.cores.stdout=JSON.stringify({platforms:[{id:'esp32:esp32',installed_version:'3.3.11'}]});await expect(s.compile(p)).rejects.toThrow('CORE_VERSION_MISMATCH');expect(s.calls.some(c=>c[0]==='compile')).toBe(false);
+ await expect(s.compile({...p,profileId:'jective-prototype'})).rejects.toThrow('WIRING_UNASSIGNED');expect(s.calls).toEqual([]);s.version='{"VersionString":"9.0"}';await expect(s.compile(p)).rejects.toThrow('CLI_VERSION_MISMATCH');s.version='{"VersionString":"1.5.1"}';s.cores={code:1,log:'fixture query failure',stdout:'fixture query failure',stderr:'',interrupted:false};await expect(s.compile(p)).rejects.toThrow('CORE_QUERY_FAILED');s.cores={code:0,log:'{bad json',stdout:'{bad json',stderr:'',interrupted:false};await expect(s.compile(p)).rejects.toThrow();s.cores.log=s.cores.stdout=JSON.stringify({platforms:[]});await expect(s.compile(p)).rejects.toThrow('CORE_MISSING');s.cores.log=s.cores.stdout=JSON.stringify({platforms:[{id:'esp32:esp32',installed_version:'3.3.11'}]});await expect(s.compile(p)).rejects.toThrow('CORE_VERSION_MISMATCH');expect(s.calls.some(c=>c[0]==='compile')).toBe(false);
 }));
 it('successful compilation records artifact hashes; stale source and changed artifacts refuse upload before invoking it',async()=>fixture(async(s,p)=>{
  const build=await s.compile(p);expect(build.state).toBe('succeeded');const folder=join(s.root,'builds',build.operationId);const manifest=JSON.parse(await readFile(join(folder,'manifest.json'),'utf8'));expect(manifest.artifactHashes['sketch.ino.bin']).toMatch(/^[a-f0-9]{64}$/);expect(await readFile(join(folder,'sketch','sketch.ino'),'utf8')).toBe(p.source);await expect(s.upload({...p,source:p.source+' changed'},build.operationId,'COM3')).rejects.toThrow('BUILD_STALE');await writeFile(join(folder,'output','sketch.ino.bin'),'tampered fixture');await expect(s.upload(p,build.operationId,'COM3')).rejects.toThrow('ARTIFACT_CHANGED');expect(s.calls.some(c=>c[0]==='upload')).toBe(false);
@@ -88,13 +88,13 @@ it('parses core JSON from stdout while retaining stderr warnings separately',asy
  s.versionWarning='Warning: explicit version diagnostic';
  const result=await s.compile(p);expect(result.state).toBe('succeeded');
  const manifest=JSON.parse(await readFile(join(s.root,'builds',result.operationId,'manifest.json'),'utf8'));
- expect(manifest.cliVersion).toBe(s.version);
+ expect(manifest.cliVersion).toBe('arduino-cli Version: 1.5.1');
  s.cores.stdout='{invalid stdout';s.cores.stderr=JSON.stringify({platforms:[{id:'esp32:esp32',installed_version:'3.3.12'}]});s.cores.log=s.cores.stderr;
  await expect(s.compile(p)).rejects.toThrow();
 }));
 it('cannot validate a mismatching CLI using a version string printed only to stderr',async()=>fixture(async(s,p)=>{
- s.version='Version: 9.0';s.versionWarning='Version: 1.5.1 fixture';
- await expect(s.compile(p)).rejects.toThrow('CLI_VERSION_MISMATCH');expect(s.calls).toEqual([['version']]);
+ s.version='{"VersionString":"9.0"}';s.versionWarning='{"VersionString":"1.5.1"}';
+ await expect(s.compile(p)).rejects.toThrow('CLI_VERSION_MISMATCH');expect(s.calls).toEqual([['version','--json']]);
 }));
 
 it('exposes only journals belonging to this service and records compiler/upload raw provenance',async()=>fixture(async(s,p)=>{

@@ -79,6 +79,7 @@ export function pythonSketch(project: Project): string {
 }
 
 export function updatePythonSketch(project: Project): Project {
+ if (project.pythonTarget) return {...project,source:''};
  if (project.pythonSource === undefined) return project;
  try {
   return {...project, source:pythonSketch(project)};

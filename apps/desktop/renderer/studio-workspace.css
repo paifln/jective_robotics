@@ -72,3 +72,60 @@
 .serial-workspace .board-monitor>.toolbar>label{width:auto}
 .serial-workspace .board-monitor>pre{min-height:180px;max-height:52dvh;overflow:auto}
 @media(max-width:800px){.feature.serial-workspace{padding:18px}}
+.editor-language-header{display:flex;align-items:center;gap:12px;min-height:43px;padding:5px 14px;background:var(--surface);border-bottom:1px solid var(--line)}
+.editor-language-header>span{color:var(--muted);font-size:11px}
+.editor-language-switch{display:inline-flex;gap:2px;padding:2px;border:1px solid var(--line);border-radius:7px;background:var(--field)}
+.studio .editor-language-switch button{min-width:62px;padding:4px 10px;border:1px solid transparent;border-radius:5px;background:transparent;color:var(--muted);font-size:12px;font-weight:600}
+.studio .editor-language-switch button:hover{color:var(--ink)}
+.studio .editor-language-switch button[aria-pressed=true]{color:var(--accent);border-color:var(--line);background:var(--surface)}
+
+.python-device-actions {
+  flex: 0 0 auto;
+  min-width: 0;
+  max-height: 33vh;
+  overflow: auto;
+  margin: 0 20px 10px;
+  padding: 8px 10px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--surface);
+}
+.python-action-row, .native-python-files form {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+}
+.python-action-row :is(button, summary),
+.native-python-files :is(button, summary),
+#studio-bluetooth button, .robot-board-actions button {
+  box-sizing: border-box;
+  max-width: 100%;
+  min-width: 0;
+  height: auto;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  text-align: center;
+  line-height: 1.3;
+}
+.python-action-row button, .native-python-files form button { min-height: 38px; padding: 7px 12px; }
+.python-board-setup { margin-inline-start: auto; min-width: 0; }
+.python-board-setup[open] { flex: 0 0 100%; }
+.python-board-setup summary { cursor: pointer; padding: 8px 6px; text-align: start; }
+.python-board-setup p, .python-device-actions > .note { margin: 4px 0 8px; }
+.studio .native-python-files > :is(form, .note) { flex-basis: 100%; min-width: 0; }
+.studio .native-python-files > [role=tablist] { flex-basis: 100%; }
+.studio .native-python-files details summary {
+  width: auto;
+  min-height: 34px;
+  padding: 6px 10px;
+}
+.native-python-files form input { flex: 1 1 130px; min-width: 0; }
+.native-python-files code { overflow-wrap: anywhere; }
+.native-python-files .note { margin: 0; }
+.studio .python-device-actions + .student-settings { margin-top: 0; }
+@media (max-width: 800px) {
+  .python-device-actions { margin-inline: 12px; }
+  .python-board-setup { margin-inline-start: 0; }
+}

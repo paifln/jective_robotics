@@ -7,7 +7,13 @@ import {safeWorkspaceData} from './workspace-data';
 import {ProfileSchema,profiles} from '../profiles';
 export const ProfileId=z.string().regex(/^[a-z][a-z0-9-]{0,79}$/);
 export const WorkspaceSchema=z.custom<Record<string,unknown>>(safeWorkspaceData,'PROJECT_WORKSPACE_UNSAFE');
-export const ProjectSchema=z.object({schemaVersion:z.literal(1),id:z.uuid(),name:z.string().min(1).max(100),profileId:ProfileId,mode:z.enum(['blocks','code']),source:z.string().max(500000),pythonSource:z.string().max(500000).optional(),sourceFiles:SourceFilesSchema.optional(),workspace:WorkspaceSchema,revision:z.number().int().nonnegative(),profileDefinition:ProfileSchema.optional(),profileVersion:z.string().optional(),profileHash:z.string().optional(),wiring:z.record(z.string(),z.number().int().min(0).max(48).nullable()).optional(),worldId:z.string().max(80).optional(),simulationWorld:WorldSchema.optional(),lessonId:z.string().max(20).optional(),worksheets:ProjectWorksheetsSchema.optional()}).strict().refine(p=>profiles.some(b=>b.id===p.profileId)||Boolean(p.profileDefinition&&p.profileVersion&&p.profileHash),'PROFILE_BINDING_REQUIRED').refine(p=>p.mode==='code'||Object.keys(p.sourceFiles??{}).length===0,'SOURCE_FILES_CODE_ONLY').refine(p=>p.pythonSource===undefined||(p.mode==='code'&&Object.keys(p.sourceFiles??{}).length===0),'PYTHON_PROJECT_SOURCE').refine(p=>p.source.length+Object.values(p.sourceFiles??{}).reduce((total,text)=>total+text.length,0)<=500000,'PROJECT_SOURCE_LIMIT');
+import {PythonTargetSchema,type PythonRequest,PythonResultSchema} from '../robots/python-runtime';
+
+import type {RobotState} from '../simulator';
+import type {PythonSimulationRequest} from '../robots/python-simulation';
+
+const PythonFilesSchema=z.record(z.string().regex(/^[a-zA-Z_][a-zA-Z0-9_]{0,39}\.py$/).refine(name=>!['main.py','jective_robot.py','_jective_start.py'].includes(name.toLowerCase())),z.string().max(500000));
+export const ProjectSchema=z.object({schemaVersion:z.literal(1),id:z.uuid(),name:z.string().min(1).max(100),profileId:ProfileId,mode:z.enum(['blocks','code']),source:z.string().max(500000),pythonSource:z.string().max(500000).optional(),pythonTarget:PythonTargetSchema.optional(),pythonFiles:PythonFilesSchema.optional(),pythonDraft:z.object({source:z.string().max(500000),target:PythonTargetSchema.optional(),files:PythonFilesSchema.optional()}).strict().optional(),arduinoDraft:z.object({source:z.string().max(500000),files:SourceFilesSchema.optional()}).strict().optional(),sourceFiles:SourceFilesSchema.optional(),workspace:WorkspaceSchema,revision:z.number().int().nonnegative(),profileDefinition:ProfileSchema.optional(),profileVersion:z.string().optional(),profileHash:z.string().optional(),wiring:z.record(z.string(),z.number().int().min(0).max(48).nullable()).optional(),worldId:z.string().max(80).optional(),simulationWorld:WorldSchema.optional(),lessonId:z.string().max(20).optional(),worksheets:ProjectWorksheetsSchema.optional()}).strict().refine(p=>profiles.some(b=>b.id===p.profileId)||Boolean(p.profileDefinition&&p.profileVersion&&p.profileHash),'PROFILE_BINDING_REQUIRED').refine(p=>p.mode==='code'||Object.keys(p.sourceFiles??{}).length===0,'SOURCE_FILES_CODE_ONLY').refine(p=>p.pythonSource===undefined||(p.mode==='code'&&Object.keys(p.sourceFiles??{}).length===0),'PYTHON_PROJECT_SOURCE').refine(p=>(p.pythonTarget===undefined||p.pythonSource!==undefined)&&(!p.pythonFiles||(p.pythonTarget!==undefined&&Object.keys(p.pythonFiles).length<=15&&new Set(Object.keys(p.pythonFiles).map(name=>name.toLowerCase())).size===Object.keys(p.pythonFiles).length&&((p.pythonSource?.length??0)+Object.values(p.pythonFiles).reduce((size,source)=>size+source.length,0)<=500000))),'PYTHON_FILES').refine(p=>(!p.pythonDraft||Object.values(p.pythonDraft.files??{}).reduce((n,text)=>n+text.length,p.pythonDraft.source.length)<=500000)&&(!p.arduinoDraft||Object.values(p.arduinoDraft.files??{}).reduce((n,text)=>n+text.length,p.arduinoDraft.source.length)<=500000),'DRAFT_SOURCE_LIMIT').refine(p=>p.source.length+Object.values(p.sourceFiles??{}).reduce((total,text)=>total+text.length,0)<=500000,'PROJECT_SOURCE_LIMIT');
 export type Project=z.infer<typeof ProjectSchema>;
 export const ErrorSchema=z.object({code:z.string(),message:z.string()}).strict();
 export const BuildSchema=z.object({operationId:z.uuid(),state:z.enum(['succeeded','failed','interrupted']),log:z.string(),sourceHash:z.string(),artifacts:z.array(z.string()),exitCode:z.number().nullable()}).strict();
@@ -31,6 +37,13 @@ export type WorkspaceState=z.infer<typeof WorkspaceStateSchema>;
 export const AssistantSettingsSchema=z.object({enabled:z.boolean(),endpoint:z.string().max(500),model:z.string().max(100),keyConfigured:z.boolean()}).strict();
 export type AssistantSettings=z.infer<typeof AssistantSettingsSchema>;
 export interface DesktopAPI {
+ pythonRun(request:PythonRequest):Promise<Result<z.infer<typeof PythonResultSchema>>>;
+ pythonStop():Promise<Result<boolean>>;
+ pythonInput(line:string):Promise<Result<boolean>>;
+ pythonSimulate(request:PythonSimulationRequest):Promise<Result<z.infer<typeof PythonResultSchema>>>;
+ pythonSimulationStop(id:string):Promise<Result<boolean>>;
+ onPythonSimulationState(listener:(event:{id:string;state?:RobotState;log?:string})=>void):()=>void;
+ onPythonOutput(listener:(log:string)=>void):()=>void;
  windowState():Promise<Result<import('./window').WindowState>>;
  windowAction(action:import('./window').WindowAction):Promise<Result<import('./window').WindowState>>;
  onWindowState(listener:(state:import('./window').WindowState)=>void):()=>void;

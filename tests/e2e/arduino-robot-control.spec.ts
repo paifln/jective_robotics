@@ -4,7 +4,7 @@ import {mkdtemp,rm} from 'node:fs/promises';
 import {basename,join,resolve,sep} from 'node:path';
 import {tmpdir} from 'node:os';
 
-type ControlFixture={commands:string[];closed:number;nativeCalls:number};
+type ControlFixture={rejectConnection:boolean;commands:string[];closed:number;nativeCalls:number};
 
 test('Arduino starter and control stop on pointer release, key release, emergency, focus loss and navigation without opening hardware',async()=>{
  const root=await mkdtemp(join(tmpdir(),'jective-arduino-control-'));
@@ -14,12 +14,12 @@ test('Arduino starter and control stop on pointer release, key release, emergenc
   const page=await app.firstWindow(),errors:string[]=[];page.on('pageerror',error=>errors.push(error.message));page.on('dialog',dialog=>dialog.accept());
   await app.evaluate(({BrowserWindow,ipcMain})=>{
    const window=BrowserWindow.getAllWindows()[0]!;window.setFocusable(false);window.setPosition(-12000,-12000);window.webContents.setBackgroundThrottling(false);window.showInactive();
-   const state=globalThis as typeof globalThis&{arduinoFixture:ControlFixture};state.arduinoFixture={commands:[],closed:0,nativeCalls:0};
+   const state=globalThis as typeof globalThis&{arduinoFixture:ControlFixture};state.arduinoFixture={rejectConnection:false,commands:[],closed:0,nativeCalls:0};
    ipcMain.removeHandler('devices:list');ipcMain.handle('devices:list',()=>({ok:true,value:[
     {path:'HC05_TEST_ONLY',transport:'bluetooth',bluetoothDirection:'outgoing',bluetoothName:'HC-05'},
     {path:'USB_TEST_ONLY',transport:'usb'},
    ]}));
-   ipcMain.removeHandler('arduino:open');ipcMain.handle('arduino:open',(_event,request)=>{if(request.path!=='HC05_TEST_ONLY')throw new Error('UNEXPECTED_FIXTURE_PORT');return {ok:true,value:{id:'90680db4-bc85-43a1-8ab9-99c185f9bb41',port:request.path}};});
+   ipcMain.removeHandler('arduino:open');ipcMain.handle('arduino:open',(_event,request)=>{if(request.path!=='HC05_TEST_ONLY')throw new Error('UNEXPECTED_FIXTURE_PORT');if(state.arduinoFixture.rejectConnection)return {ok:false,error:{code:'PORT_BUSY',message:'PORT_BUSY: test port owned'}};return {ok:true,value:{id:'90680db4-bc85-43a1-8ab9-99c185f9bb41',port:request.path}};});
    ipcMain.removeHandler('arduino:command');ipcMain.handle('arduino:command',(_event,request)=>{if(!/^[FBLRS]$/.test(request.command))throw new Error('NON_ASCII_ROBOT_COMMAND');state.arduinoFixture.commands.push(request.command);return {ok:true,value:true};});
    ipcMain.removeHandler('arduino:close');ipcMain.handle('arduino:close',()=>{state.arduinoFixture.closed++;state.arduinoFixture.commands.push('S');return {ok:true,value:true};});
    const build={operationId:'79c3c84b-06ef-4b89-80f2-e25f898605b1',sourceHash:'fixture',state:'succeeded',exitCode:0,log:'Compile fixture',artifacts:[]};
@@ -46,10 +46,22 @@ test('Arduino starter and control stop on pointer release, key release, emergenc
   await expect(page.getByRole('button',{name:'Run via Bluetooth',exact:true})).toBeEnabled();
   await page.getByRole('combobox',{name:'USB port',exact:true}).selectOption('USB_TEST_ONLY');
   await navigation.getByRole('button',{name:'Robot control',exact:true}).click();
+  const control=page.locator('.arduino-robot-control');
+  const settings=control.getByRole('button',{name:'Robot setup',exact:true});
+  await expect(control.getByLabel('HC-05 port',{exact:true})).toBeHidden();
+  await settings.click();
   await expect(page.getByRole('combobox',{name:'USB port',exact:true})).toHaveValue('USB_TEST_ONLY');
   await page.getByRole('button',{name:'Install controller firmware via USB',exact:true}).click();
   await expect(page.locator('.robot-board-status')).toContainText('Uploaded to USB_TEST_ONLY');
-  const control=page.locator('.arduino-robot-control');await expect(control).toContainText('Install the controller firmware via USB, then select the HC-05 port and connect.');await control.getByLabel('HC-05 COM port',{exact:true}).selectOption('HC05_TEST_ONLY');await control.getByRole('button',{name:'Connect · 9600',exact:true}).click();await expect(control.locator('.arduino-drive-status')).toHaveText('HC05_TEST_ONLY · Stopped');
+  await expect(control.getByLabel('HC-05 port',{exact:true})).toHaveValue('HC05_TEST_ONLY');
+  await settings.click();
+  await expect(control.getByRole('button',{name:'Forward',exact:true})).toHaveCount(0);
+  await app.evaluate(()=>{(globalThis as typeof globalThis&{arduinoFixture:ControlFixture}).arduinoFixture.rejectConnection=true;});
+  await control.getByRole('button',{name:'Connect robot',exact:true}).click();
+  await expect(control.getByRole('alert')).toHaveText('The robot is busy, so close any other program using it and try again.');
+  await app.evaluate(()=>{(globalThis as typeof globalThis&{arduinoFixture:ControlFixture}).arduinoFixture.rejectConnection=false;});
+  await control.getByRole('button',{name:'Connect robot',exact:true}).click();
+  await expect(control.locator('.arduino-drive-status')).toHaveText('Connected · Stopped');
   const forward=control.getByRole('button',{name:'Forward',exact:true});
   const right=control.getByRole('button',{name:'Right',exact:true});
   const preview=control.locator('.arduino-drive-preview canvas');
